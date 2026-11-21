@@ -1,0 +1,110 @@
+{
+  "versao": "1.0.0",
+  "atomos": {
+    "SIGILO": [
+      { "id": "sigilo_nao_conta", "padrao": "nao conta pra ninguem", "imperativo": true },
+      { "id": "sigilo_nao_fala_gerente", "padrao": "nao fala com o gerente", "imperativo": true },
+      { "id": "sigilo_nao_desliga", "padrao": "nao desliga a ligacao", "imperativo": true },
+      { "id": "sigilo_confidencial", "padrao": "isso e confidencial" },
+      { "id": "sigilo_entre_nos", "padrao": "fica entre nos" },
+      { "id": "sigilo_apaga", "padrao": "apaga essa mensagem", "imperativo": true },
+      { "id": "sigilo_nao_avisa", "padrao": "nao avisa ninguem", "imperativo": true },
+      { "id": "sigilo_nao_va_agencia", "padrao": "nao va a agencia", "imperativo": true },
+      { "id": "sigilo_nao_comente", "padrao": "nao comente com ninguem", "imperativo": true },
+      { "id": "sigilo_sigiloso", "padrao": "e sigiloso" }
+    ],
+    "AUTORIDADE": [
+      { "id": "aut_setor_seguranca", "padrao": "sou do setor de seguranca" },
+      { "id": "aut_central_atendimento", "padrao": "central de atendimento" },
+      { "id": "aut_departamento_fraudes", "padrao": "departamento de fraudes" },
+      { "id": "aut_ouvidoria", "padrao": "sou da ouvidoria" },
+      { "id": "aut_banco_central", "padrao": "banco central" },
+      { "id": "aut_protocolo", "padrao": "protocolo numero" },
+      { "id": "aut_advogado", "padrao": "sou advogado" },
+      { "id": "aut_escritorio", "padrao": "meu escritorio" },
+      { "id": "aut_inss", "padrao": "sou do inss" },
+      { "id": "aut_receita", "padrao": "receita federal" },
+      { "id": "aut_gerente", "padrao": "sou o gerente da sua conta" },
+      { "id": "aut_funcionario", "padrao": "funcionario do banco" },
+      { "id": "aut_pericia", "padrao": "pericia do inss" }
+    ],
+    "URGENCIA": [
+      { "id": "urg_agora", "padrao": "agora" },
+      { "id": "urg_imediatamente", "padrao": "imediatamente" },
+      { "id": "urg_rapido", "padrao": "rapido" },
+      { "id": "urg_corre", "padrao": "corre" },
+      { "id": "urg_hoje_ainda", "padrao": "hoje ainda" },
+      { "id": "urg_proximos_minutos", "padrao": "nos proximos minutos" },
+      { "id": "urg_ultima_chance", "padrao": "ultima chance" },
+      { "id": "urg_senao", "padrao": "senao" },
+      { "id": "urg_vai_bloquear", "padrao": "vai bloquear" },
+      { "id": "urg_expira_hoje", "padrao": "expira hoje" },
+      { "id": "urg_prazo_final", "padrao": "prazo final" },
+      { "id": "urg_urgente", "padrao": "urgente" },
+      { "id": "urg_nao_pode_esperar", "padrao": "nao pode esperar" }
+    ],
+    "VINCULO_AFETIVO": [
+      { "id": "vin_mae", "padrao": "mae" },
+      { "id": "vin_pai", "padrao": "pai" },
+      { "id": "vin_filho", "padrao": "filho" },
+      { "id": "vin_filha", "padrao": "sua filha" },
+      { "id": "vin_numero_novo", "padrao": "troquei de numero" },
+      { "id": "vin_esse_numero", "padrao": "esse e meu numero novo" },
+      { "id": "vin_sou_eu", "padrao": "sou eu" },
+      { "id": "vin_to_precisando", "padrao": "to precisando" },
+      { "id": "vin_me_ajuda", "padrao": "me ajuda" },
+      { "id": "vin_aqui_filho", "padrao": "aqui e seu filho" },
+      { "id": "vin_nao_conta_pai", "padrao": "nao conta pro seu pai" }
+    ],
+    "MEDO_PERDA": [
+      { "id": "med_conta_invadida", "padrao": "sua conta foi invadida" },
+      { "id": "med_emprestimo_nome", "padrao": "emprestimo no seu nome" },
+      { "id": "med_vai_bloquear", "padrao": "vao bloquear sua conta" },
+      { "id": "med_voce_vai_perder", "padrao": "voce vai perder" },
+      { "id": "med_movimentacao", "padrao": "movimentacao suspeita" },
+      { "id": "med_usando_cpf", "padrao": "estao usando seu cpf" },
+      { "id": "med_perder_tudo", "padrao": "voce pode perder tudo" },
+      { "id": "med_negativado", "padrao": "vai ser negativado" },
+      { "id": "med_cancelamento", "padrao": "cancelamento do beneficio" },
+      { "id": "med_cartao_clonado", "padrao": "seu cartao foi clonado" }
+    ],
+    "GANHO_INESPERADO": [
+      { "id": "gan_sorteado", "padrao": "voce foi sorteado" },
+      { "id": "gan_premio", "padrao": "premio" },
+      { "id": "gan_precatorio", "padrao": "precatorio" },
+      { "id": "gan_restituicao", "padrao": "restituicao" },
+      { "id": "gan_valores_receber", "padrao": "valores a receber" },
+      { "id": "gan_resgate", "padrao": "resgate" },
+      { "id": "gan_bonus", "padrao": "bonus" },
+      { "id": "gan_cashback", "padrao": "cashback" },
+      { "id": "gan_voce_ganhou", "padrao": "voce ganhou" },
+      { "id": "gan_liberacao", "padrao": "liberacao de valor" },
+      { "id": "gan_rpv", "padrao": "rpv" },
+      { "id": "gan_indenizacao", "padrao": "indenizacao" }
+    ]
+  },
+  "imperativosExtras": [
+    { "id": "imp_faz_pix", "padrao": "faz o pix agora" },
+    { "id": "imp_transfere_agora", "padrao": "transfere agora" },
+    { "id": "imp_instala_app", "padrao": "instala esse aplicativo" }
+  ],
+  "mitigadores": [
+    { "id": "mit_nao_e_golpe", "padrao": "nao e golpe" },
+    { "id": "mit_estou_ciente", "padrao": "estou ciente" },
+    { "id": "mit_pode_deixar", "padrao": "pode deixar" },
+    { "id": "mit_ja_confirmamos", "padrao": "ja confirmamos" },
+    { "id": "mit_obrigado", "padrao": "obrigado" },
+    { "id": "mit_comprovante", "padrao": "segue o comprovante" },
+    { "id": "mit_reuniao", "padrao": "reuniao" },
+    { "id": "mit_trabalho", "padrao": "trabalho" },
+    { "id": "mit_boleto_escola", "padrao": "boleto da escola" },
+    { "id": "mit_dividir_conta", "padrao": "dividir a conta" },
+    { "id": "mit_almoco", "padrao": "almoco" }
+  ],
+  "perguntasEducativas": [
+    { "id": "perg_isso_golpe", "padrao": "isso e golpe" },
+    { "id": "perg_sera_golpe", "padrao": "sera que e golpe" },
+    { "id": "perg_isso_fraude", "padrao": "isso e fraude" },
+    { "id": "perg_e_golpe", "padrao": "e golpe" }
+  ]
+}
