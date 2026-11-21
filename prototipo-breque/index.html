@@ -856,6 +856,14 @@
 
           <div class="section-label">Acesso rápido</div>
           <div class="stack">
+            <button class="btn btn-secondary" onclick="navigate('discagem_segura')">
+              <div>
+                Discagem Segura (Canais oficiais)
+                <span class="btn-sub">Como falar com banco e órgãos oficiais sem cair em número falso</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
             <button class="btn btn-secondary" onclick="navigate('trusted')">
               <div>
                 Pessoa de confiança
@@ -1248,7 +1256,7 @@
             </div>
 
             <button class="btn btn-primary btn-center" onclick="state.incidentLog.saved = true; render();">
-              Salvar registro fictício nesta tela
+              Organizar resumo nesta tela (não fica salvo ao fechar)
             </button>
 
             ${state.incidentLog.saved ? `
@@ -1263,6 +1271,61 @@
           </div>
 
           <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
+        `;
+        return;
+      }
+
+      // DISCAGEM SEGURA (CANAIS OFICIAIS + 6 PADRÕES DE COERÇÃO)
+      if (state.screen === "discagem_segura") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-primary">Discagem Segura • Canais oficiais</span>
+            <h1>Como falar com canais oficiais sem cair em número falso</h1>
+            <p style="margin-top: 6px;">
+              Nunca retorne para o número suspeito nem use o telefone enviado na mensagem recebida. Procure o canal oficial por conta própria.
+            </p>
+          </div>
+
+          <div class="card stack">
+            <h3>Seu banco (contestação e MED)</h3>
+            <p><strong>Como acessar:</strong> Abra o aplicativo oficial do seu banco já instalado ou ligue para o telefone impresso no verso do cartão.</p>
+            <p style="font-size: 0.82rem;"><strong>Fonte:</strong> Banco Central do Brasil (orientações MED) • <strong>Verificado em:</strong> 2026-11-21</p>
+          </div>
+
+          <div class="card stack">
+            <h3>Emergência policial (190)</h3>
+            <p><strong>Como acessar:</strong> Disque 190 diretamente no discador do seu celular se houver risco físico ou ameaça imediata.</p>
+            <p style="font-size: 0.82rem;"><strong>Fonte:</strong> Serviço público de emergência policial • <strong>Verificado em:</strong> 2026-11-21</p>
+          </div>
+
+          <div class="card stack">
+            <h3>Delegacia Virtual / Polícia Civil do seu estado</h3>
+            <p><strong>Como acessar:</strong> Digite manualmente o site oficial do governo do seu estado (domínio .gov.br) ou procure uma delegacia presencial.</p>
+            <p style="font-size: 0.82rem;"><strong>Fonte:</strong> MJSP / Polícias Civis estaduais • <strong>Verificado em:</strong> 2026-11-21</p>
+          </div>
+
+          <div class="card stack">
+            <h3>Registrato (Banco Central)</h3>
+            <p><strong>Como acessar:</strong> Acesse manualmente bcb.gov.br com sua conta Gov.br para conferir contas, chaves Pix ou empréstimos no seu CPF.</p>
+            <p style="font-size: 0.82rem;"><strong>Fonte:</strong> Banco Central do Brasil (bcb.gov.br) • <strong>Verificado em:</strong> 2026-11-21</p>
+          </div>
+
+          <div class="card card-soft">
+            <h3>Os 6 padrões de coerção que costumam aparecer combinados</h3>
+            <p style="margin-bottom: 6px;">Nem todo golpe se reduz a estes padrões, mas eles ajudam a reconhecer pressão fabricada:</p>
+            <ul class="list-clean">
+              <li><strong>Urgência:</strong> “tem que ser agora, senão você perde”.</li>
+              <li><strong>Sigilo:</strong> “não conte para ninguém, não desligue”.</li>
+              <li><strong>Falsa autoridade:</strong> diz ser banco, advogado, INSS ou suporte.</li>
+              <li><strong>Medo de perda:</strong> “sua conta foi invadida” ou “vão bloquear”.</li>
+              <li><strong>Ganho inesperado:</strong> prêmio, precatório ou valor fácil a receber.</li>
+              <li><strong>Vínculo afetivo:</strong> “mãe/pai, troquei de número, me ajuda”.</li>
+            </ul>
+          </div>
+
+          <button class="btn btn-primary btn-center" onclick="goHome()">Voltar ao início</button>
         `;
         return;
       }
