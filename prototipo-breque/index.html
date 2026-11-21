@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>BREQUE — Protótipo Navegável</title>
+  <style>
+    :root {
+      --bg: #f4f3ef;
+      --surface: #ffffff;
+      --surface-soft: #f8f7f3;
+      --text: #1c242b;
+      --text-muted: #52606d;
+      --primary: #1f4e5f;
+      --primary-hover: #173c4a;
+      --primary-soft: #e6f0f3;
+      --amber: #9a5b13;
+      --amber-bg: #fdf4e7;
+      --amber-border: #efc891;
+      --alert: #9b2c2c;
+      --alert-bg: #fdf0f0;
+      --alert-border: #efb6b6;
+      --border: #dde2e6;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --shadow: 0 2px 10px rgba(28, 36, 43, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #e5e7eb;
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 32px rgba(0, 0, 0, 0.12);
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: inline-block;
+    }
+
+    .badge-proto {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px 18px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    h1 {
+      font-size: 1.45rem;
+      line-height: 1.25;
+      margin: 0;
+      color: var(--text);
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      line-height: 1.3;
+      margin: 0;
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 0.98rem;
+      margin: 0 0 6px;
+      color: var(--text);
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.96rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-amber {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+    }
+
+    .card-alert {
+      background: var(--alert-bg);
+      border: 1px solid var(--alert-border);
+    }
+
+    .card-soft {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 15px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-soft);
+    }
+
+    .btn-urgent {
+      background: var(--alert-bg);
+      color: var(--alert);
+      border: 1.5px solid var(--alert-border);
+    }
+
+    .btn-urgent:hover {
+      background: #fae2e2;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      padding: 8px 4px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      width: auto;
+      justify-content: flex-start;
+    }
+
+    .btn-center {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .btn-sub {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .pill-fictional {
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+    }
+
+    .pill-amber {
+      background: var(--amber-bg);
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
+    }
+
+    .pill-alert {
+      background: var(--alert-bg);
+      color: var(--alert);
+      border: 1px solid var(--alert-border);
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 13px 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-item.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .check-box {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #fff;
+      background: #fff;
+    }
+
+    .check-item.selected .check-box {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .step-card {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quote-box {
+      background: var(--surface-soft);
+      border-left: 4px solid var(--primary);
+      padding: 12px 14px;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.94rem;
+      color: var(--text);
+      margin-top: 8px;
+    }
+
+    .timer-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--primary-soft);
+      border: 1px solid #bfd8e0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+
+    .timer-count {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .footer-nav {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 4px 0;
+      text-decoration: underline;
+    }
+
+    .list-clean {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--text-muted);
+      font-size: 0.93rem;
+    }
+
+    .list-clean li {
+      margin-bottom: 6px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame" role="application" aria-label="BREQUE Protótipo Navegável">
+    <header class="topbar">
+      <button class="brand" onclick="goHome()" aria-label="Voltar ao início do BREQUE">
+        <span class="brand-dot" aria-hidden="true"></span>
+        BREQUE
+      </button>
+      <span class="badge-proto">Protótipo • Exemplos fictícios</span>
+    </header>
+
+    <main id="app" class="content"></main>
+
+    <footer class="footer-nav">
+      <span>Nada é salvo ou enviado</span>
+      <button class="link-btn" onclick="renderPrivacy()">Privacidade e limites</button>
+    </footer>
+  </div>
+
+  <script>
+    // Estado apenas em memória. Nenhum dado é persistido ou enviado para rede.
+    const state = {
+      screen: "home",
+      stage: null, // "antes" | "durante" | "depois"
+      signals: new Set(),
+      postType: null, // "pix" | "dados" | "app"
+      postChecked: new Set(),
+      activeExample: null,
+      pauseSeconds: 0,
+      pauseInterval: null
+    };
+
+    const SIGNALS = [
+      { id: "pressa", label: "Pediram pressa ou disseram que é urgente", critical: false },
+      { id: "numero_novo", label: "Número novo, desconhecido ou diferente do habitual", critical: false },
+      { id: "dinheiro", label: "Pediram Pix, transferência, pagamento ou taxa", critical: false },
+      { id: "credencial", label: "Pediram senha, código de SMS ou instalar aplicativo", critical: true },
+      { id: "sigilo", label: "Pediram para não desligar ou não contar para ninguém", critical: true }
+    ];
+
+    const FICTIONAL_EXAMPLES = {
+      whatsapp_mae: {
+        title: "Exemplo fictício: Mensagem de número novo",
+        channel: "WhatsApp (ilustração fictícia)",
+        message: "“Oi mãe, meu celular quebrou e estou com esse número provisório. Preciso pagar um boleto urgente de R$ 1.280 agora, depois te devolvo.”",
+        stage: "antes",
+        presetSignals: ["pressa", "numero_novo", "dinheiro"],
+        verifyTip: "Ligue para o número antigo da pessoa ou mande um áudio pedindo para confirmar algo que só vocês sabem — sem usar o número novo."
+      },
+      ligacao_banco: {
+        title: "Exemplo fictício: Ligação dizendo ser do banco",
+        channel: "Ligação telefônica (ilustração fictícia)",
+        message: "“Aqui é da central de segurança. Detectamos uma compra de R$ 3.400. Para cancelar agora, não desligue e informe o código que chegou por SMS.”",
+        stage: "durante",
+        presetSignals: ["pressa", "credencial", "sigilo"],
+        verifyTip: "Desligue a ligação agora. Espere 1 minuto e ligue você mesmo para o número oficial que está no verso do seu cartão."
+      },
+      sms_entrega: {
+        title: "Exemplo fictício: Cobrança de taxa de entrega",
+        channel: "SMS com link (ilustração fictícia)",
+        message: "“Seu pacote ficou retido. Regularize a taxa de R$ 27,90 em até 2 horas pelo link abaixo para evitar devolução.”",
+        stage: "antes",
+        presetSignals: ["pressa", "dinheiro"],
+        verifyTip: "Não clique no link. Abra o site ou app oficial da loja onde você comprou e confira o rastreio por lá."
+      }
+    };
+
+    function clearTimer() {
+      if (state.pauseInterval) {
+        clearInterval(state.pauseInterval);
+        state.pauseInterval = null;
+      }
+      state.pauseSeconds = 0;
+    }
+
+    function goHome() {
+      clearTimer();
+      state.screen = "home";
+      state.stage = null;
+      state.signals = new Set();
+      state.postType = null;
+      state.postChecked = new Set();
+      state.activeExample = null;
+      render();
+    }
+
+    function startFlow() {
+      clearTimer();
+      state.activeExample = null;
+      state.signals = new Set();
+      state.screen = "stage";
+      render();
+    }
+
+    function startPostIncident() {
+      clearTimer();
+      state.activeExample = null;
+      state.stage = "depois";
+      state.postType = null;
+      state.postChecked = new Set();
+      state.screen = "post_select";
+      render();
+    }
+
+    function openExample(key) {
+      clearTimer();
+      const ex = FICTIONAL_EXAMPLES[key];
+      state.activeExample = ex;
+      state.stage = ex.stage;
+      state.signals = new Set(ex.presetSignals);
+      state.screen = "example_preview";
+      render();
+    }
+
+    function selectStage(stage) {
+      state.stage = stage;
+      if (stage === "depois") {
+        state.postType = null;
+        state.postChecked = new Set();
+        state.screen = "post_select";
+      } else {
+        state.screen = "signals";
+      }
+      render();
+    }
+
+    function toggleSignal(id) {
+      if (state.signals.has(id)) {
+        state.signals.delete(id);
+      } else {
+        state.signals.add(id);
+      }
+      render();
+    }
+
+    function goToGuidance() {
+      clearTimer();
+      state.screen = "guidance";
+      render();
+    }
+
+    function startPauseTimer() {
+      clearTimer();
+      state.pauseSeconds = 10;
+      render();
+      state.pauseInterval = setInterval(() => {
+        state.pauseSeconds -= 1;
+        if (state.pauseSeconds <= 0) {
+          clearTimer();
+        }
+        render();
+      }, 1000);
+    }
+
+    function selectPostType(type) {
+      state.postType = type;
+      state.postChecked = new Set();
+      state.screen = "post_plan";
+      render();
+    }
+
+    function togglePostCheck(idx) {
+      if (state.postChecked.has(idx)) {
+        state.postChecked.delete(idx);
+      } else {
+        state.postChecked.add(idx);
+      }
+      render();
+    }
+
+    function renderHelperMode() {
+      clearTimer();
+      state.screen = "helper";
+      render();
+    }
+
+    function renderPrivacy() {
+      clearTimer();
+      state.screen = "privacy";
+      render();
+    }
+
+    function renderVerifyScript() {
+      clearTimer();
+      state.screen = "verify_script";
+      render();
+    }
+
+    function getRiskReading() {
+      const count = state.signals.size;
+      const hasCritical = SIGNALS.some(s => s.critical && state.signals.has(s.id));
+
+      if (hasCritical || count >= 2) {
+        return {
+          level: "alto",
+          pillClass: "pill-alert",
+          cardClass: "card-alert",
+          badge: "Há sinais fortes de risco",
+          headline: "Pare antes de responder, clicar ou transferir.",
+          detail: "Os sinais marcados são muito comuns em situações de manipulação sob pressão. Não consigo confirmar o caso sozinho, mas o mais seguro agora é interromper o contato e conferir por fora."
+        };
+      }
+
+      if (count === 1) {
+        return {
+          level: "atencao",
+          pillClass: "pill-amber",
+          cardClass: "card-amber",
+          badge: "Há sinais de atenção",
+          headline: "Não consigo confirmar se é legítimo.",
+          detail: "Antes de avançar, vale fazer uma verificação rápida por um canal independente."
+        };
+      }
+
+      return {
+        level: "incerto",
+        pillClass: "pill-amber",
+        cardClass: "card-soft",
+        badge: "Sem confirmação automática",
+        headline: "Não consigo confirmar se está tudo certo.",
+        detail: "Mesmo sem os sinais mais comuns marcados, se algo parece estranho, verifique por outro canal antes de decidir."
+      };
+    }
+
+    function render() {
+      const app = document.getElementById("app");
+      window.scrollTo({ top: 0, behavior: "instant" });
+
+      if (state.screen === "home") {
+        app.innerHTML = `
+          <div>
+            <h1>Um breque na hora da dúvida.</h1>
+            <p style="margin-top: 6px;">
+              Sem julgamento e sem pressa. Escolha o que você precisa agora e siga passo a passo.
+            </p>
+          </div>
+
+          <div class="stack">
+            <button class="btn btn-primary" onclick="startFlow()">
+              <div>
+                Estou em dúvida agora
+                <span class="btn-sub">Iniciar o Roteiro Reverso (1 minuto)</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-urgent" onclick="startPostIncident()">
+              <div>
+                Já passei dados ou fiz um Pix
+                <span class="btn-sub">Ver o que fazer agora, passo a passo</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="renderHelperMode()">
+              <div>
+                Estou ajudando um familiar
+                <span class="btn-sub">Como conferir juntos sem constrangimento</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="section-label">Testar com exemplos fictícios</div>
+          <div class="stack">
+            <button class="btn btn-secondary" onclick="openExample('whatsapp_mae')">
+              <div>
+                “Oi mãe, troquei de número”
+                <span class="btn-sub">Exemplo fictício • Pedido de Pix no WhatsApp</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="openExample('ligacao_banco')">
+              <div>
+                “Central do banco: compra suspeita”
+                <span class="btn-sub">Exemplo fictício • Ligação sob pressão</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="openExample('sms_entrega')">
+              <div>
+                “Taxa de entrega pendente”
+                <span class="btn-sub">Exemplo fictício • SMS com link de cobrança</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="card card-soft">
+            <h3>Transparência</h3>
+            <p>
+              Este protótipo <strong>não</strong> lê seu WhatsApp, <strong>não</strong> escuta ligações,
+              <strong>não</strong> acessa seu banco e <strong>não</strong> faz bloqueios ou denúncias sozinho.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.screen === "example_preview" && state.activeExample) {
+        const ex = state.activeExample;
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goHome()">← Voltar</button>
+
+          <div class="card">
+            <span class="pill pill-fictional">Exemplo fictício para teste</span>
+            <h2>${ex.title}</h2>
+            <p style="margin-top: 4px; font-size: 0.85rem;">${ex.channel}</p>
+            <div class="quote-box">${ex.message}</div>
+          </div>
+
+          <p>
+            Neste exemplo, já pré-selecionamos os sinais que aparecem na mensagem para você ver como o
+            <strong>Roteiro Reverso</strong> funciona. Você pode ajustar se quiser.
+          </p>
+
+          <button class="btn btn-primary btn-center" onclick="state.screen='signals'; render();">
+            Ver sinais identificados →
+          </button>
+        `;
+        return;
+      }
+
+      if (state.screen === "stage") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goHome()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-amber">Roteiro Reverso • Passo 1 de 3</span>
+            <h1>Em que momento você está?</h1>
+            <p style="margin-top: 6px;">Não precisa contar detalhes pessoais. Só escolha o estágio mais parecido.</p>
+          </div>
+
+          <div class="stack">
+            <button class="btn btn-secondary" onclick="selectStage('antes')">
+              <div>
+                Recebi uma mensagem, ligação ou link
+                <span class="btn-sub">Ainda não cliquei nem paguei nada</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="selectStage('durante')">
+              <div>
+                Estou no meio da conversa ou ligação agora
+                <span class="btn-sub">A pessoa está esperando minha resposta</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-urgent" onclick="selectStage('depois')">
+              <div>
+                Já cliquei, passei dados ou fiz um pagamento
+                <span class="btn-sub">Preciso agir agora para reduzir o prejuízo</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.screen === "signals") {
+        const itemsHtml = SIGNALS.map(sig => {
+          const checked = state.signals.has(sig.id);
+          return `
+            <div class="check-item ${checked ? "selected" : ""}" role="checkbox" aria-checked="${checked}" tabindex="0" onclick="toggleSignal('${sig.id}')">
+              <div class="check-box">${checked ? "✓" : ""}</div>
+              <div>
+                <div style="font-weight: 600; font-size: 0.96rem;">${sig.label}</div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="${state.activeExample ? "state.screen='example_preview'; render();" : "state.screen='stage'; render();"}">← Voltar</button>
+
+          <div>
+            <span class="pill pill-amber">Roteiro Reverso • Passo 2 de 3</span>
+            <h1>Algum destes sinais apareceu?</h1>
+            <p style="margin-top: 6px;">Toque nos que combinam com a situação. Se nenhum combinar, pode avançar mesmo assim.</p>
+          </div>
+
+          <div class="stack">${itemsHtml}</div>
+
+          <p style="font-size: 0.84rem;">
+            Privacidade: o BREQUE nunca pede sua senha, código de SMS, CPF ou número do cartão.
+          </p>
+
+          <button class="btn btn-primary btn-center" onclick="goToGuidance()">
+            Ver orientação para agora →
+          </button>
+        `;
+        return;
+      }
+
+      if (state.screen === "guidance") {
+        const risk = getRiskReading();
+        const verifyTip = state.activeExample
+          ? state.activeExample.verifyTip
+          : "Confirme usando um telefone ou aplicativo que você já conhecia antes — nunca o número ou link que acabou de chegar.";
+
+        const pauseHtml = state.pauseSeconds > 0
+          ? `
+            <div class="timer-box">
+              <div>
+                <strong>Pausa rápida</strong>
+                <p style="font-size: 0.85rem;">Respire fundo. Nenhuma decisão séria precisa ser tomada em segundos.</p>
+              </div>
+              <div class="timer-count">${state.pauseSeconds}s</div>
+            </div>
+          `
+          : `
+            <button class="btn btn-secondary" onclick="startPauseTimer()">
+              <div>
+                Fazer uma pausa de 10 segundos
+                <span class="btn-sub">Opcional — ajuda a quebrar a pressa</span>
+              </div>
+              <span aria-hidden="true">⏱</span>
+            </button>
+          `;
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="state.screen='signals'; render();">← Voltar</button>
+
+          <div class="card ${risk.cardClass}">
+            <span class="pill ${risk.pillClass}">${risk.badge}</span>
+            <h2>${risk.headline}</h2>
+            <p style="margin-top: 6px; color: var(--text);">${risk.detail}</p>
+          </div>
+
+          ${pauseHtml}
+
+          <div class="section-label">O que fazer agora (passo a passo)</div>
+
+          <div class="card stack">
+            <div class="step-card">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Interrompa a pressão</h3>
+                <p>${state.stage === "durante" ? "Você pode desligar a ligação ou parar de responder agora. Quem é legítimo entende." : "Não responda com pressa e não clique em links enviados na mensagem."}</p>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Verifique por outro canal</h3>
+                <p>${verifyTip}</p>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Só decida depois de confirmar</h3>
+                <p>Você mantém o controle. O BREQUE não bloqueia seu aparelho — só ajuda você a conferir com calma.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <button class="btn btn-primary" onclick="renderVerifyScript()">
+              <div>
+                Ver frase pronta para confirmar
+                <span class="btn-sub">Texto curto para ganhar tempo sem constrangimento</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-urgent" onclick="startPostIncident()">
+              <div>
+                Já passei dados ou fiz o pagamento
+                <span class="btn-sub">Ir para o plano de ação imediata</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary btn-center" onclick="goHome()">
+              Voltar ao início
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.screen === "verify_script") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="state.screen='guidance'; render();">← Voltar</button>
+
+          <div>
+            <h1>Frases prontas para ganhar tempo</h1>
+            <p style="margin-top: 6px;">Se quiser responder algo antes de conferir por fora, você pode usar uma destas frases:</p>
+          </div>
+
+          <div class="card">
+            <h3>Para familiar ou conhecido</h3>
+            <div class="quote-box">“Vou te ligar no seu número antigo rapidinho para confirmar, tudo bem?”</div>
+          </div>
+
+          <div class="card">
+            <h3>Para quem diz ser do banco ou empresa</h3>
+            <div class="quote-box">“Por segurança, vou desligar e ligar para o número oficial do verso do meu cartão.”</div>
+          </div>
+
+          <div class="card card-soft">
+            <p><strong>Lembrete:</strong> você não precisa enviar nada se não quiser. Ignorar ou desligar também é uma resposta válida.</p>
+          </div>
+
+          <button class="btn btn-primary btn-center" onclick="goHome()">Concluir e voltar ao início</button>
+        `;
+        return;
+      }
+
+      if (state.screen === "post_select") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goHome()">← Voltar</button>
+
+          <div class="card card-soft">
+            <h1 style="font-size: 1.3rem;">Vamos resolver um passo de cada vez.</h1>
+            <p style="margin-top: 6px;">
+              Isso acontece com muita gente e não é motivo para vergonha. Escolha o que chegou a acontecer para ver a ordem mais útil de ações.
+            </p>
+          </div>
+
+          <div class="stack">
+            <button class="btn btn-urgent" onclick="selectPostType('pix')">
+              <div>
+                Fiz um Pix ou transferência
+                <span class="btn-sub">Prioridade: acionar o banco e pedir o MED</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-urgent" onclick="selectPostType('dados')">
+              <div>
+                Passei senha, código ou dados do cartão
+                <span class="btn-sub">Prioridade: bloquear cartão e trocar senhas</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-urgent" onclick="selectPostType('app')">
+              <div>
+                Instalei um aplicativo ou compartilhei a tela
+                <span class="btn-sub">Prioridade: desconectar internet e remover o app</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.screen === "post_plan") {
+        const plans = {
+          pix: {
+            title: "Ação rápida: Pix ou transferência",
+            steps: [
+              "Abra o aplicativo oficial do seu banco agora e procure a opção de contestar o Pix pelo MED (Mecanismo Especial de Devolução).",
+              "Se preferir falar com alguém, ligue para o número oficial no verso do seu cartão.",
+              "Guarde prints da conversa, do comprovante e da chave Pix usada (não apague a conversa ainda).",
+              "Registre um Boletim de Ocorrência na Delegacia Virtual do seu estado."
+            ]
+          },
+          dados: {
+            title: "Ação rápida: Senha, código ou cartão",
+            steps: [
+              "Bloqueie o cartão imediatamente pelo aplicativo oficial do banco.",
+              "Troque a senha da conta afetada (e de outros lugares onde você usa a mesma senha).",
+              "Avise o banco pelo canal oficial sobre o ocorrido para monitorar movimentações.",
+              "Se passou código do WhatsApp, tente entrar novamente no app para derrubar o acesso indevido e avise pessoas próximas."
+            ]
+          },
+          app: {
+            title: "Ação rápida: Aplicativo ou tela compartilhada",
+            steps: [
+              "Desligue o Wi-Fi e os dados móveis (ou ative o Modo Avião) agora para cortar o acesso.",
+              "Desinstale o aplicativo desconhecido que pediram para baixar.",
+              "Usando outro aparelho de confiança, troque as senhas do seu banco e e-mail.",
+              "Ligue para o banco pelo telefone oficial para conferir se houve alguma movimentação."
+            ]
+          }
+        };
+
+        const plan = plans[state.postType];
+        const listHtml = plan.steps.map((text, idx) => {
+          const done = state.postChecked.has(idx);
+          return `
+            <div class="check-item ${done ? "selected" : ""}" role="checkbox" aria-checked="${done}" tabindex="0" onclick="togglePostCheck(${idx})">
+              <div class="check-box">${done ? "✓" : ""}</div>
+              <div style="font-size: 0.94rem; ${done ? "text-decoration: line-through; opacity: 0.75;" : ""}">${text}</div>
+            </div>
+          `;
+        }).join("");
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="state.screen='post_select'; render();">← Voltar</button>
+
+          <div>
+            <span class="pill pill-alert">Plano pós-incidente</span>
+            <h1>${plan.title}</h1>
+            <p style="margin-top: 6px;">Marque conforme for fazendo. O BREQUE não executa bloqueios nem denúncias sozinho — você faz diretamente nos canais oficiais.</p>
+          </div>
+
+          <div class="stack">${listHtml}</div>
+
+          <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
+        `;
+        return;
+      }
+
+      if (state.screen === "helper") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goHome()">← Voltar</button>
+
+          <div>
+            <h1>Ajudando um familiar ou amigo</h1>
+            <p style="margin-top: 6px;">Quem está sob pressão pode ficar na defensiva se sentir cobrança. Um tom calmo ajuda mais.</p>
+          </div>
+
+          <div class="card stack">
+            <div class="step-card">
+              <div class="step-num">1</div>
+              <div>
+                <h3>Acolha primeiro</h3>
+                <p>Evite dizer “como você caiu nisso?”. Prefira: <em>“Que bom que você me mostrou, vamos conferir juntos com calma.”</em></p>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">2</div>
+              <div>
+                <h3>Descubra o estágio</h3>
+                <p>Pergunte apenas: a pessoa ainda está decidindo ou já passou dados/fez pagamento?</p>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">3</div>
+              <div>
+                <h3>Faça o Roteiro Reverso juntos</h3>
+                <p>Use o botão abaixo para olhar os sinais lado a lado.</p>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-center" onclick="startFlow()">
+            Iniciar Roteiro Reverso juntos →
+          </button>
+        `;
+        return;
+      }
+
+      if (state.screen === "privacy") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goHome()">← Voltar</button>
+
+          <div>
+            <h1>Privacidade e limites do BREQUE</h1>
+            <p style="margin-top: 6px;">Nosso compromisso é ser transparente sobre o que este protótipo faz e o que ele não faz.</p>
+          </div>
+
+          <div class="card">
+            <h3>O que o BREQUE faz aqui</h3>
+            <ul class="list-clean">
+              <li>Ajuda você a reconhecer sinais comuns de pressão e manipulação.</li>
+              <li>Oferece um roteiro curto de próximos passos conforme o estágio da situação.</li>
+              <li>Dá um plano prático se você já compartilhou dados ou fez um pagamento.</li>
+            </ul>
+          </div>
+
+          <div class="card card-soft">
+            <h3>O que o BREQUE NÃO faz</h3>
+            <ul class="list-clean">
+              <li>Não lê mensagens do WhatsApp nem SMS.</li>
+              <li>Não escuta ligações nem monitora sua tela.</li>
+              <li>Não acessa seu banco nem faz Pix, bloqueios ou denúncias por você.</li>
+              <li>Não garante que algo “está seguro”.</li>
+              <li>Não envia nem salva suas respostas — ao fechar a tela, tudo desaparece.</li>
+            </ul>
+          </div>
+
+          <button class="btn btn-primary btn-center" onclick="goHome()">Entendi, voltar ao início</button>
+        `;
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
