@@ -24,27 +24,27 @@
   <title>BREQUE — Copiloto contra golpes</title>
   <style>
     :root {
-      --bg: #07131c;
-      --surface: #0d1f2d;
-      --surface-soft: #112738;
-      --text: #f1f7fa;
-      --text-muted: #9eb6c7;
-      --brand: #0ea5c6;
-      --brand-2: #0a6d8a;
-      --brand-soft: rgba(14, 165, 198, 0.14);
-      --accent: #fbbf24;
-      --accent-bg: rgba(245, 158, 11, 0.14);
-      --accent-border: rgba(251, 191, 36, 0.55);
-      --risk: #fca5a5;
-      --risk-bg: rgba(220, 38, 38, 0.14);
-      --risk-border: rgba(248, 113, 113, 0.45);
-      --neutral-bg: #13293a;
-      --neutral-border: #25455d;
-      --border: rgba(148, 197, 224, 0.18);
+      --bg: #f4f6f8;
+      --surface: #ffffff;
+      --surface-soft: #f8fafb;
+      --text: #0f1b24;
+      --text-muted: #4b5c6b;
+      --brand: #0f2f3d;
+      --brand-2: #17465a;
+      --brand-soft: #e6f0f4;
+      --accent: #b45309;
+      --accent-bg: #fff8eb;
+      --accent-border: #f3d092;
+      --risk: #991b1b;
+      --risk-bg: #fef2f2;
+      --risk-border: #f2bcbc;
+      --neutral-bg: #eef2f5;
+      --neutral-border: #cfd8e0;
+      --border: #e1e7ec;
       --radius: 18px;
       --radius-sm: 13px;
-      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.28);
-      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.45);
+      --shadow-sm: 0 2px 10px rgba(15, 27, 36, 0.05);
+      --shadow-md: 0 8px 24px rgba(15, 47, 61, 0.12);
       --font-scale: 1;
     }
 
@@ -60,44 +60,35 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      background: radial-gradient(circle at 15% 10%, #0d3b4c 0%, #040b11 55%, #071b29 100%);
+      background: var(--bg);
       color: var(--text);
       line-height: 1.48;
-      display: flex;
-      justify-content: center;
       min-height: 100vh;
     }
 
     .app-shell {
       width: 100%;
-      max-width: 480px;
       min-height: 100vh;
-      background:
-        radial-gradient(ellipse 85% 32% at 22% 0%, rgba(16, 185, 129, 0.34) 0%, transparent 65%),
-        radial-gradient(ellipse 75% 30% at 88% 4%, rgba(14, 165, 233, 0.32) 0%, transparent 65%),
-        #03080d;
+      background: var(--bg);
       display: flex;
       flex-direction: column;
       position: relative;
-      border-left: 1px solid rgba(255, 255, 255, 0.08);
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 60px rgba(0, 0, 0, 0.7);
     }
 
     .proto-strip {
-      background: rgba(3, 8, 13, 0.55);
-      color: #a9d3e3;
-      font-size: 0.76rem;
-      line-height: 1.3;
+      background: #0b222c;
+      color: #e2eff5;
+      font-size: 0.8rem;
+      line-height: 1.35;
       text-align: center;
-      padding: 7px 14px;
+      padding: 8px 14px;
       font-weight: 500;
     }
 
     .topbar {
-      background: transparent;
+      background: var(--brand);
       color: #ffffff;
-      padding: 10px 18px 8px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -105,6 +96,7 @@
       position: sticky;
       top: 0;
       z-index: 30;
+      box-shadow: 0 2px 10px rgba(15, 47, 61, 0.15);
     }
 
     .brand-btn {
@@ -145,10 +137,13 @@
 
     .content {
       flex: 1;
-      padding: 16px 16px 96px;
+      width: 100%;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 18px 16px 96px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
 
     .hero {
@@ -586,10 +581,11 @@
     .bottom-nav {
       position: fixed;
       bottom: 0;
+      left: 0;
+      right: 0;
       width: 100%;
-      max-width: 480px;
-      background: rgba(8, 21, 31, 0.94);
-      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
       border-top: 1px solid var(--border);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -724,11 +720,11 @@
       gap: 10px;
       padding: 11px 14px;
       border-radius: 14px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(186, 230, 253, 0.16);
-      color: #d6eaf5;
-      font-size: 0.84rem;
-      font-weight: 500;
+      background: var(--brand-soft);
+      border: 1px solid #c5dce5;
+      color: var(--brand);
+      font-size: 0.86rem;
+      font-weight: 600;
     }
 
     .arc-hero {
@@ -737,14 +733,14 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 12px 10px 6px;
-      background:
-        radial-gradient(ellipse 90% 42% at 50% 82%, rgba(14, 165, 233, 0.36) 0%, transparent 72%),
-        radial-gradient(circle at 50% 58%, rgba(56, 189, 248, 0.16) 0%, transparent 62%);
+      padding: 20px 16px 18px;
+      border-radius: 22px;
+      background: linear-gradient(150deg, #0f2f3d 0%, #17465a 100%);
       border: none;
       cursor: pointer;
       text-align: center;
       width: 100%;
+      box-shadow: var(--shadow-md);
     }
 
     .arc-hero:active {
@@ -753,13 +749,13 @@
 
     .arc-wrap {
       position: relative;
-      width: 280px;
-      height: 158px;
+      width: 260px;
+      height: 146px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
     }
 
     .arc-svg {
@@ -767,13 +763,13 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      filter: drop-shadow(0 0 18px rgba(125, 211, 252, 0.55));
+      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.35));
     }
 
     .arc-label {
       position: relative;
       z-index: 2;
-      font-size: 1.48rem;
+      font-size: 1.44rem;
       font-weight: 800;
       letter-spacing: 0.02em;
       color: #ffffff;
@@ -783,9 +779,9 @@
     .arc-sub {
       position: relative;
       z-index: 2;
-      font-size: 0.78rem;
-      color: #bae6fd;
-      font-weight: 600;
+      font-size: 0.82rem;
+      color: #fde68a;
+      font-weight: 700;
       margin-top: 5px;
     }
 
@@ -793,37 +789,32 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin-top: -6px;
-      position: relative;
-      z-index: 3;
     }
 
     .glass-card {
-      background: linear-gradient(170deg, rgba(56, 189, 248, 0.22) 0%, rgba(15, 32, 46, 0.72) 55%, rgba(8, 18, 28, 0.88) 100%);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(186, 230, 253, 0.18);
-      border-radius: 18px;
-      padding: 13px 11px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 12px;
       text-align: left;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       min-height: 112px;
       color: var(--text);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      box-shadow: var(--shadow-sm);
     }
 
     .glass-card.amber-glass {
-      border-color: rgba(251, 191, 36, 0.42);
-      background: linear-gradient(170deg, rgba(251, 191, 36, 0.24) 0%, rgba(15, 32, 46, 0.76) 58%, rgba(8, 18, 28, 0.9) 100%);
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
     }
 
     .glass-card.risk-glass {
-      border-color: rgba(248, 113, 113, 0.36);
-      background: linear-gradient(170deg, rgba(239, 68, 68, 0.22) 0%, rgba(15, 32, 46, 0.76) 58%, rgba(8, 18, 28, 0.9) 100%);
+      border-color: var(--risk-border);
+      background: var(--risk-bg);
     }
 
     .glass-card-top {
@@ -834,10 +825,10 @@
     }
 
     .glass-mini-icon {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--brand-soft);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -845,33 +836,34 @@
     }
 
     .glass-card-title {
-      font-size: 0.88rem;
+      font-size: 0.92rem;
       font-weight: 800;
-      color: #ffffff;
+      color: var(--text);
       line-height: 1.2;
     }
 
     .glass-card-sub {
-      font-size: 0.76rem;
-      color: #b7d2e0;
-      line-height: 1.3;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.32;
     }
 
     .summary-box {
-      background: rgba(9, 17, 24, 0.92);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 22px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
       padding: 16px 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      box-shadow: var(--shadow-sm);
     }
 
     .summary-row {
       width: 100%;
-      background: rgba(255, 255, 255, 0.045);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
       padding: 12px 13px;
       display: flex;
       align-items: center;
@@ -880,6 +872,11 @@
       cursor: pointer;
       text-align: left;
       color: var(--text);
+    }
+
+    .summary-row:hover {
+      background: var(--brand-soft);
+      border-color: #bfd6e0;
     }
 
     .summary-left {
@@ -893,21 +890,17 @@
       height: 38px;
       min-width: 38px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--brand-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #e2f1f8;
-    }
-
-    .summary-row:hover {
-      background: rgba(255, 255, 255, 0.09);
+      color: var(--brand);
     }
 
     .summary-tag {
       font-size: 0.8rem;
       font-weight: 800;
-      color: #38bdf8;
+      color: var(--brand);
       white-space: nowrap;
     }
 
@@ -918,18 +911,6 @@
     }
 
     @media (min-width: 768px) {
-      body {
-        padding: 24px 20px;
-        align-items: flex-start;
-      }
-
-      .app-shell {
-        max-width: 960px;
-        min-height: auto;
-        border-radius: 24px;
-        overflow: hidden;
-      }
-
       .content {
         padding: 24px 28px 104px;
         gap: 18px;
@@ -937,8 +918,8 @@
 
       .home-layout {
         display: grid;
-        grid-template-columns: 1.05fr 0.95fr;
-        gap: 22px;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
         align-items: start;
       }
 
@@ -946,11 +927,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
-      }
-
-      .bottom-nav {
-        max-width: 960px;
-        border-radius: 0 0 24px 24px;
       }
     }
   </style>

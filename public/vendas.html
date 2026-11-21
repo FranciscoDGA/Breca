@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BREQUE — Copiloto contra golpes para você e sua família</title>
+  <meta name="description" content="Um breque na hora da dúvida. Interrompa decisões sob pressão, verifique por outro canal e aja com calma. 100% no seu aparelho." />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --brand: #0f2f3d;
+      --brand-2: #17465a;
+      --brand-soft: #e6f0f4;
+      --accent: #b45309;
+      --accent-bg: #fff8eb;
+      --text: #0f1b24;
+      --muted: #4b5c6b;
+      --bg: #ffffff;
+      --soft: #f4f6f8;
+      --border: #dfe6ec;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      background: var(--brand);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f59e0b;
+      color: #0f1b24;
+      font-weight: 800;
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+    }
+
+    .btn-cta:hover { background: #fbbf24; }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      color: #fff;
+      font-weight: 700;
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+    }
+
+    .hero {
+      background: linear-gradient(155deg, #0b222c 0%, #0f2f3d 55%, #17465a 100%);
+      color: #fff;
+      padding: 72px 0 80px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.18);
+      color: #fde68a;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      line-height: 1.15;
+      margin: 0 0 16px;
+    }
+
+    .hero p {
+      font-size: 1.08rem;
+      color: #d6e6ed;
+      margin: 0 0 26px;
+      max-width: 560px;
+    }
+
+    .hero-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 22px;
+      padding: 24px;
+    }
+
+    .hero-card h3 { margin: 0 0 12px; color: #fde68a; font-size: 1rem; }
+    .hero-card ul { margin: 0; padding-left: 18px; color: #e2eff5; font-size: 0.94rem; }
+    .hero-card li { margin-bottom: 8px; }
+
+    section { padding: 68px 0; }
+    .section-soft { background: var(--soft); }
+
+    .section-head {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 42px;
+    }
+
+    .section-head h2 {
+      font-size: 1.9rem;
+      margin: 0 0 10px;
+      color: var(--brand);
+    }
+
+    .section-head p { margin: 0; color: var(--muted); font-size: 1rem; }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .feature-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .feature-card h3 { margin: 0 0 8px; color: var(--brand); font-size: 1.08rem; }
+    .feature-card p { margin: 0; color: var(--muted); font-size: 0.94rem; }
+
+    .plan-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .plan-card.highlight {
+      border-color: #d49b38;
+      background: var(--accent-bg);
+    }
+
+    .price { font-size: 1.8rem; font-weight: 800; color: var(--brand); margin: 8px 0; }
+    .plan-card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.92rem; }
+    .plan-card li { margin-bottom: 7px; }
+
+    .faq-list {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    details {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+    }
+
+    summary {
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--brand);
+      font-size: 1rem;
+    }
+
+    details p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    footer {
+      background: #0b222c;
+      color: #c2d6e0;
+      padding: 40px 0;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 820px) {
+      .hero-grid, .grid-3 { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.9rem; }
+      .nav-links a:not(.btn-cta) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav-bar">
+      <a href="/" class="logo">
+        <svg width="24" height="24" viewBox="0 0 512 512" aria-hidden="true">
+          <path d="M256 64L104 128v122c0 106 64 198 152 232 88-34 152-126 152-232V128L256 64z" fill="#1b536b" stroke="#ffffff" stroke-width="26" stroke-linejoin="round"/>
+          <rect x="198" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
+          <rect x="274" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
+        </svg>
+        BREQUE
+      </a>
+      <nav class="nav-links">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#planos">Planos</a>
+        <a href="#duvidas">Dúvidas</a>
+        <a href="/" class="btn-cta">Abrir o App Grátis</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="hero-badge">Copiloto contra golpes • Feito para o Brasil</span>
+        <h1>Um breque na hora da dúvida, antes de o dinheiro sair.</h1>
+        <p>
+          O BREQUE ajuda você e sua família a interromper decisões tomadas sob pressão, verificar mensagens e links localmente no aparelho e agir rápido se algo já aconteceu — sem ler seu WhatsApp nem acessar seu banco.
+        </p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="/" class="btn-cta">Usar o BREQUE agora (Grátis) →</a>
+          <a href="#duvidas" class="btn-outline">Tirar dúvidas</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <h3>Por que o BREQUE é diferente</h3>
+        <ul>
+          <li><strong>Não é antivírus nem promessa vazia:</strong> foca no momento de pressão emocional.</li>
+          <li><strong>Privacidade real:</strong> tudo roda no seu aparelho; não lê WhatsApp nem escuta chamadas.</li>
+          <li><strong>Instala em 2 toques (PWA):</strong> funciona no Android e no iPhone direto pelo link.</li>
+          <li><strong>Apoio sem vigilância:</strong> protege pais e avós preservando total autonomia.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona">
+    <div class="container">
+      <div class="section-head">
+        <h2>Como o BREQUE ajuda antes, durante e depois</h2>
+        <p>Ferramentas diretas para quem está sob pressão ou ajudando alguém da família.</p>
+      </div>
+      <div class="grid-3">
+        <div class="feature-card">
+          <h3>1. Sessão de Proteção + Áudio-Guia</h3>
+          <p>Está recebendo pressão por telefone ou mensagem? Um toque abre uma pausa calma, áudio-guia e frases prontas para desligar sem constrangimento.</p>
+        </div>
+        <div class="feature-card">
+          <h3>2. Verificador Local + Roteiro Reverso</h3>
+          <p>Cole uma mensagem ou link para checar padrões de coerção e sinais estruturais localmente, seguido de um passo a passo seguro conforme o estágio da situação.</p>
+        </div>
+        <div class="feature-card">
+          <h3>3. Mesa de Recuperação (MED)</h3>
+          <p>Já fez um Pix, passou senha ou instalou aplicativo? Receba a ordem mais útil de ações, canais oficiais verificados e organize seu relato em arquivo local (.txt).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="planos" class="section-soft">
+    <div class="container">
+      <div class="section-head">
+        <h2>Planos simples e transparentes</h2>
+        <p>O socorro essencial é gratuito. Os planos pagos ampliam o apoio familiar e mantêm o projeto independente.</p>
+      </div>
+      <div class="grid-3">
+        <div class="plan-card">
+          <div>
+            <h3>Básico</h3>
+            <div class="price">Grátis</div>
+            <ul>
+              <li>Roteiro Reverso (6 estágios)</li>
+              <li>Sessão de Proteção + Áudio-Guia</li>
+              <li>Analisador local de links e mensagens</li>
+              <li>Discagem Segura e Mesa de Recuperação</li>
+            </ul>
+          </div>
+          <a href="/" class="btn-cta" style="background:var(--brand); color:#fff;">Começar grátis</a>
+        </div>
+
+        <div class="plan-card highlight">
+          <div>
+            <h3>Plus / Família</h3>
+            <div class="price">R$ 12,90<span style="font-size:0.9rem; font-weight:600;">/mês</span></div>
+            <p style="font-size:0.84rem; color:var(--muted); margin:-4px 0 12px;">ou R$ 99/ano (até 5 familiares)</p>
+            <ul>
+              <li>Tudo do Básico para até 5 pessoas</li>
+              <li>Até 5 Pessoas de Confiança</li>
+              <li>Exportação completa do Dossiê 30 Min (.txt)</li>
+              <li>Plano de Proteção Pessoal (em breve)</li>
+            </ul>
+          </div>
+          <a href="/" class="btn-cta">Reservar plano Família</a>
+        </div>
+
+        <div class="plan-card">
+          <div>
+            <h3>Cooperativas e Empresas</h3>
+            <div class="price" style="font-size:1.35rem;">Sob consulta (B2B2C)</div>
+            <ul>
+              <li>A partir de R$ 0,50 a R$ 1,50 por usuário ativo/mês</li>
+              <li>Canais oficiais da instituição em destaque</li>
+              <li>Apoio à redução de fraudes e judicialização</li>
+              <li>Privacidade LGPD preservada</li>
+            </ul>
+          </div>
+          <a href="/" class="btn-cta" style="background:var(--brand-soft); color:var(--brand);">Falar sobre parceria</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="duvidas">
+    <div class="container">
+      <div class="section-head">
+        <h2>Perguntas frequentes (Tire suas dúvidas)</h2>
+        <p>Transparência total sobre o que o BREQUE faz e o que ele não faz.</p>
+      </div>
+      <div class="faq-list">
+        <details open>
+          <summary>O BREQUE lê minhas mensagens do WhatsApp ou escuta minhas ligações?</summary>
+          <p>Não. O BREQUE não acessa WhatsApp, SMS, chamadas nem aplicativos de banco. Tudo o que você analisa é colado ou informado voluntariamente por você e processado localmente no seu aparelho.</p>
+        </details>
+        <details>
+          <summary>O BREQUE garante que eu nunca vou cair em um golpe ou que vou recuperar meu dinheiro?</summary>
+          <p>Não. Nenhum aplicativo sério pode garantir isso. O BREQUE é um copiloto de apoio à decisão: ajuda você a pausar sob pressão, confirmar por outro canal e organizar rapidamente os passos junto ao seu banco (como o MED), cuja análise depende exclusivamente do banco e das regras do Banco Central.</p>
+        </details>
+        <details>
+          <summary>Preciso baixar na Google Play ou App Store?</summary>
+          <p>Não precisa. O BREQUE é um aplicativo Web instalável (PWA): você abre pelo link no celular e adiciona direto à tela inicial, funcionando no Android e no iPhone sem ocupar espaço.</p>
+        </details>
+        <details>
+          <summary>Como funciona para proteger meus pais ou avós?</summary>
+          <p>Sem vigilância e sem tirar a autonomia. Vocês instalam o ícone na primeira tela do celular, combinam a Pergunta Secreta da Família (que fica fora do celular) e configuram a Pessoa de Confiança para quando eles quiserem pedir uma segunda opinião.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div>
+        <strong style="color:#fff;">BREQUE — Copiloto contra golpes</strong>
+        <p style="margin:6px 0 0; max-width:540px;">Ferramenta de apoio à decisão. Não garante prevenção de golpes, não garante recuperação de valores e não substitui a confirmação oficial com o seu banco.</p>
+      </div>
+      <div style="display:flex; gap:18px; align-items:center;">
+        <a href="/" style="color:#fde68a; font-weight:700;">Abrir o App</a>
+        <a href="/#privacy" style="color:#c2d6e0;">Termos e LGPD</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
