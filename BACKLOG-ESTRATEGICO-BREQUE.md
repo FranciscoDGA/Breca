@@ -71,3 +71,33 @@ Toda nova função passa por 3 degraus:
 - [ ] Rodar `supabase/schema.sql` no SQL Editor do projeto Supabase (`vbqvajvyurxpbisqdpmi.supabase.co`).
 - [ ] Conduzir testes moderados com 5 a 10 pessoas reais usando `https://breca-rho.vercel.app`.
 - [ ] Revisar textos jurídicos (MED, LGPD, valor probatório) com advogado especializado antes de ativar cobrança real (Mercado Pago / Stripe).
+
+---
+
+## 5. Registro de Análises Externas (ChatGPT e Claude AI)
+
+> **Contexto:** Ambas as IAs analisaram `https://breca-rho.vercel.app/` apenas pelo HTML inicial (sem executar JavaScript), portanto não viram as telas internas já implementadas. Ainda assim, deixaram insumos valiosos para o roadmap.
+
+### A. Visão do ChatGPT
+- **Pontos alinhados com o BREQUE atual:**
+  - Não competir de frente com Truecaller/Whoscall; focar em **interromper a decisão** (*Reconhecer → Desacelerar → Verificar → Agir → Proteger*).
+  - **Modo SOCORRO (pós-Pix / MED)** sem prometer recuperação garantida *(já implementado na Mesa de Recuperação)*.
+  - **Proteção familiar sem monitorar conversas** *(já implementado no Pacto Familiar e Pessoa de Confiança)*.
+  - Começar como **Web/PWA local-first** antes de partir para integrações nativas no Android.
+- **Ideias para fases futuras (pós-validação):**
+  - Análise voluntária de **prints (OCR)** e **áudios suspeitos** (sempre como indício de risco, nunca como prova definitiva de deepfake).
+  - Verificador de consistência de Pix/beneficiário quando houver fonte confiável (sem fingir consultar o sistema bancário).
+  - Inteligência coletiva de golpes distinguindo denúncias de ocorrências confirmadas.
+- **Referência visual adotada:** tema escuro glassmórfico em azul-petróleo/ciano luminoso (`1008fc6`), **sem** placares falsos de links escaneados nem botão de bloqueio.
+
+### B. Visão do Claude AI
+- **Pontos alinhados com o BREQUE atual:**
+  - Posicionamento comportamental (“gerar pausa”), privacidade como diferencial, PWA sem fricção de loja e acessibilidade (`A-`/`A+` + leitura por voz).
+  - Checklists específicos de golpes de Pix (ex.: Pix errado, falsa central, boleto) e orientação nos primeiros 30 minutos pós-golpe.
+- **Melhorias técnicas rápidas para implementar no PWA:**
+  - **Open Graph (`og:title`, `og:description`, `og:image`):** melhorar a prévia ao compartilhar o link no WhatsApp da família.
+  - **Web Share Target (`share_target` no `manifest.webmanifest`):** permitir compartilhar uma mensagem direto do WhatsApp para o BREQUE instalado no Android, sem copiar e colar.
+  - **Consistência de marca e domínio:** alinhar futuramente domínio e nome (ex.: `breca.com.br` vs. `BREQUE`).
+- **Ponto conscientemente rejeitado:**
+  - Semáforo com estado **“ok / verde”** — mantemos a regra inviolável do BREQUE de **nunca** exibir veredito “seguro”/verde.
+
