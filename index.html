@@ -1,19 +1,1436 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#101418" />
-    <meta
-      name="description"
-      content="BRECA — o breque antes da decisão financeira. Ajuda você a decidir com calma. Não garante segurança."
-    />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-    <title>BRECA</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>BREQUE — Protótipo Navegável de Alta Fidelidade</title>
+  <style>
+    :root {
+      --bg: #f3f2ee;
+      --surface: #ffffff;
+      --surface-soft: #f8f7f4;
+      --text: #182128;
+      --text-muted: #4b5966;
+      --primary: #1a4b5c;
+      --primary-hover: #133946;
+      --primary-soft: #e6f0f3;
+      --amber: #8a500d;
+      --amber-bg: #fdf4e7;
+      --amber-border: #ecc388;
+      --risk: #942626;
+      --risk-bg: #fdf0f0;
+      --risk-border: #ebb3b3;
+      --neutral-bg: #eef2f5;
+      --neutral-border: #cdd7df;
+      --border: #d9dfe4;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --shadow: 0 2px 10px rgba(24, 33, 40, 0.06);
+      --font-scale: 1;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: calc(16px * var(--font-scale));
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #dfe3e8;
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 36px rgba(0, 0, 0, 0.14);
+    }
+
+    .proto-banner {
+      background: #23303b;
+      color: #f3f6f8;
+      font-size: 0.74rem;
+      text-align: center;
+      padding: 6px 12px;
+      letter-spacing: 0.01em;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.12rem;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+      background: none;
+      border: none;
+      padding: 4px 0;
+      cursor: pointer;
+    }
+
+    .brand-mark {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: inline-block;
+    }
+
+    .font-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .font-btn {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .font-btn:hover {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+    }
+
+    .content {
+      flex: 1;
+      padding: 18px 16px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    h1 {
+      font-size: 1.38rem;
+      line-height: 1.28;
+      margin: 0;
+      color: var(--text);
+    }
+
+    h2 {
+      font-size: 1.12rem;
+      line-height: 1.3;
+      margin: 0;
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 0.96rem;
+      margin: 0 0 4px;
+      color: var(--text);
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-soft {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+    }
+
+    .card-amber {
+      background: var(--amber-bg);
+      border: 1.5px solid var(--amber-border);
+    }
+
+    .card-risk {
+      background: var(--risk-bg);
+      border: 1.5px solid var(--risk-border);
+    }
+
+    .card-neutral {
+      background: var(--neutral-bg);
+      border: 1.5px solid var(--neutral-border);
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 15px 16px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: background 0.15s ease, transform 0.05s ease;
+      line-height: 1.35;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-soft);
+    }
+
+    .btn-amber {
+      background: var(--amber-bg);
+      color: var(--amber);
+      border: 1.5px solid var(--amber-border);
+    }
+
+    .btn-risk {
+      background: var(--risk-bg);
+      color: var(--risk);
+      border: 1.5px solid var(--risk-border);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary);
+      padding: 6px 2px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      width: auto;
+      justify-content: flex-start;
+    }
+
+    .btn-center {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .btn-sub {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-top: 3px;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+
+    .pill-primary {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid #bfd6de;
+    }
+
+    .pill-amber {
+      background: var(--amber-bg);
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
+    }
+
+    .pill-risk {
+      background: var(--risk-bg);
+      color: var(--risk);
+      border: 1px solid var(--risk-border);
+    }
+
+    .pill-neutral {
+      background: var(--neutral-bg);
+      color: var(--text);
+      border: 1px solid var(--neutral-border);
+    }
+
+    .pill-fictional {
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+    }
+
+    .section-label {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      resize: vertical;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .quote-box {
+      background: var(--surface-soft);
+      border-left: 4px solid var(--primary);
+      padding: 12px 14px;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.94rem;
+      color: var(--text);
+      margin-top: 6px;
+    }
+
+    .rr-block {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .rr-block:first-child {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .rr-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 13px 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-item.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .check-box {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      color: #fff;
+      background: #fff;
+    }
+
+    .check-item.selected .check-box {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .timer-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--primary-soft);
+      border: 1px solid #bfd8e0;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+
+    .timer-count {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .list-clean {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      color: var(--text-muted);
+      font-size: 0.93rem;
+    }
+
+    .list-clean li {
+      margin-bottom: 6px;
+    }
+
+    .review-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #6b4e16;
+      background: #fef8e7;
+      border: 1px solid #ead39c;
+      border-radius: 6px;
+      padding: 2px 7px;
+      margin-top: 6px;
+    }
+
+    .footer-nav {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      padding: 4px 0;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame" role="application" aria-label="BREQUE Protótipo Navegável">
+    <div class="proto-banner">
+      Protótipo navegável • Conteúdo fictício • Sem conexão com bancos ou apps reais
+    </div>
+
+    <header class="topbar">
+      <button class="brand" onclick="goHome()" aria-label="Voltar ao início do BREQUE">
+        <span class="brand-mark" aria-hidden="true"></span>
+        BREQUE
+      </button>
+      <div class="font-controls" aria-label="Ajustar tamanho da fonte">
+        <button class="font-btn" onclick="changeFont(-0.1)" aria-label="Diminuir fonte">A-</button>
+        <button class="font-btn" onclick="changeFont(0)" aria-label="Fonte padrão">A</button>
+        <button class="font-btn" onclick="changeFont(0.1)" aria-label="Aumentar fonte">A+</button>
+      </div>
+    </header>
+
+    <main id="app" class="content"></main>
+
+    <footer class="footer-nav">
+      <button class="link-btn" onclick="navigate('privacy')">Como o BREQUE usa seus dados</button>
+      <button class="link-btn" onclick="navigate('trusted')">Pessoa de confiança</button>
+    </footer>
+  </div>
+
+  <script>
+    // Estado apenas em memória. Nada é persistido nem enviado pela rede.
+    const state = {
+      screen: "home",
+      history: [],
+      fontScale: 1,
+
+      // Fluxo B — Verificar algo recebido
+      verifyInputMode: "exemplo", // "colar" | "resumo" | "exemplo"
+      verifyText: "",
+      verifyExampleKey: null,
+      q1Origin: null,   // "banco" | "familiar_novo" | "desconhecido" | "eu_iniciei"
+      q2Pressure: null, // "sim" | "nao" | "nao_sei"
+      q3Request: null,  // "dinheiro" | "credencial" | "nenhum"
+
+      // Fluxo C — Pressão acontecendo agora
+      pressureTopic: null, // "dinheiro" | "banco" | "familiar" | "ameaca" | "investimento" | "suporte" | "outro"
+      pauseSeconds: 0,
+      pauseInterval: null,
+
+      // Fluxo D — Já fiz algo
+      postEvent: null, // "credencial" | "app" | "pix" | "documento" | "outro"
+      postChecked: new Set(),
+      incidentLog: {
+        time: "",
+        summary: "",
+        saved: false
+      },
+
+      // Fluxo E — Pessoa de confiança (apenas demonstração visual)
+      trustedContacts: [
+        { id: "c1", name: "Maria (Irmã)", note: "Contato fictício de demonstração" }
+      ],
+      selectedContactId: "c1",
+      newContactName: "",
+      newContactNote: "",
+      helpPreviewText: "",
+      helpSentSimulated: false,
+
+      // Roteiro Reverso selecionado
+      activeStage: 1
+    };
+
+    const FICTIONAL_EXAMPLES = {
+      pix_familiar: {
+        title: "Exemplo fictício: Mensagem de número novo",
+        text: "“Oi, troquei de número porque meu celular deu problema. Preciso fazer um Pix urgente de R$ 950 agora, depois te devolvo.”",
+        q1: "familiar_novo",
+        q2: "sim",
+        q3: "dinheiro"
+      },
+      banco_codigo: {
+        title: "Exemplo fictício: Mensagem dizendo ser do banco",
+        text: "“Central de segurança: identificamos um acesso incomum. Informe o código de 6 dígitos enviado por SMS para cancelar.”",
+        q1: "banco",
+        q2: "sim",
+        q3: "credencial"
+      },
+      cobranca_duvida: {
+        title: "Exemplo fictício: Cobrança de entrega por SMS",
+        text: "“Sua encomenda aguarda confirmação de endereço. Regularize hoje para evitar devolução.”",
+        q1: "desconhecido",
+        q2: "nao_sei",
+        q3: "nenhum"
+      }
+    };
+
+    // Os 6 estágios do Roteiro Reverso
+    const ROTEIRO_REVERSO = {
+      1: {
+        num: 1,
+        titulo: "Recebeu um contato suspeito, mas ainda não respondeu",
+        acolhimento: "Você fez muito bem em parar para olhar isso antes de responder.",
+        acaoAgora: "Não responda à mensagem e não clique em links por enquanto.",
+        motivo: "Quando você não responde logo, ganha tempo para conferir com calma e evita entrar em uma conversa sob pressão.",
+        verificacao: "Procure a pessoa ou empresa por um canal que você já usava antes: o número antigo salvo na agenda, o aplicativo oficial já instalado ou o telefone no verso do cartão.",
+        evitar: "Evite clicar em links recebidos, baixar arquivos ou ligar para o número que veio escrito na mensagem.",
+        alternativa: "Se você não souber qual é o canal oficial, deixe a mensagem parada e peça ajuda a alguém de confiança para procurar junto.",
+        quandoPedirAjuda: "Peça ajuda se a mensagem envolver dinheiro, documento ou alguém da família e você ainda ficar em dúvida."
+      },
+      2: {
+        num: 2,
+        titulo: "Está conversando com a pessoa ou organização",
+        acolhimento: "Tudo bem estar no meio da conversa. Você pode pausar a qualquer momento.",
+        acaoAgora: "Diga que vai conferir uma informação e encerre ou pause a conversa agora.",
+        motivo: "Quem é legítimo entende uma pausa para confirmação. Sair da conversa reduz a chance de decidir no impulso.",
+        verificacao: "Desligue ou saia do chat e faça contato por fora: use o aplicativo oficial do serviço, o site digitado manualmente por você ou o número antigo da pessoa.",
+        evitar: "Evite confrontar ou discutir com quem entrou em contato, e não passe dados para “confirmar cadastro”.",
+        alternativa: "Se ficar difícil encerrar a ligação, você pode simplesmente dizer “preciso desligar agora” e encerrar a chamada.",
+        quandoPedirAjuda: "Chame uma pessoa de confiança se sentir confusão, pressa ou receio de estar perdendo algo importante."
+      },
+      3: {
+        num: 3,
+        titulo: "Está sob pressão para enviar dinheiro, código, documento ou instalar algo",
+        acolhimento: "Pressa e pressão deixam qualquer pessoa tensa. Vamos desacelerar agora.",
+        acaoAgora: "Interrompa o contato imediatamente e não envie código, senha, dinheiro, documento nem instale aplicativos.",
+        motivo: "Pedidos urgentes com exigência de sigilo ou rapidez são a principal forma de impedir você de conferir a situação.",
+        verificacao: "Depois de encerrar o contato, confira por conta própria no aplicativo oficial do banco, no número do verso do cartão ou ligando para o número antigo do familiar.",
+        evitar: "Evite permanecer na ligação enquanto mexe no aplicativo do banco, ler códigos de SMS em voz alta ou compartilhar a tela.",
+        alternativa: "Se estiver difícil encerrar sozinho, coloque o celular de lado por um minuto e chame alguém próximo para olhar junto.",
+        quandoPedirAjuda: "Peça ajuda agora mesmo se a pessoa insistir, tentar assustar você ou pedir para não contar para ninguém."
+      },
+      4: {
+        num: 4,
+        titulo: "Já compartilhou dados ou deu acesso ao aparelho",
+        acolhimento: "Isso acontece com muitas pessoas e não é culpa sua. Vamos cuidar do mais importante primeiro.",
+        acaoAgora: "Interrompa o contato imediatamente. Se passou senha ou código, troque a senha pelo canal oficial; se instalou um aplicativo ou deu acesso ao aparelho, pare de usar o app e busque suporte confiável.",
+        motivo: "Agir rápido reduz o tempo em que outra pessoa pode usar sua conta ou acessar seu aparelho.",
+        verificacao: "Acesse o aplicativo oficial da conta afetada (ou de outro aparelho confiável) para conferir acessos recentes e falar com o suporte oficial.",
+        evitar: "Evite aceitar ajuda de quem iniciou o contato, pagar taxas para “desbloquear” a conta ou tentar procedimentos técnicos arriscados sem orientação confiável.",
+        alternativa: "Se não conseguir trocar a senha ou remover o acesso sozinho, peça ajuda a um familiar de confiança ou ao suporte oficial do banco/aparelho.",
+        quandoPedirAjuda: "Peça ajuda logo agora — ter alguém ao lado facilita trocar senhas e falar com o suporte com mais calma.",
+        revisaoEspecializada: "Orientação de contenção de acesso e suporte técnico: recomenda-se revisão especializada antes da publicação."
+      },
+      5: {
+        num: 5,
+        titulo: "Já fez pagamento ou transferência",
+        acolhimento: "Sinto muito que isso tenha acontecido. Sem julgamento: vamos seguir a ordem mais útil para agora.",
+        acaoAgora: "Entre em contato imediatamente com o seu banco pelo canal oficial e pergunte sobre contestação ou MED (Mecanismo Especial de Devolução).",
+        motivo: "Quanto antes o banco for avisado, maior a chance de analisar o bloqueio dos valores — embora a devolução nunca possa ser garantida.",
+        verificacao: "Use apenas o aplicativo oficial do seu banco já instalado ou o telefone impresso no verso do cartão.",
+        evitar: "Evite fazer novos pagamentos para “estornar” o primeiro, pagar intermediários que prometem recuperar o dinheiro ou apagar o comprovante e as mensagens.",
+        alternativa: "Se estiver nervoso para falar com o banco sozinho, peça a uma pessoa de confiança para acompanhar a ligação com você.",
+        quandoPedirAjuda: "Peça ajuda agora para ligar para o banco, guardar os comprovantes e organizar o relato.",
+        revisaoEspecializada: "Orientação sobre contestação/MED e registro formal: recomenda-se revisão jurídica e regulatória antes da publicação."
+      },
+      6: {
+        num: 6,
+        titulo: "Está tentando organizar o que aconteceu e buscar ajuda",
+        acolhimento: "Organizar os fatos com calma ajuda você a retomar o controle da situação.",
+        acaoAgora: "Anote horário, o que aconteceu e o que você já fez, e guarde os comprovantes e prints no seu aparelho.",
+        motivo: "Ter a linha do tempo clara facilita o atendimento no banco, no suporte oficial e, se você decidir, no registro de ocorrência.",
+        verificacao: "Para registrar ocorrência ou buscar orientação formal, acesse apenas o site oficial da Polícia Civil do seu estado digitado manualmente ou canais oficiais do seu banco.",
+        evitar: "Evite compartilhar seus documentos ou comprovantes com desconhecidos que ofereçam “recuperação garantida” nas redes sociais.",
+        alternativa: "Se for cansativo organizar tudo hoje, anote apenas o básico agora e peça ajuda a alguém de confiança para revisar depois.",
+        quandoPedirAjuda: "Compartilhe o resumo com uma pessoa de confiança quando quiser apoio para revisar os próximos passos.",
+        revisaoEspecializada: "Texto sobre registro de ocorrência e valor probatório: recomenda-se revisão jurídica antes da publicação."
+      }
+    };
+
+    function clearTimer() {
+      if (state.pauseInterval) {
+        clearInterval(state.pauseInterval);
+        state.pauseInterval = null;
+      }
+      state.pauseSeconds = 0;
+    }
+
+    function changeFont(delta) {
+      if (delta === 0) {
+        state.fontScale = 1;
+      } else {
+        state.fontScale = Math.min(1.25, Math.max(0.9, +(state.fontScale + delta).toFixed(2)));
+      }
+      document.documentElement.style.setProperty("--font-scale", state.fontScale);
+    }
+
+    function navigate(screen, pushHistory = true) {
+      clearTimer();
+      if (pushHistory && state.screen !== screen) {
+        state.history.push(state.screen);
+      }
+      state.screen = screen;
+      render();
+    }
+
+    function goBack() {
+      clearTimer();
+      const prev = state.history.pop();
+      state.screen = prev || "home";
+      render();
+    }
+
+    function goHome() {
+      clearTimer();
+      state.history = [];
+      state.screen = "home";
+      render();
+    }
+
+    function startPauseTimer() {
+      clearTimer();
+      state.pauseSeconds = 10;
+      render();
+      state.pauseInterval = setInterval(() => {
+        state.pauseSeconds -= 1;
+        if (state.pauseSeconds <= 0) clearTimer();
+        render();
+      }, 1000);
+    }
+
+    function selectFictionalExample(key) {
+      const ex = FICTIONAL_EXAMPLES[key];
+      state.verifyInputMode = "exemplo";
+      state.verifyExampleKey = key;
+      state.verifyText = ex.text;
+      state.q1Origin = ex.q1;
+      state.q2Pressure = ex.q2;
+      state.q3Request = ex.q3;
+      navigate("verify_q1");
+    }
+
+    function evaluateVerify() {
+      const reasons = [];
+      let score = 0;
+
+      if (state.q1Origin === "banco") {
+        reasons.push("O contato diz ser de banco ou empresa (vale sempre confirmar pelo canal oficial).");
+        score += 1;
+      } else if (state.q1Origin === "familiar_novo") {
+        reasons.push("Alguém conhecido entrou em contato por um número novo.");
+        score += 1;
+      } else if (state.q1Origin === "desconhecido") {
+        reasons.push("O contato veio de um número ou remetente desconhecido.");
+        score += 1;
+      }
+
+      if (state.q2Pressure === "sim") {
+        reasons.push("Há pressão para agir rápido ou manter segredo.");
+        score += 2;
+      }
+
+      if (state.q3Request === "dinheiro") {
+        reasons.push("Houve pedido de dinheiro, Pix ou pagamento.");
+        score += 2;
+      } else if (state.q3Request === "credencial") {
+        reasons.push("Houve pedido de código, senha, documento ou instalação de aplicativo.");
+        score += 3;
+      }
+
+      if (score >= 3 || state.q3Request === "credencial") {
+        return {
+          status: "Sinais de risco",
+          cardClass: "card-risk",
+          pillClass: "pill-risk",
+          stage: state.q2Pressure === "sim" ? 3 : 1,
+          reasons
+        };
+      }
+      if (score >= 1) {
+        return {
+          status: "Não dá para confirmar",
+          cardClass: "card-amber",
+          pillClass: "pill-amber",
+          stage: 1,
+          reasons
+        };
+      }
+      return {
+        status: "Poucos sinais encontrados — ainda vale verificar",
+        cardClass: "card-neutral",
+        pillClass: "pill-neutral",
+        stage: 1,
+        reasons: ["Nenhum dos sinais mais comuns foi marcado, mas isso não garante que o contato seja legítimo."]
+      };
+    }
+
+    function openHelpPreview(contextLabel) {
+      const summary = state.verifyText
+        ? `Situação que quero conferir: ${state.verifyText.slice(0, 120)}`
+        : `Estou em dúvida sobre uma situação (${contextLabel}) e gostaria de conferir com você antes de decidir.`;
+      state.helpPreviewText = summary;
+      state.helpSentSimulated = false;
+      navigate("help_preview");
+    }
+
+    function renderRoteiroCard(stageNum, extraNotice = "") {
+      const r = ROTEIRO_REVERSO[stageNum];
+      return `
+        <div class="card">
+          <span class="pill pill-primary">Roteiro Reverso • Estágio ${r.num} de 6</span>
+          <h2>${r.titulo}</h2>
+          <p style="margin-top: 8px; color: var(--text); font-weight: 500;">${r.acolhimento}</p>
+
+          ${extraNotice ? `<div class="quote-box" style="margin-top: 10px; border-left-color: var(--risk); background: var(--risk-bg);">${extraNotice}</div>` : ""}
+
+          <div class="rr-block">
+            <div class="rr-title">Ação mais importante agora</div>
+            <p style="color: var(--text); font-weight: 600;">${r.acaoAgora}</p>
+          </div>
+
+          <div class="rr-block">
+            <div class="rr-title">Por que fazer isso</div>
+            <p>${r.motivo}</p>
+          </div>
+
+          <div class="rr-block">
+            <div class="rr-title">Como verificar por conta própria</div>
+            <p>${r.verificacao}</p>
+          </div>
+
+          <div class="rr-block">
+            <div class="rr-title">O que evitar</div>
+            <p>${r.evitar}</p>
+          </div>
+
+          <div class="rr-block">
+            <div class="rr-title">Se não conseguir fazer isso agora</div>
+            <p>${r.alternativa}</p>
+          </div>
+
+          <div class="rr-block">
+            <div class="rr-title">Quando pedir ajuda a uma pessoa de confiança</div>
+            <p>${r.quandoPedirAjuda}</p>
+          </div>
+
+          ${r.revisaoEspecializada ? `<div class="review-tag">Nota de validação: ${r.revisaoEspecializada}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function render() {
+      const app = document.getElementById("app");
+      window.scrollTo({ top: 0, behavior: "instant" });
+
+      // A. TELA INICIAL
+      if (state.screen === "home") {
+        app.innerHTML = `
+          <div>
+            <h1>Vamos entender o que está acontecendo e decidir o próximo passo com calma.</h1>
+          </div>
+
+          <div class="stack">
+            <button class="btn btn-primary" onclick="navigate('verify_start')">
+              <div>
+                Quero verificar algo que recebi
+                <span class="btn-sub">Mensagem, ligação, link ou cobrança</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-amber" onclick="navigate('pressure_pause')">
+              <div>
+                Estão me pressionando agora
+                <span class="btn-sub">Pausa rápida e orientação para o momento</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-risk" onclick="navigate('post_start')">
+              <div>
+                Já fiz algo e preciso de ajuda
+                <span class="btn-sub">Pix, senha, código, documento ou aplicativo</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="section-label">Acesso rápido</div>
+          <div class="stack">
+            <button class="btn btn-secondary" onclick="navigate('trusted')">
+              <div>
+                Pessoa de confiança
+                <span class="btn-sub">Escolha quem pode ajudar quando você quiser</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="navigate('privacy')">
+              <div>
+                Como o BREQUE usa seus dados
+                <span class="btn-sub">Privacidade e limites deste protótipo</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="navigate('stages_overview')">
+              <div>
+                Explorar os 6 estágios do Roteiro Reverso
+                <span class="btn-sub">Visão completa para teste do conceito</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // B1. VERIFICAR ALGO RECEBIDO — ENTRADA
+      if (state.screen === "verify_start") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-primary">Verificar algo recebido</span>
+            <h1>Como você prefere contar o que recebeu?</h1>
+            <p style="margin-top: 6px;">O BREQUE não lê seu WhatsApp, SMS nem notificações. Você escolhe o que colocar aqui.</p>
+          </div>
+
+          <div class="card stack">
+            <label class="field-label" for="verify-text">Colar mensagem ou digitar um resumo curto</label>
+            <textarea id="verify-text" rows="3" placeholder="Ex.: Recebi uma mensagem pedindo Pix urgente de um número novo..." oninput="state.verifyText = this.value; state.verifyExampleKey = null;">${state.verifyText}</textarea>
+            <p style="font-size: 0.82rem;">Não precisa colocar senhas, CPF, número de cartão ou telefone completo.</p>
+            <button class="btn btn-primary btn-center" onclick="navigate('verify_q1')">
+              Continuar com meu relato →
+            </button>
+          </div>
+
+          <div class="section-label">Ou testar com um exemplo fictício</div>
+          <div class="stack">
+            <button class="btn btn-secondary" onclick="selectFictionalExample('pix_familiar')">
+              <div>
+                “Oi, troquei de número... preciso de um Pix”
+                <span class="btn-sub">Exemplo fictício • Familiar em número novo</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="selectFictionalExample('banco_codigo')">
+              <div>
+                “Central de segurança: informe o código SMS”
+                <span class="btn-sub">Exemplo fictício • Pedido de código</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <button class="btn btn-secondary" onclick="selectFictionalExample('cobranca_duvida')">
+              <div>
+                “Encomenda aguarda confirmação”
+                <span class="btn-sub">Exemplo fictício • Mensagem com poucos sinais</span>
+              </div>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // B2. PERGUNTA 1 DE 3
+      if (state.screen === "verify_q1") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar (seu relato fica mantido)</button>
+
+          <div>
+            <span class="pill pill-primary">Pergunta 1 de 3</span>
+            <h1>Quem iniciou o contato?</h1>
+          </div>
+
+          ${state.verifyText ? `<div class="quote-box">${state.verifyText}</div>` : ""}
+
+          <div class="stack">
+            <button class="btn ${state.q1Origin === 'banco' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='banco'; navigate('verify_q2')">
+              Alguém dizendo ser banco, loja ou empresa <span>→</span>
+            </button>
+            <button class="btn ${state.q1Origin === 'familiar_novo' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='familiar_novo'; navigate('verify_q2')">
+              Familiar ou conhecido em um número novo <span>→</span>
+            </button>
+            <button class="btn ${state.q1Origin === 'desconhecido' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='desconhecido'; navigate('verify_q2')">
+              Um número ou remetente desconhecido <span>→</span>
+            </button>
+            <button class="btn ${state.q1Origin === 'eu_iniciei' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='eu_iniciei'; navigate('verify_q2')">
+              Eu mesmo comecei o contato por um canal oficial <span>→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // B2. PERGUNTA 2 DE 3
+      if (state.screen === "verify_q2") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-primary">Pergunta 2 de 3</span>
+            <h1>Há pressão para agir rápido ou manter segredo?</h1>
+          </div>
+
+          <div class="stack">
+            <button class="btn ${state.q2Pressure === 'sim' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q2Pressure='sim'; navigate('verify_q3')">
+              Sim, pediram pressa ou para não contar a ninguém <span>→</span>
+            </button>
+            <button class="btn ${state.q2Pressure === 'nao' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q2Pressure='nao'; navigate('verify_q3')">
+              Não percebi pressa nem segredo <span>→</span>
+            </button>
+            <button class="btn ${state.q2Pressure === 'nao_sei' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q2Pressure='nao_sei'; navigate('verify_q3')">
+              Não tenho certeza <span>→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // B2. PERGUNTA 3 DE 3
+      if (state.screen === "verify_q3") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-primary">Pergunta 3 de 3</span>
+            <h1>Pediram dinheiro, código, senha ou instalação de aplicativo?</h1>
+          </div>
+
+          <div class="stack">
+            <button class="btn ${state.q3Request === 'dinheiro' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q3Request='dinheiro'; navigate('verify_result')">
+              Sim, pediram dinheiro, Pix ou pagamento <span>→</span>
+            </button>
+            <button class="btn ${state.q3Request === 'credencial' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q3Request='credencial'; navigate('verify_result')">
+              Sim, pediram código, senha, documento ou instalar app <span>→</span>
+            </button>
+            <button class="btn ${state.q3Request === 'nenhum' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q3Request='nenhum'; navigate('verify_result')">
+              Não pediram nada disso <span>→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // B3. RESULTADO DA VERIFICAÇÃO
+      if (state.screen === "verify_result") {
+        const res = evaluateVerify();
+        const reasonsHtml = res.reasons.map(r => `<li>${r}</li>`).join("");
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar e ajustar respostas</button>
+
+          <div class="card ${res.cardClass}">
+            <span class="pill ${res.pillClass}">${res.status}</span>
+            <h2>O que levou a esta leitura</h2>
+            <ul class="list-clean" style="color: var(--text);">${reasonsHtml}</ul>
+          </div>
+
+          ${renderRoteiroCard(res.stage)}
+
+          <div class="stack">
+            <button class="btn btn-primary btn-center" onclick="openHelpPreview('verificação de contato recebido')">
+              Pedir ajuda a uma pessoa de confiança
+            </button>
+            <button class="btn btn-secondary btn-center" onclick="goHome()">
+              Voltar ao início
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // C1. PRESSÃO ACONTECENDO AGORA — PAUSA
+      if (state.screen === "pressure_pause") {
+        const pauseHtml = state.pauseSeconds > 0
+          ? `
+            <div class="timer-box">
+              <div>
+                <strong>Respire fundo</strong>
+                <p style="font-size: 0.85rem;">Nenhuma decisão séria precisa ser tomada em segundos.</p>
+              </div>
+              <div class="timer-count">${state.pauseSeconds}s</div>
+            </div>
+          `
+          : `
+            <button class="btn btn-secondary btn-center" onclick="startPauseTimer()">
+              Fazer uma pausa de 10 segundos (opcional)
+            </button>
+          `;
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div class="card card-amber">
+            <span class="pill pill-amber">Primeiro passo</span>
+            <h1>Pause. Não informe códigos, senhas ou dados bancários.</h1>
+            <p style="margin-top: 8px; color: var(--text);">
+              Você não precisa resolver isso correndo. Quem é legítimo espera você confirmar.
+            </p>
+          </div>
+
+          ${pauseHtml}
+
+          <button class="btn btn-primary btn-center" onclick="navigate('pressure_topic')">
+            Continuar com calma →
+          </button>
+        `;
+        return;
+      }
+
+      // C2. PRESSÃO — O QUE ESTÁ ACONTECENDO
+      if (state.screen === "pressure_topic") {
+        const topics = [
+          { id: "dinheiro", label: "Pedido de dinheiro ou Pix" },
+          { id: "banco", label: "Contato que diz ser do banco" },
+          { id: "familiar", label: "Familiar pedindo ajuda" },
+          { id: "ameaca", label: "Ameaça ou intimidação" },
+          { id: "investimento", label: "Promessa de investimento ou ganho rápido" },
+          { id: "suporte", label: "Suporte técnico pedindo acesso ao aparelho" },
+          { id: "outro", label: "Outra situação" }
+        ];
+        const btns = topics.map(t => `
+          <button class="btn btn-secondary" onclick="state.pressureTopic='${t.id}'; navigate('pressure_guide')">
+            ${t.label} <span>→</span>
+          </button>
+        `).join("");
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-amber">Pressão acontecendo agora</span>
+            <h1>O que está acontecendo?</h1>
+          </div>
+          <div class="stack">${btns}</div>
+        `;
+        return;
+      }
+
+      // C3. PRESSÃO — ROTEIRO REVERSO
+      if (state.screen === "pressure_guide") {
+        const extra = state.pressureTopic === "ameaca"
+          ? "<strong>Atenção à sua segurança física:</strong> se você estiver sob ameaça imediata ou em risco físico, procure ajuda local apropriada imediatamente (como a polícia pelo 190 ou alguém próximo em local seguro)."
+          : "";
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          ${renderRoteiroCard(3, extra)}
+
+          <div class="stack">
+            <button class="btn btn-primary btn-center" onclick="openHelpPreview('pressão acontecendo agora')">
+              Pedir ajuda a uma pessoa de confiança
+            </button>
+            <button class="btn btn-risk btn-center" onclick="navigate('post_start')">
+              Já passei dados ou fiz um pagamento
+            </button>
+            <button class="btn btn-secondary btn-center" onclick="goHome()">
+              Voltar ao início
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // D1. JÁ FIZ ALGO — SELEÇÃO
+      if (state.screen === "post_start") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div class="card card-soft">
+            <h1>Sem julgamento. Vamos cuidar de um passo por vez.</h1>
+            <p style="margin-top: 6px;">O que chegou a acontecer?</p>
+          </div>
+
+          <div class="stack">
+            <button class="btn btn-risk" onclick="state.postEvent='pix'; state.postChecked=new Set(); navigate('post_plan')">
+              Fiz Pix ou pagamento <span>→</span>
+            </button>
+            <button class="btn btn-risk" onclick="state.postEvent='credencial'; state.postChecked=new Set(); navigate('post_plan')">
+              Compartilhei código ou senha <span>→</span>
+            </button>
+            <button class="btn btn-risk" onclick="state.postEvent='app'; state.postChecked=new Set(); navigate('post_plan')">
+              Instalei aplicativo ou dei acesso ao aparelho <span>→</span>
+            </button>
+            <button class="btn btn-secondary" onclick="state.postEvent='documento'; state.postChecked=new Set(); navigate('post_plan')">
+              Enviei documento ou foto <span>→</span>
+            </button>
+            <button class="btn btn-secondary" onclick="state.postEvent='outro'; state.postChecked=new Set(); navigate('post_plan')">
+              Outra situação / quero organizar o que aconteceu <span>→</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // D2. JÁ FIZ ALGO — PLANO PRIORIZADO + ROTEIRO REVERSO
+      if (state.screen === "post_plan") {
+        const stageMap = { pix: 5, credencial: 4, app: 4, documento: 4, outro: 6 };
+        const stepsMap = {
+          pix: [
+            "Contate imediatamente o seu banco pelo canal oficial (app instalado ou telefone do verso do cartão) e pergunte sobre contestação/MED (sem garantia de recuperação).",
+            "Guarde o comprovante, a chave usada e prints da conversa.",
+            "Organize o relato e avalie registrar ocorrência no canal oficial da Polícia Civil do seu estado."
+          ],
+          credencial: [
+            "Acesse o serviço oficial por um canal confiável e troque a senha imediatamente.",
+            "Se a mesma senha for usada em outros lugares, troque também.",
+            "Avise o banco ou serviço oficial caso note qualquer acesso desconhecido."
+          ],
+          app: [
+            "Interrompa imediatamente o contato com quem pediu a instalação.",
+            "Evite acessar bancos ou senhas nesse aparelho até buscar suporte confiável.",
+            "Se possível, troque senhas importantes a partir de outro aparelho confiável."
+          ],
+          documento: [
+            "Interrompa o contato e não envie novos documentos ou selfies.",
+            "Guarde prints da conversa e anote quais documentos foram enviados.",
+            "Acompanhe seus canais oficiais e avalie registrar ocorrência se houver uso indevido."
+          ],
+          outro: [
+            "Anote horário e o que aconteceu enquanto ainda está recente.",
+            "Guarde mensagens, números e comprovantes.",
+            "Converse com uma pessoa de confiança para decidir o próximo passo."
+          ]
+        };
+
+        const steps = stepsMap[state.postEvent] || stepsMap.outro;
+        const checklistHtml = steps.map((txt, idx) => {
+          const checked = state.postChecked.has(idx);
+          return `
+            <div class="check-item ${checked ? "selected" : ""}" role="checkbox" aria-checked="${checked}" tabindex="0" onclick="togglePostCheck(${idx})">
+              <div class="check-box">${checked ? "✓" : ""}</div>
+              <div style="font-size: 0.93rem; ${checked ? "text-decoration: line-through; opacity: 0.75;" : ""}">${txt}</div>
+            </div>
+          `;
+        }).join("");
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          ${renderRoteiroCard(stageMap[state.postEvent] || 6)}
+
+          <div class="section-label">Próximos passos priorizados (marque conforme fizer)</div>
+          <div class="stack">${checklistHtml}</div>
+
+          <div class="stack">
+            <button class="btn btn-primary btn-center" onclick="openIncidentLog()">
+              Criar registro local fictício do incidente →
+            </button>
+            <button class="btn btn-secondary btn-center" onclick="openHelpPreview('apoio após incidente')">
+              Pedir ajuda a uma pessoa de confiança
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // D3. REGISTRO LOCAL FICTÍCIO DO INCIDENTE
+      if (state.screen === "incident_log") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-fictional">Demonstração local • Não enviado</span>
+            <h1>Organizar o que aconteceu</h1>
+            <p style="margin-top: 6px;">Este registro ajuda a organizar informações para falar com o banco ou buscar ajuda, mas <strong>não é prova jurídica garantida</strong>.</p>
+          </div>
+
+          <div class="card stack">
+            <div>
+              <label class="field-label" for="log-time">Horário aproximado</label>
+              <input id="log-time" type="text" value="${state.incidentLog.time}" oninput="state.incidentLog.time = this.value" />
+            </div>
+
+            <div>
+              <label class="field-label" for="log-summary">Seu relato (com suas palavras)</label>
+              <textarea id="log-summary" rows="4" placeholder="Anote o que aconteceu e o que você já fez..." oninput="state.incidentLog.summary = this.value">${state.incidentLog.summary}</textarea>
+            </div>
+
+            <button class="btn btn-primary btn-center" onclick="state.incidentLog.saved = true; render();">
+              Salvar registro fictício nesta tela
+            </button>
+
+            ${state.incidentLog.saved ? `
+              <div class="quote-box">
+                <strong>Registro organizado apenas nesta sessão de teste.</strong><br/>
+                Horário: ${state.incidentLog.time || "Não informado"}<br/>
+                Ações marcadas: ${state.postChecked.size}<br/>
+                <em>Ao fechar a página, estes dados somem.</em>
+              </div>
+            ` : ""}
+            <div class="review-tag">Nota de validação: aviso sobre valor probatório requer revisão jurídica.</div>
+          </div>
+
+          <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
+        `;
+        return;
+      }
+
+      // E. PESSOA DE CONFIANÇA
+      if (state.screen === "trusted") {
+        const listHtml = state.trustedContacts.map(c => `
+          <div class="card card-soft" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div>
+              <div style="font-weight:700;">${c.name}</div>
+              <div style="font-size:0.84rem; color:var(--text-muted);">${c.note}</div>
+            </div>
+            <button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.84rem;" onclick="state.selectedContactId='${c.id}'; openHelpPreview('pedido de apoio');">
+              Simular pedido
+            </button>
+          </div>
+        `).join("");
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-fictional">Demonstração visual</span>
+            <h1>Pessoa de confiança</h1>
+            <p style="margin-top: 6px;">
+              Você decide quando pedir ajuda e vê exatamente o que será compartilhado antes de confirmar.
+              O BREQUE <strong>não</strong> rastreia localização, mensagens, atividade nem transações de ninguém.
+            </p>
+          </div>
+
+          <div class="stack">${listHtml}</div>
+
+          <div class="card stack">
+            <h3>Adicionar contato (apenas demonstração)</h3>
+            <input type="text" placeholder="Nome (ex.: João - filho)" value="${state.newContactName}" oninput="state.newContactName=this.value" />
+            <input type="text" placeholder="Relação (opcional)" value="${state.newContactNote}" oninput="state.newContactNote=this.value" />
+            <button class="btn btn-primary btn-center" onclick="addTrustedContact()">
+              Adicionar contato fictício
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // PRÉVIA E CONFIRMAÇÃO DE PEDIDO DE AJUDA
+      if (state.screen === "help_preview") {
+        const contact = state.trustedContacts.find(c => c.id === state.selectedContactId) || state.trustedContacts[0];
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <span class="pill pill-primary">Prévia antes de confirmar</span>
+            <h1>Pedido de ajuda para ${contact.name}</h1>
+            <p style="margin-top: 6px;">Revise o texto abaixo. Nada é enviado sem sua confirmação explícita.</p>
+          </div>
+
+          <div class="card stack">
+            <label class="field-label" for="help-msg">O que seria compartilhado</label>
+            <textarea id="help-msg" rows="4" oninput="state.helpPreviewText=this.value">${state.helpPreviewText}</textarea>
+
+            ${!state.helpSentSimulated ? `
+              <button class="btn btn-primary btn-center" onclick="state.helpSentSimulated=true; render();">
+                Confirmar simulação de envio
+              </button>
+            ` : `
+              <div class="quote-box">
+                <strong>Simulação concluída no protótipo.</strong><br/>
+                Nenhuma mensagem real foi enviada e ${contact.name} não recebeu este aviso porque este protótipo não está conectado a serviços reais.
+              </div>
+            `}
+          </div>
+
+          <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
+        `;
+        return;
+      }
+
+      // VISÃO DOS 6 ESTÁGIOS DO ROTEIRO REVERSO
+      if (state.screen === "stages_overview") {
+        const tabs = [1, 2, 3, 4, 5, 6].map(n => `
+          <button class="font-btn" style="flex:1; padding:8px 0; ${state.activeStage === n ? 'background:var(--primary); color:#fff; border-color:var(--primary);' : ''}" onclick="state.activeStage=${n}; render();">
+            ${n}
+          </button>
+        `).join("");
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <h1>Os 6 estágios do Roteiro Reverso</h1>
+            <p style="margin-top: 4px;">Toque em um número para revisar o fluxo pronto de cada estágio.</p>
+          </div>
+          <div class="row">${tabs}</div>
+          ${renderRoteiroCard(state.activeStage)}
+        `;
+        return;
+      }
+
+      // COMO O BREQUE USA SEUS DADOS
+      if (state.screen === "privacy") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+
+          <div>
+            <h1>Como o BREQUE usa seus dados</h1>
+            <p style="margin-top: 6px;">Transparência e autonomia em primeiro lugar.</p>
+          </div>
+
+          <div class="card">
+            <h3>Neste protótipo</h3>
+            <ul class="list-clean">
+              <li>Tudo funciona apenas nesta tela do seu navegador.</li>
+              <li>Nenhum texto, contato ou registro é enviado para servidores.</li>
+              <li>Ao fechar ou recarregar a página, as informações digitadas desaparecem.</li>
+            </ul>
+          </div>
+
+          <div class="card card-soft">
+            <h3>O que o BREQUE não faz</h3>
+            <ul class="list-clean">
+              <li>Não lê WhatsApp, SMS, e-mails nem notificações.</li>
+              <li>Não escuta ligações nem monitora sua tela.</li>
+              <li>Não rastreia localização ou atividade de familiares.</li>
+              <li>Não faz Pix, bloqueios nem denúncias sem você.</li>
+              <li>Nunca exibe um selo verde dizendo que algo “está seguro”.</li>
+            </ul>
+          </div>
+
+          <button class="btn btn-primary btn-center" onclick="goHome()">Entendi, voltar ao início</button>
+        `;
+      }
+    }
+
+    function togglePostCheck(idx) {
+      if (state.postChecked.has(idx)) {
+        state.postChecked.delete(idx);
+      } else {
+        state.postChecked.add(idx);
+      }
+      render();
+    }
+
+    function openIncidentLog() {
+      if (!state.incidentLog.time) {
+        const now = new Date();
+        state.incidentLog.time = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      }
+      if (!state.incidentLog.summary && state.verifyText) {
+        state.incidentLog.summary = state.verifyText;
+      }
+      state.incidentLog.saved = false;
+      navigate("incident_log");
+    }
+
+    function addTrustedContact() {
+      const name = state.newContactName.trim();
+      if (!name) return;
+      const id = "c" + (state.trustedContacts.length + 1);
+      state.trustedContacts.push({
+        id,
+        name,
+        note: state.newContactNote.trim() || "Contato fictício de demonstração"
+      });
+      state.newContactName = "";
+      state.newContactNote = "";
+      render();
+    }
+
+    render();
+  </script>
+</body>
 </html>
