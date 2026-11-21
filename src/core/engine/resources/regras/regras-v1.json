@@ -1,0 +1,58 @@
+{
+  "versao": "1.0.0",
+  "atomos": {
+    "SIGILO": { "base": 22, "multiplicadorComCanal": 1.5 },
+    "AUTORIDADE": { "base": 20, "multiplicadorComCanal": 1.5 },
+    "URGENCIA": { "base": 18, "multiplicadorComCanal": 1.5 },
+    "VINCULO_AFETIVO": { "base": 18, "multiplicadorComCanal": 1.2 },
+    "MEDO_PERDA": { "base": 16, "multiplicadorComCanal": 1.3 },
+    "GANHO_INESPERADO": { "base": 14, "multiplicadorComCanal": 1.2 }
+  },
+  "contexto": {
+    "TELA_FINANCEIRA_ATIVA": 15,
+    "CANAL_ABERTO_DURANTE_OPERACAO": 20,
+    "CHAVE_DESTINO_NOVA": 10,
+    "VALOR_ATIPICO": 12,
+    "HESITACAO_DIGITACAO": 8,
+    "HORARIO_ATIPICO": 6,
+    "PEDIDO_DE_DINHEIRO_EM_MENSAGEM": 14,
+    "CODIGO_EM_TRANSITO": 40,
+    "CONTROLE_REMOTO_ATIVO": 45
+  },
+  "bandas": [
+    { "ate": 29, "nivel": "SILENCIO" },
+    { "ate": 49, "nivel": "PERGUNTA" },
+    { "ate": 69, "nivel": "INTERVENCAO" },
+    { "ate": 100, "nivel": "INTERVENCAO_FORTE" }
+  ],
+  "regrasDuras": [
+    {
+      "id": "HR-01",
+      "requer": ["CONTROLE_REMOTO_ATIVO", "TELA_FINANCEIRA_ATIVA"],
+      "nivel": "INTERVENCAO_FORTE",
+      "imediata": true,
+      "motivo": "Há acesso remoto no aparelho com uma transferência na tela ao mesmo tempo."
+    },
+    {
+      "id": "HR-02",
+      "requer": ["CODIGO_EM_TRANSITO", "CANAL_ABERTO_DURANTE_OPERACAO"],
+      "nivel": "PERGUNTA",
+      "imediata": true,
+      "frase": "Você está em chamada. Nunca leia este código.",
+      "motivo": "Um código de verificação chegou enquanto uma ligação está aberta."
+    },
+    {
+      "id": "HR-03",
+      "requer": ["CANAL_ABERTO_DURANTE_OPERACAO", "TELA_FINANCEIRA_ATIVA"],
+      "scoreBase": 55,
+      "motivo": "Operação sob influência de terceiro: há um canal aberto enquanto você usa o app do banco."
+    }
+  ],
+  "politica": {
+    "janelaMs": 120000,
+    "episodioSemAncoraMs": 60000,
+    "cooldownForteMs": 600000,
+    "cooldownPerguntaMs": 180000,
+    "tetoSemAncora": "PERGUNTA"
+  }
+}
