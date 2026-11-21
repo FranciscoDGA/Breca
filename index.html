@@ -813,6 +813,40 @@
         state.pauseInterval = null;
       }
       state.pauseSeconds = 0;
+      stopCalmGuidance();
+    }
+
+    function stopCalmGuidance() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      state.isSpeaking = false;
+    }
+
+    function toggleCalmGuidance() {
+      if (!("speechSynthesis" in window)) return;
+      if (state.isSpeaking) {
+        stopCalmGuidance();
+        render();
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const text =
+        "Respira fundo. Você não precisa fazer nada agora. Não informe códigos, senhas ou dados bancários. Você pode desligar a ligação agora mesmo. Quem é do banco ou da sua família de verdade vai entender e esperar.";
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "pt-BR";
+      utter.rate = 0.86;
+      utter.pitch = 0.96;
+      const voices = window.speechSynthesis.getVoices();
+      const ptVoice =
+        voices.find(v => /pt[-_]BR/i.test(v.lang) && /natural|google|luciana|francisca|maria/i.test(v.name)) ||
+        voices.find(v => /pt[-_]BR/i.test(v.lang));
+      if (ptVoice) utter.voice = ptVoice;
+      utter.onend = () => { state.isSpeaking = false; render(); };
+      utter.onerror = () => { state.isSpeaking = false; render(); };
+      state.isSpeaking = true;
+      window.speechSynthesis.speak(utter);
+      render();
     }
 
     function changeFont(delta) {
@@ -1030,6 +1064,11 @@
                 <span class="tile-sub">Organize horários, relato e ações feitas</span>
               </button>
 
+              <button class="tile-btn" onclick="navigate('codigo_familia')">
+                <span class="tile-title">Código da Família</span>
+                <span class="tile-sub">Pergunta secreta contra número novo e voz clonada</span>
+              </button>
+
               <button class="tile-btn" onclick="navigate('stages_overview')">
                 <span class="tile-title">Roteiro Reverso</span>
                 <span class="tile-sub">Veja os 6 estágios e sinais de coerção</span>
@@ -1040,13 +1079,45 @@
         return;
       }
 
+      if (state.screen === "codigo_familia") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">Código da Família • 100% fora do celular</span>
+            <h1>Pergunta secreta contra número novo e voz clonada</h1>
+            <p style="margin-top: 6px;">Mesmo que alguém clone um WhatsApp ou imite uma voz, não sabe uma resposta que só a sua família combinou pessoalmente.</p>
+          </div>
+
+          <div class="card stack">
+            <h3>Como combinar em 2 minutos (sem salvar no celular)</h3>
+            <div class="rr-block">
+              <div class="rr-title">1. Escolha uma pergunta simples</div>
+              <p>Exemplo: <em>“Qual era o nome do nosso primeiro cachorro?”</em> ou <em>“Qual comida nunca falta no domingo?”</em>.</p>
+            </div>
+            <div class="rr-block">
+              <div class="rr-title">2. Combine pessoalmente ou por chamada de vídeo</div>
+              <p>Não escreva a resposta no WhatsApp nem salve no aplicativo. Ela existe só na memória de vocês.</p>
+            </div>
+            <div class="rr-block">
+              <div class="rr-title">3. Use sempre que houver pedido de dinheiro</div>
+              <p>Se alguém mandar mensagem de número novo ou ligar com pressa, faça a pergunta combinada antes de qualquer transferência.</p>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-center" onclick="navigate('install_guide')">
+            Como configurar o BREQUE com sua família →
+          </button>
+        `;
+        return;
+      }
+
       if (state.screen === "install_guide") {
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div class="card stack">
-            <span class="pill pill-brand">PWA Instalável</span>
-            <h1>Instalar o BREQUE no celular</h1>
-            <p>O BREQUE funciona como aplicativo direto da tela inicial, sem precisar baixar em loja.</p>
+            <span class="pill pill-brand">PWA Instalável • Almoço de Domingo</span>
+            <h1>Instalar o BREQUE no celular (ou ajudar um familiar)</h1>
+            <p>O BREQUE funciona como aplicativo direto da tela inicial, sem precisar baixar em loja e sem tirar a autonomia de ninguém.</p>
             <div class="rr-block">
               <div class="rr-title">No Android (Chrome / Edge)</div>
               <p>Toque nos <strong>3 pontinhos</strong> no canto superior direito e escolha <strong>“Adicionar à tela inicial”</strong> ou <strong>“Instalar aplicativo”</strong>.</p>
@@ -1054,6 +1125,10 @@
             <div class="rr-block">
               <div class="rr-title">No iPhone (Safari)</div>
               <p>Toque no ícone de <strong>Compartilhar</strong> (quadrado com seta para cima) e escolha <strong>“Adicionar à Tela de Início”</strong>.</p>
+            </div>
+            <div class="rr-block">
+              <div class="rr-title">Dica para configurar com pais ou avós (2 minutos)</div>
+              <p>1. Coloque o ícone do BREQUE na primeira tela, ao lado do WhatsApp.<br/>2. Combinem juntos a <strong>Pergunta Secreta da Família</strong>.<br/>3. Mostrem que o app não vigia ninguém — só ajuda a pausar na hora da dúvida.</p>
             </div>
           </div>
           <button class="btn btn-primary btn-center" onclick="goHome()">Voltar ao início</button>
@@ -1151,6 +1226,9 @@
         const pauseHtml = state.pauseSeconds > 0
           ? `<div class="timer-box"><div><strong>Respire fundo</strong><p style="font-size:0.84rem;">Nenhuma decisão séria precisa ser tomada em segundos.</p></div><div class="timer-count">${state.pauseSeconds}s</div></div>`
           : `<button class="btn btn-secondary btn-center" onclick="startPauseTimer()">Fazer uma pausa de 10 segundos (opcional)</button>`;
+        const audioBtn = "speechSynthesis" in window
+          ? `<button class="btn ${state.isSpeaking ? 'btn-primary' : 'btn-secondary'} btn-center" onclick="toggleCalmGuidance()">${state.isSpeaking ? 'Parar áudio de orientação' : 'Ouvir orientação calma (voz do aparelho)'}</button>`
+          : "";
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div class="card card-amber">
@@ -1158,7 +1236,17 @@
             <h1>Pause. Não informe códigos, senhas ou dados bancários.</h1>
             <p style="margin-top: 8px; color: var(--text);">Você não precisa resolver isso correndo. Quem é legítimo espera você confirmar.</p>
           </div>
+
+          ${audioBtn}
           ${pauseHtml}
+
+          <div class="card stack">
+            <h3>Frases prontas para desligar sem constrangimento</h3>
+            <div class="quote-box">“Meu celular está acabando a bateria. Vou ligar para o número do verso do meu cartão.”</div>
+            <div class="quote-box">“Vou conferir isso com a minha família e já retorno.”</div>
+            <p style="font-size: 0.82rem;">Se for familiar em número novo, faça a <strong>Pergunta Secreta da Família</strong> antes de fazer qualquer transferência.</p>
+          </div>
+
           <button class="btn btn-primary btn-center" onclick="navigate('pressure_topic')">Continuar com calma →</button>
         `;
         return;
