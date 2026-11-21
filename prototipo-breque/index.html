@@ -911,22 +911,35 @@
       white-space: nowrap;
     }
 
-    @media (min-width: 720px) {
+    .home-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
       body {
-        padding: 24px 16px;
+        padding: 24px 20px;
         align-items: flex-start;
       }
 
       .app-shell {
-        max-width: 680px;
-        min-height: calc(100vh - 48px);
-        border-radius: 22px;
+        max-width: 960px;
+        min-height: auto;
+        border-radius: 24px;
         overflow: hidden;
       }
 
       .content {
-        padding: 22px 24px 104px;
-        gap: 16px;
+        padding: 24px 28px 104px;
+        gap: 18px;
+      }
+
+      .home-layout {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 22px;
+        align-items: start;
       }
 
       .secondary-actions {
@@ -936,8 +949,8 @@
       }
 
       .bottom-nav {
-        max-width: 680px;
-        border-radius: 0 0 22px 22px;
+        max-width: 960px;
+        border-radius: 0 0 24px 24px;
       }
     }
   </style>
@@ -1685,89 +1698,126 @@
             <span>BREQUE pronto • Processamento 100% local no aparelho</span>
           </div>
 
-          <button class="arc-hero" onclick="navigate('pressure_pause')" aria-label="Estão me pressionando agora">
-            <div class="arc-wrap">
-              <svg class="arc-svg" viewBox="0 0 280 158" aria-hidden="true">
-                <defs>
-                  <linearGradient id="arcGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#7dd3fc"/>
-                    <stop offset="50%" stop-color="#f0f9ff"/>
-                    <stop offset="100%" stop-color="#bae6fd"/>
-                  </linearGradient>
-                </defs>
-                <path d="M 32 142 A 108 108 0 0 1 248 142" fill="none" stroke="rgba(186,230,253,0.14)" stroke-width="28" stroke-linecap="butt"/>
-                <path d="M 32 142 A 108 108 0 0 1 248 142" fill="none" stroke="url(#arcGrad)" stroke-width="28" stroke-linecap="butt"/>
-              </svg>
-              <div class="arc-label">BREQUE</div>
-              <div class="arc-sub">Pausa imediata →</div>
+          <div class="home-layout">
+            <div class="stack" style="gap: 14px;">
+              <button class="arc-hero" onclick="navigate('pressure_pause')" aria-label="Estão me pressionando agora">
+                <div class="arc-wrap">
+                  <svg class="arc-svg" viewBox="0 0 280 158" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="arcGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#7dd3fc"/>
+                        <stop offset="50%" stop-color="#f0f9ff"/>
+                        <stop offset="100%" stop-color="#bae6fd"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M 32 142 A 108 108 0 0 1 248 142" fill="none" stroke="rgba(186,230,253,0.14)" stroke-width="28" stroke-linecap="butt"/>
+                    <path d="M 32 142 A 108 108 0 0 1 248 142" fill="none" stroke="url(#arcGrad)" stroke-width="28" stroke-linecap="butt"/>
+                  </svg>
+                  <div class="arc-label">BREQUE</div>
+                  <div class="arc-sub">Pausa imediata →</div>
+                </div>
+              </button>
+
+              <div class="glass-trio">
+                <button class="glass-card amber-glass" onclick="navigate('pressure_pause')">
+                  <div class="glass-card-top">
+                    <span class="glass-card-title">Pressão</span>
+                    <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fde68a" stroke-width="2.4"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
+                  </div>
+                  <span class="glass-card-sub">Áudio calmo e saída agora</span>
+                </button>
+
+                <button class="glass-card" onclick="navigate('verify_start')">
+                  <div class="glass-card-top">
+                    <span class="glass-card-title">Verificar</span>
+                    <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
+                  </div>
+                  <span class="glass-card-sub">Mensagem, link ou ligação</span>
+                </button>
+
+                <button class="glass-card risk-glass" onclick="navigate('post_start')">
+                  <div class="glass-card-top">
+                    <span class="glass-card-title">Socorro</span>
+                    <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2.4"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
+                  </div>
+                  <span class="glass-card-sub">Já fiz Pix, senha ou app</span>
+                </button>
+              </div>
             </div>
-          </button>
 
-          <div class="glass-trio">
-            <button class="glass-card amber-glass" onclick="navigate('pressure_pause')">
-              <div class="glass-card-top">
-                <span class="glass-card-title">Pressão</span>
-                <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fde68a" stroke-width="2.4"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
+            <section class="summary-box" aria-label="Ferramentas essenciais">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding: 0 2px;">
+                <h2 style="font-size:1rem;">Ferramentas essenciais</h2>
+                <button class="btn-ghost" style="font-size:0.82rem; color:#7dd3fc; border:none;" onclick="navigate('central_mais')">Ver todas</button>
               </div>
-              <span class="glass-card-sub">Áudio calmo e saída agora</span>
-            </button>
 
-            <button class="glass-card" onclick="navigate('verify_start')">
-              <div class="glass-card-top">
-                <span class="glass-card-title">Verificar</span>
-                <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
-              </div>
-              <span class="glass-card-sub">Mensagem, link ou ligação</span>
-            </button>
+              <button class="summary-row" onclick="navigate('discagem_segura')">
+                <div class="summary-left">
+                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.92rem;">Discagem Segura</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Canais oficiais verificados (banco, 190, BO)</div>
+                  </div>
+                </div>
+                <span class="summary-tag">4 canais</span>
+              </button>
 
-            <button class="glass-card risk-glass" onclick="navigate('post_start')">
-              <div class="glass-card-top">
-                <span class="glass-card-title">Socorro</span>
-                <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2.4"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
-              </div>
-              <span class="glass-card-sub">Já fiz Pix, senha ou app</span>
-            </button>
+              <button class="summary-row" onclick="navigate('trusted')">
+                <div class="summary-left">
+                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.92rem;">Pessoa de Confiança</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Pedir apoio com prévia no WhatsApp/SMS</div>
+                  </div>
+                </div>
+                <span class="summary-tag">Apoio</span>
+              </button>
+
+              <button class="summary-row" onclick="resetVacina()">
+                <div class="summary-left">
+                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.92rem;">Vacina de 60 Segundos</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Treino rápido de 3 rodadas com a família</div>
+                  </div>
+                </div>
+                <span class="summary-tag">Treinar</span>
+              </button>
+
+              <button class="summary-row" onclick="state.cardDownloaded=false; navigate('cartao_familia')">
+                <div class="summary-left">
+                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10"/><path d="M7 12h6"/></svg></div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.92rem;">Cartão da Família (PNG)</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Imagem pronta para fixar no WhatsApp</div>
+                  </div>
+                </div>
+                <span class="summary-tag">Baixar</span>
+              </button>
+
+              <button class="summary-row" onclick="openIncidentLog()">
+                <div class="summary-left">
+                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.92rem;">Dossiê 30 Min (MED)</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Organizar relato e baixar .txt no aparelho</div>
+                  </div>
+                </div>
+                <span class="summary-tag">Abrir</span>
+              </button>
+
+              <button class="summary-row" onclick="navigate('planos')">
+                <div class="summary-left">
+                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 16.5 5.5 21l2-7.5L2 9h7z"/></svg></div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.92rem;">Planos BREQUE</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Básico grátis • Família R$ 12,90</div>
+                  </div>
+                </div>
+                <span class="summary-tag">Ver</span>
+              </button>
+            </section>
           </div>
-
-          <section class="summary-box" aria-label="Atalhos rápidos">
-            <div style="display:flex; justify-content:space-between; align-items:center; padding: 0 2px;">
-              <h2 style="font-size:1rem;">Atalhos rápidos</h2>
-              <button class="btn-ghost" style="font-size:0.82rem; color:#7dd3fc; border:none;" onclick="navigate('central_mais')">Ver todos</button>
-            </div>
-
-            <button class="summary-row" onclick="navigate('discagem_segura')">
-              <div class="summary-left">
-                <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-                <div>
-                  <div style="font-weight:700; font-size:0.92rem;">Discagem Segura</div>
-                  <div style="font-size:0.78rem; color:var(--text-muted);">Canais oficiais verificados</div>
-                </div>
-              </div>
-              <span class="summary-tag">4 canais</span>
-            </button>
-
-            <button class="summary-row" onclick="navigate('central_mais')">
-              <div class="summary-left">
-                <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                <div>
-                  <div style="font-weight:700; font-size:0.92rem;">Família & Treino</div>
-                  <div style="font-size:0.78rem; color:var(--text-muted);">Vacina 60s, Cartão PNG e Pacto</div>
-                </div>
-              </div>
-              <span class="summary-tag">Abrir</span>
-            </button>
-
-            <button class="summary-row" onclick="navigate('planos')">
-              <div class="summary-left">
-                <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 16.5 5.5 21l2-7.5L2 9h7z"/></svg></div>
-                <div>
-                  <div style="font-weight:700; font-size:0.92rem;">Planos BREQUE</div>
-                  <div style="font-size:0.78rem; color:var(--text-muted);">Básico grátis • Família R$ 12,90</div>
-                </div>
-              </div>
-              <span class="summary-tag">Ver</span>
-            </button>
-          </section>
         `;
         return;
       }
