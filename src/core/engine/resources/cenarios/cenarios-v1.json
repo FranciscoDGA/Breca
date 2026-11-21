@@ -1,0 +1,366 @@
+{
+  "versao": "1.0.0",
+  "cenarios": [
+    {
+      "id": "falsa-central",
+      "nome": "Falsa central",
+      "descricao": "Ligação se passando pela central do banco, com código de verificação chegando e tela de transferência aberta.",
+      "esperado": { "nivel": "PERGUNTA", "regra": "HR-02" },
+      "sinais": [
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "CANAL_ABERTO_DURANTE_OPERACAO",
+          "deslocamentoMs": -30000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "TELA_FINANCEIRA_ATIVA",
+          "deslocamentoMs": -25000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "AUTORIDADE",
+          "deslocamentoMs": -25000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -20000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "CODIGO_EM_TRANSITO",
+          "deslocamentoMs": -5000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "falso-parente",
+      "nome": "Falso parente no WhatsApp",
+      "descricao": "Número novo se passando por filho, com urgência e pedido de dinheiro.",
+      "esperado": { "nivel": "INTERVENCAO", "regra": null },
+      "sinais": [
+        {
+          "tipo": "ATOMO",
+          "atomo": "VINCULO_AFETIVO",
+          "deslocamentoMs": -60000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -50000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "PEDIDO_DE_DINHEIRO_EM_MENSAGEM",
+          "deslocamentoMs": -45000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "mao-fantasma",
+      "nome": "Mão fantasma",
+      "descricao": "Acesso remoto ativo no aparelho enquanto a tela de transferência está aberta.",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-01" },
+      "sinais": [
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "CONTROLE_REMOTO_ATIVO",
+          "deslocamentoMs": -40000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "TELA_FINANCEIRA_ATIVA",
+          "deslocamentoMs": -35000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "pix-induzido",
+      "nome": "Pix induzido",
+      "descricao": "Ligação aberta enquanto o Pix é preenchido para uma chave nova, com valor fora do padrão.",
+      "esperado": { "nivel": "INTERVENCAO", "regra": "HR-03" },
+      "sinais": [
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "CANAL_ABERTO_DURANTE_OPERACAO",
+          "deslocamentoMs": -40000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "TELA_FINANCEIRA_ATIVA",
+          "deslocamentoMs": -35000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "CHAVE_DESTINO_NOVA",
+          "deslocamentoMs": -20000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "VALOR_ATIPICO",
+          "deslocamentoMs": -15000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "falso-advogado",
+      "nome": "Falso advogado de precatório",
+      "descricao": "Autoridade falsa oferece um ganho inesperado e pede acesso à tela financeira.",
+      "esperado": { "nivel": "PERGUNTA", "regra": null },
+      "sinais": [
+        {
+          "tipo": "ATOMO",
+          "atomo": "AUTORIDADE",
+          "deslocamentoMs": -50000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "GANHO_INESPERADO",
+          "deslocamentoMs": -40000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "TELA_FINANCEIRA_ATIVA",
+          "deslocamentoMs": -30000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "falso-motoboy",
+      "nome": "Falso motoboy com cartão",
+      "descricao": "Autoridade e pressa para entregar o cartão, com pedido de sigilo. Sem tela financeira ativa.",
+      "esperado": { "nivel": "PERGUNTA", "regra": null },
+      "sinais": [
+        {
+          "tipo": "ATOMO",
+          "atomo": "AUTORIDADE",
+          "deslocamentoMs": -50000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -40000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "SIGILO",
+          "deslocamentoMs": -30000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "falso-suporte",
+      "nome": "Falso suporte pedindo instalação de app",
+      "descricao": "Falso suporte do banco pede instalação de aplicativo com urgência.",
+      "esperado": { "nivel": "PERGUNTA", "regra": null },
+      "sinais": [
+        {
+          "tipo": "ATOMO",
+          "atomo": "AUTORIDADE",
+          "deslocamentoMs": -40000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -30000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "controle-pix-conhecido",
+      "nome": "Controle negativo A — Pix habitual",
+      "descricao": "Pix para chave conhecida, sem canal aberto, horário e valor habituais.",
+      "esperado": { "nivel": "SILENCIO", "regra": null },
+      "sinais": [
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "TELA_FINANCEIRA_ATIVA",
+          "deslocamentoMs": -30000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "controle-sms-comum",
+      "nome": "Controle negativo B — SMS comum",
+      "descricao": "Notificação de SMS comum, sem nenhum sinal relevante.",
+      "esperado": { "nivel": "SILENCIO", "regra": null },
+      "sinais": []
+    },
+    {
+      "id": "controle-contato-confianca",
+      "nome": "Controle negativo C — conversa com contato de confiança",
+      "descricao": "Conversa com contato de confiança, sem tela financeira: no máximo PERGUNTA, nunca INTERVENCAO.",
+      "esperado": { "nivel": "PERGUNTA", "regra": null },
+      "sinais": [
+        {
+          "tipo": "ATOMO",
+          "atomo": "VINCULO_AFETIVO",
+          "deslocamentoMs": -50000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -40000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "CANAL_ABERTO_DURANTE_OPERACAO",
+          "deslocamentoMs": -45000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "repeticao-atomos",
+      "nome": "Repetição do mesmo átomo",
+      "descricao": "O mesmo átomo cinco vezes na janela: o peso não soma (teste anti-inflação).",
+      "esperado": { "nivel": "PERGUNTA", "regra": null },
+      "sinais": [
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -50000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -45000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -40000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -35000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -30000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "TELA_FINANCEIRA_ATIVA",
+          "deslocamentoMs": -30000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    },
+    {
+      "id": "expiracao-janela",
+      "nome": "Expiração da janela",
+      "descricao": "Sinais antigos, fora da janela de 120 s, são ignorados; só o sinal recente conta.",
+      "esperado": { "nivel": "SILENCIO", "regra": null },
+      "sinais": [
+        {
+          "tipo": "ATOMO",
+          "atomo": "AUTORIDADE",
+          "deslocamentoMs": -200000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "URGENCIA",
+          "deslocamentoMs": -190000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "ATOMO",
+          "atomo": "SIGILO",
+          "deslocamentoMs": -180000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "TELA_FINANCEIRA_ATIVA",
+          "deslocamentoMs": -170000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "CANAL_ABERTO_DURANTE_OPERACAO",
+          "deslocamentoMs": -160000,
+          "confianca": 1,
+          "origem": "simulador"
+        },
+        {
+          "tipo": "CONTEXTO",
+          "contexto": "HESITACAO_DIGITACAO",
+          "deslocamentoMs": -10000,
+          "confianca": 1,
+          "origem": "simulador"
+        }
+      ]
+    }
+  ]
+}
