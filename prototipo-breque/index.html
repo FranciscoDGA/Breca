@@ -823,6 +823,11 @@
       state.isSpeaking = false;
     }
 
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
     function toggleCalmGuidance() {
       if (!("speechSynthesis" in window)) return;
       if (state.isSpeaking) {
@@ -830,23 +835,37 @@
         render();
         return;
       }
-      window.speechSynthesis.cancel();
+
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      synth.resume();
+
       const text =
         "Respira fundo. Você não precisa fazer nada agora. Não informe códigos, senhas ou dados bancários. Você pode desligar a ligação agora mesmo. Quem é do banco ou da sua família de verdade vai entender e esperar.";
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = "pt-BR";
-      utter.rate = 0.86;
-      utter.pitch = 0.96;
-      const voices = window.speechSynthesis.getVoices();
+      utter.rate = 0.88;
+      utter.pitch = 0.98;
+      utter.volume = 1;
+
+      const voices = synth.getVoices();
       const ptVoice =
-        voices.find(v => /pt[-_]BR/i.test(v.lang) && /natural|google|luciana|francisca|maria/i.test(v.name)) ||
-        voices.find(v => /pt[-_]BR/i.test(v.lang));
+        voices.find(v => /pt[-_]BR/i.test(v.lang) && /natural|google|luciana|francisca|maria|antonio/i.test(v.name)) ||
+        voices.find(v => /pt[-_]BR/i.test(v.lang)) ||
+        voices.find(v => /^pt/i.test(v.lang));
       if (ptVoice) utter.voice = ptVoice;
+
       utter.onend = () => { state.isSpeaking = false; render(); };
       utter.onerror = () => { state.isSpeaking = false; render(); };
+
+      window.__brequeUtter = utter;
       state.isSpeaking = true;
-      window.speechSynthesis.speak(utter);
       render();
+
+      setTimeout(() => {
+        synth.resume();
+        synth.speak(utter);
+      }, 80);
     }
 
     function changeFont(delta) {
