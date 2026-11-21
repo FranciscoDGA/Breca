@@ -60,3 +60,18 @@ create policy "insercao_voluntaria_relato_minimizado"
   on public.relatos_minimizados
   for insert
   with check (true);
+
+-- 3. Tabela de interesse em planos (pré-cadastro voluntário até ativar checkout Mercado Pago/Stripe)
+create table if not exists public.interesse_planos (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  plano text not null check (plano in ('familia_mensal', 'familia_anual', 'gold', 'institucional')),
+  criado_em timestamptz not null default now()
+);
+
+alter table public.interesse_planos enable row level security;
+
+create policy "insercao_voluntaria_interesse_plano"
+  on public.interesse_planos
+  for insert
+  with check (true);
