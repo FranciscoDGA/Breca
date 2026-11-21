@@ -723,8 +723,144 @@
       activeStage: 1,
       selectedPlan: "familia_mensal",
       planEmail: "",
-      planStatus: "" // "" | "enviando" | "ok" | "erro"
+      planStatus: "", // "" | "enviando" | "ok" | "erro"
+      vacinaStep: 0,
+      vacinaFeedback: "",
+      vacinaScore: 0,
+      cardFamilyHint: "",
+      cardDownloaded: false
     };
+
+    const VACINA_CENARIOS = [
+      {
+        titulo: "Rodada 1 de 3 • WhatsApp",
+        msg: "“Oi mãe/pai, troquei de número agora. Preciso pagar um boleto urgente de R$ 890, depois te devolvo!”",
+        opcoes: [
+          { label: "Fazer o Pix logo para ajudar", correta: false, feedback: "A pressa é o principal truque. Mesmo sendo alguém querido, vale pausar 1 minuto e conferir por fora." },
+          { label: "Ligar para o número antigo ou fazer a Pergunta Secreta da Família", correta: true, feedback: "Excelente! Confirmar por um canal antigo ou pela pergunta secreta desarma esse golpe em segundos." }
+        ]
+      },
+      {
+        titulo: "Rodada 2 de 3 • Ligação",
+        msg: "“Aqui é da central do seu banco. Detectamos uma compra suspeita. Não desligue e leia o código de 6 dígitos que chegou por SMS.”",
+        opcoes: [
+          { label: "Desligar e ligar para o número no verso do cartão", correta: true, feedback: "Perfeito! Banco de verdade nunca pede código de SMS por ligação nem proíbe você de desligar." },
+          { label: "Ler o código rápido para cancelar a compra", correta: false, feedback: "Esse código costuma ser usado para entrar na sua conta ou aprovar uma transferência. Desligar é sempre seguro." }
+        ]
+      },
+      {
+        titulo: "Rodada 3 de 3 • SMS com link",
+        msg: "“Sua encomenda foi retida. Pague a taxa de R$ 24,90 pelo link abaixo em até 1 hora.”",
+        opcoes: [
+          { label: "Abrir o site/app oficial onde fiz a compra (sem clicar no link)", correta: true, feedback: "Muito bem! Conferir direto no app ou site onde você comprou evita páginas falsas." },
+          { label: "Clicar no link para ver qual encomenda é", correta: false, feedback: "Links com prazo curto são feitos para levar você a telas clonadas. Prefira sempre o app oficial." }
+        ]
+      }
+    ];
+
+    function answerVacina(idx) {
+      const c = VACINA_CENARIOS[state.vacinaStep];
+      const opt = c.opcoes[idx];
+      if (opt.correta) state.vacinaScore += 1;
+      state.vacinaFeedback = opt.feedback;
+      render();
+    }
+
+    function nextVacina() {
+      state.vacinaFeedback = "";
+      state.vacinaStep += 1;
+      render();
+    }
+
+    function resetVacina() {
+      state.vacinaStep = 0;
+      state.vacinaFeedback = "";
+      state.vacinaScore = 0;
+      navigate("vacina_60s");
+    }
+
+    function downloadFamilyCardPng() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1350;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      // Fundo limpo
+      ctx.fillStyle = "#f4f6f8";
+      ctx.fillRect(0, 0, 1080, 1350);
+
+      // Topo azul-petróleo
+      ctx.fillStyle = "#0f2f3d";
+      ctx.fillRect(0, 0, 1080, 290);
+
+      ctx.fillStyle = "#fde68a";
+      ctx.font = "bold 32px sans-serif";
+      ctx.fillText("CARTÃO DE BOLSO DA FAMÍLIA • BREQUE", 70, 105);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 56px sans-serif";
+      ctx.fillText("Na dúvida, dê um BREQUE.", 70, 190);
+
+      ctx.fillStyle = "#d6e6ed";
+      ctx.font = "30px sans-serif";
+      ctx.fillText("3 passos para proteger quem você ama", 70, 245);
+
+      // 3 Passos
+      const passos = [
+        ["1. PAUSE E DESLIGUE", "Quem é do banco ou da família de verdade espera."],
+        ["2. CONFIRME POR OUTRO CANAL", "Use o número antigo ou o telefone no verso do cartão."],
+        ["3. NUNCA PASSE CÓDIGOS", "Banco não pede código de SMS, senha nem instalar app."]
+      ];
+
+      let y = 370;
+      passos.forEach(([titulo, desc]) => {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(70, y, 940, 185);
+        ctx.strokeStyle = "#d9e2e8";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(70, y, 940, 185);
+
+        ctx.fillStyle = "#0f2f3d";
+        ctx.font = "bold 36px sans-serif";
+        ctx.fillText(titulo, 110, y + 72);
+
+        ctx.fillStyle = "#334155";
+        ctx.font = "30px sans-serif";
+        ctx.fillText(desc, 110, y + 132);
+        y += 220;
+      });
+
+      // Bloco Pergunta Secreta
+      ctx.fillStyle = "#fff8eb";
+      ctx.fillRect(70, 1045, 940, 180);
+      ctx.strokeStyle = "#d49b38";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(70, 1045, 940, 180);
+
+      ctx.fillStyle = "#92400e";
+      ctx.font = "bold 34px sans-serif";
+      ctx.fillText("LEMBRETE: PERGUNTA SECRETA DA FAMÍLIA", 110, 1110);
+
+      ctx.fillStyle = "#1e293b";
+      ctx.font = "28px sans-serif";
+      const hint = state.cardFamilyHint.trim() || "Faça a pergunta que combinamos pessoalmente antes de fazer Pix.";
+      ctx.fillText(hint.slice(0, 58), 110, 1170);
+
+      ctx.fillStyle = "#64748b";
+      ctx.font = "24px sans-serif";
+      ctx.fillText("BREQUE • Apoio à decisão • Não substitui confirmação oficial com seu banco", 70, 1295);
+
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cartao-familia-breque.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      state.cardDownloaded = true;
+      render();
+    }
 
     async function submitPlanInterest() {
       const email = state.planEmail.trim();
@@ -1154,51 +1290,169 @@
             </div>
           </div>
 
-          <section class="tools-panel" aria-label="Ferramentas complementares">
-            <div class="section-label" style="margin-top:0;">Ferramentas complementares</div>
-            <div class="grid-2">
-              <button class="tile-btn" onclick="navigate('discagem_segura')">
-                <span class="tile-title">Discagem Segura</span>
-                <span class="tile-sub">Encontre canais oficiais com fonte e data</span>
-              </button>
+          <div class="grid-2">
+            <button class="tile-btn" onclick="navigate('discagem_segura')">
+              <span class="tile-title">Discagem Segura</span>
+              <span class="tile-sub">Canais oficiais verificados</span>
+            </button>
 
-              <button class="tile-btn" onclick="navigate('trusted')">
-                <span class="tile-title">Pessoa de Confiança</span>
-                <span class="tile-sub">Prepare um pedido de apoio com prévia</span>
-              </button>
+            <button class="tile-btn" onclick="navigate('central_mais')" style="border-color:#bfd6e0; background:var(--brand-soft);">
+              <span class="tile-title" style="color:var(--brand);">Família, Treino e Planos</span>
+              <span class="tile-sub">Vacina 60s, Cartão, Pacto e Planos</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
 
-              <button class="tile-btn" onclick="openIncidentLog()">
-                <span class="tile-title">Registro do Incidente</span>
-                <span class="tile-sub">Organize horários, relato e ações feitas</span>
-              </button>
+      if (state.screen === "central_mais") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">Central da Família & Treino</span>
+            <h1>Prepare-se antes do susto</h1>
+            <p style="margin-top:6px;">Ferramentas para treinar em 1 minuto, proteger sua família sem vigiar e gerenciar seu plano.</p>
+          </div>
 
-              <button class="tile-btn" onclick="navigate('codigo_familia')">
-                <span class="tile-title">Código da Família</span>
-                <span class="tile-sub">Pergunta secreta contra número novo e voz clonada</span>
-              </button>
+          <div class="stack">
+            <button class="action-card primary-tone" onclick="resetVacina()">
+              <div class="icon-badge icon-brand">60s</div>
+              <div>
+                <span class="action-title">Vacina de 60 Segundos</span>
+                <span class="action-sub">Treino rápido em 3 rodadas para criar memória muscular contra golpes</span>
+              </div>
+            </button>
 
-              <button class="tile-btn" onclick="navigate('stages_overview')">
-                <span class="tile-title">Roteiro Reverso</span>
-                <span class="tile-sub">Veja os 6 estágios e sinais de coerção</span>
-              </button>
+            <button class="action-card primary-tone" onclick="state.cardDownloaded=false; navigate('cartao_familia')">
+              <div class="icon-badge icon-brand">PNG</div>
+              <div>
+                <span class="action-title">Cartão da Família (WhatsApp / Geladeira)</span>
+                <span class="action-sub">Gere uma imagem pronta para fixar no grupo da família</span>
+              </div>
+            </button>
 
-              <button class="tile-btn" onclick="navigate('planos')" style="border-color:#bfd6e0; background:var(--brand-soft);">
-                <span class="tile-title" style="color:var(--brand);">Planos BREQUE</span>
-                <span class="tile-sub">Básico grátis, Família R$ 12,90 e Gold R$ 29,90</span>
+            <button class="action-card primary-tone" onclick="navigate('pacto_familia')">
+              <div class="icon-badge icon-brand">✓</div>
+              <div>
+                <span class="action-title">Pacto Familiar de Autonomia</span>
+                <span class="action-sub">Apoio sem vigilância + Pergunta Secreta da Família</span>
+              </div>
+            </button>
+          </div>
+
+          <div class="section-label">Mais recursos</div>
+          <div class="grid-2">
+            <button class="tile-btn" onclick="navigate('trusted')">
+              <span class="tile-title">Pessoa de Confiança</span>
+              <span class="tile-sub">Prepare pedido de apoio</span>
+            </button>
+            <button class="tile-btn" onclick="openIncidentLog()">
+              <span class="tile-title">Dossiê 30 Min (MED)</span>
+              <span class="tile-sub">Organize relato e protocolo</span>
+            </button>
+            <button class="tile-btn" onclick="navigate('stages_overview')">
+              <span class="tile-title">Roteiro Reverso</span>
+              <span class="tile-sub">6 estágios e padrões</span>
+            </button>
+            <button class="tile-btn" onclick="navigate('planos')" style="border-color:#bfd6e0; background:var(--brand-soft);">
+              <span class="tile-title" style="color:var(--brand);">Planos BREQUE</span>
+              <span class="tile-sub">Grátis, Família e Gold</span>
+            </button>
+          </div>
+
+          <button class="btn btn-secondary btn-center" onclick="navigate('privacy')">Termos de Uso, Privacidade e LGPD</button>
+        `;
+        return;
+      }
+
+      if (state.screen === "vacina_60s") {
+        if (state.vacinaStep >= VACINA_CENARIOS.length) {
+          app.innerHTML = `
+            <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+            <div class="card card-amber stack">
+              <span class="pill pill-amber">Treino concluído!</span>
+              <h1>Você completou a Vacina de 60 Segundos</h1>
+              <p style="color:var(--text);">Escolhas mais seguras: <strong>${state.vacinaScore} de ${VACINA_CENARIOS.length}</strong>.</p>
+              <p>O mais importante não é acertar tudo de primeira — é lembrar de <strong>pausar e confirmar por outro canal</strong> quando a pressa aparecer.</p>
+            </div>
+            <button class="btn btn-primary btn-center" onclick="resetVacina()">Refazer treino</button>
+            <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
+          `;
+          return;
+        }
+        const c = VACINA_CENARIOS[state.vacinaStep];
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">${c.titulo}</span>
+            <h1>O que você faria agora?</h1>
+          </div>
+          <div class="card"><div class="quote-box">${c.msg}</div></div>
+          ${!state.vacinaFeedback ? `
+            <div class="stack">
+              ${c.opcoes.map((o, i) => `<button class="btn btn-secondary" onclick="answerVacina(${i})">${o.label} <span>→</span></button>`).join("")}
+            </div>
+          ` : `
+            <div class="card card-soft stack">
+              <h3>Reflexão rápida</h3>
+              <p style="color:var(--text);">${state.vacinaFeedback}</p>
+              <button class="btn btn-primary btn-center" onclick="nextVacina()">
+                ${state.vacinaStep < VACINA_CENARIOS.length - 1 ? 'Próxima rodada →' : 'Ver resultado →'}
               </button>
             </div>
-          </section>
+          `}
+        `;
+        return;
+      }
 
-          <div class="card card-soft" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px;">
-            <p style="font-size: 0.88rem; line-height: 1.55; color: var(--text);">
-              O <strong>BREQUE</strong> é um apoio à decisão: não garante prevenção de golpes nem recuperação de valores.
-            </p>
-            <button
-              style="border: 1.5px solid var(--brand); background: var(--brand-soft); color: var(--brand); border-radius: 999px; padding: 9px 18px; font-size: 0.86rem; font-weight: 700; cursor: pointer;"
-              onclick="navigate('privacy')"
-            >
-              Ler Termos de Uso e LGPD →
+      if (state.screen === "cartao_familia") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">Cartão da Família • 100% local</span>
+            <h1>Imagem pronta para o WhatsApp ou geladeira</h1>
+            <p style="margin-top:6px;">Gere uma imagem limpa com os 3 passos do BREQUE e o lembrete da Pergunta Secreta da Família. Nenhum dado sai do aparelho.</p>
+          </div>
+          <div class="card stack">
+            <div>
+              <label class="field-label" for="card-hint">Lembrete opcional no cartão (não escreva a resposta secreta!)</label>
+              <input id="card-hint" type="text" placeholder="Ex.: Pergunte o nome do nosso primeiro cachorro" value="${state.cardFamilyHint}" oninput="state.cardFamilyHint=this.value" />
+            </div>
+            <button class="btn btn-primary btn-center" onclick="downloadFamilyCardPng()">
+              Baixar imagem (cartao-familia-breque.png)
             </button>
+            ${state.cardDownloaded ? `<div class="quote-box"><strong>Imagem gerada no seu aparelho!</strong> Agora você pode fixar no grupo da família no WhatsApp ou imprimir.</div>` : ""}
+          </div>
+          <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
+        `;
+        return;
+      }
+
+      if (state.screen === "pacto_familia") {
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">Pacto Familiar de Autonomia</span>
+            <h1>Proteger quem você ama, sem espionar</h1>
+            <p style="margin-top:6px;">Apps que vigiam o celular geram constrangimento e são desinstalados. O BREQUE funciona com respeito e acordo mútuo:</p>
+          </div>
+          <div class="card stack">
+            <div class="rr-block" style="border-top:none; margin-top:0; padding-top:0;">
+              <div class="rr-title">1. Autonomia preservada</div>
+              <p>Ninguém vê suas mensagens, ligações ou extrato. Você decide quando pedir apoio.</p>
+            </div>
+            <div class="rr-block">
+              <div class="rr-title">2. Pergunta Secreta combinada pessoalmente</div>
+              <p>Em qualquer pedido urgente de dinheiro, a família combina de sempre fazer a pergunta secreta antes.</p>
+            </div>
+            <div class="rr-block">
+              <div class="rr-title">3. Ícone na primeira tela</div>
+              <p>Deixe o BREQUE instalado ao lado do WhatsApp para lembrar de pausar na hora da dúvida.</p>
+            </div>
+          </div>
+          <div class="stack">
+            <button class="btn btn-primary btn-center" onclick="navigate('codigo_familia')">Combinar Pergunta Secreta →</button>
+            <button class="btn btn-secondary btn-center" onclick="navigate('trusted')">Configurar Pessoa de Confiança →</button>
           </div>
         `;
         return;
