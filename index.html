@@ -1452,6 +1452,91 @@
       navigate("verify_q1");
     }
 
+    function normalizeText(str) {
+      return (str || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function analyzeLocalTextOrLink(raw) {
+      const text = (raw || "").trim();
+      if (!text) return null;
+      const norm = normalizeText(text);
+      const findings = [];
+      let score = 0;
+
+      // 1. Análise estrutural de link (sem acessar o site)
+      const urlMatch = text.match(/(https?:\/\/[^\s]+|www\.[^\s]+|[a-z0-9-]+\.(com|net|org|xyz|top|site|online|click|vip|info|br)(\/[^\s]*)?)/i);
+      if (urlMatch) {
+        const rawUrl = urlMatch[0].toLowerCase();
+        if (/^http:\/\//.test(rawUrl)) {
+          findings.push("O link usa HTTP sem criptografia (não tem HTTPS).");
+          score += 1;
+        }
+        if (/(bit\.ly|tinyurl\.com|t\.co|cutt\.ly|rb\.gy|shorturl)/i.test(rawUrl)) {
+          findings.push("Link encurtado: esconde o endereço real do site de destino.");
+          score += 2;
+        }
+        if (/\.(xyz|top|click|site|online|vip|info)\b/i.test(rawUrl)) {
+          findings.push("Terminação de domínio muito usada em páginas temporárias de golpe.");
+          score += 2;
+        }
+        if (/(gov|correios|receita|inss|itau|bradesco|santander|nubank|caixa|serasa|bb\.|mercadopago)/i.test(rawUrl) && !/\.gov\.br\b/i.test(rawUrl)) {
+          findings.push("O link cita banco ou órgão conhecido fora de um domínio oficial verificado.");
+          score += 3;
+        }
+        if (/\b\d{1,3}(\.\d{1,3}){3}\b/.test(rawUrl)) {
+          findings.push("O link aponta para um número IP direto em vez de um site oficial.");
+          score += 3;
+        }
+      }
+
+      // 2. Análise dos 6 padrões de coerção + pedidos sensíveis
+      const rules = [
+        { name: "Urgência", pts: 2, re: /(urgente|agora|imediatamente|hoje ainda|ultima chance|em ate \d|prazo|rapido|retido|vai bloquear)/ },
+        { name: "Sigilo", pts: 3, re: /(nao conta|nao fale|nao desligue|sigiloso|confidencial|entre nos|apaga essa)/ },
+        { name: "Falsa autoridade", pts: 2, re: /(central de seguranca|central de atendimento|gerente|ouvidoria|advogado|precatorio|receita federal|inss|suporte tecnico)/ },
+        { name: "Medo de perda", pts: 2, re: /(conta foi invadida|cartao foi clonado|compra suspeita|vao bloquear|emprestimo no seu nome|devolucao|negativado)/ },
+        { name: "Ganho inesperado", pts: 2, re: /(voce foi sorteado|premio|valores a receber|resgate|indenizacao|restituicao|bonus)/ },
+        { name: "Vínculo afetivo", pts: 2, re: /(troquei de numero|numero novo|numero provisorio|oi mae|oi pai|celular quebrou|depois te devolvo)/ },
+        { name: "Pedido sensível", pts: 3, re: /(pix|boleto|taxa|transferencia|codigo|sms|senha|instalar|aplicativo|anydesk|teamviewer)/ }
+      ];
+
+      rules.forEach(r => {
+        if (r.re.test(norm)) {
+          findings.push(`Padrão identificado no texto: ${r.name}.`);
+          score += r.pts;
+        }
+      });
+
+      if (score >= 4) {
+        return {
+          status: "Sinais de risco",
+          cardClass: "card-risk",
+          pillClass: "pill-risk",
+          stage: 3,
+          findings
+        };
+      }
+      if (score >= 1) {
+        return {
+          status: "Não dá para confirmar",
+          cardClass: "card-amber",
+          pillClass: "pill-amber",
+          stage: 1,
+          findings
+        };
+      }
+      return {
+        status: "Poucos sinais encontrados — ainda vale verificar",
+        cardClass: "card-neutral",
+        pillClass: "pill-neutral",
+        stage: 1,
+        findings: ["Nenhum dos padrões locais mais comuns apareceu no texto/link, mas isso não garante que seja legítimo."]
+      };
+    }
+
     function evaluateVerify() {
       const reasons = [];
       let score = 0;
@@ -1898,26 +1983,54 @@
       }
 
       if (state.screen === "verify_start") {
+        const localScan = state.verifyText.trim().length >= 4 ? analyzeLocalTextOrLink(state.verifyText) : null;
         app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Verificar algo recebido</span>
-            <h1>Como você prefere contar o que recebeu?</h1>
-            <p style="margin-top: 6px;">O BREQUE não lê WhatsApp, SMS nem notificações. Anote apenas para organizar seu relato — neste protótipo, a leitura usa as 3 perguntas a seguir.</p>
+          <div style="position:relative; border-radius:20px; overflow:hidden; padding:18px 16px 20px; background:radial-gradient(circle at 50% 35%, rgba(16,185,129,0.28) 0%, rgba(14,165,233,0.2) 45%, rgba(6,16,24,0.95) 100%); border:1px solid rgba(125,211,252,0.2); text-align:center;">
+            <button class="btn btn-ghost" style="position:absolute; left:12px; top:12px; color:#fff;" onclick="goBack()">←</button>
+            <div style="font-size:0.86rem; font-weight:700; color:#d6eef7; margin-bottom:12px;">Verificar Mensagem ou Link</div>
+            <div style="width:62px; height:62px; margin:0 auto 10px; border-radius:50%; background:rgba(14,165,198,0.2); border:1.5px solid rgba(125,211,252,0.5); box-shadow:0 0 24px rgba(56,189,248,0.4); display:flex; align-items:center; justify-content:center;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e0f7ff" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            </div>
+            <p style="font-size:0.84rem; color:#bfe0ee;">Análise 100% local no aparelho. O BREQUE não abre links nem envia textos para servidores.</p>
           </div>
 
           <div class="card stack">
-            <label class="field-label" for="verify-text">Colar mensagem ou digitar um resumo curto</label>
-            <textarea id="verify-text" rows="3" placeholder="Ex.: Recebi uma mensagem pedindo Pix urgente de um número novo..." oninput="state.verifyText = this.value;">${state.verifyText}</textarea>
-            <p style="font-size: 0.8rem;">Não coloque senhas, códigos, CPF ou número do cartão.</p>
-            <button class="btn btn-primary btn-center" onclick="navigate('verify_q1')">Continuar com meu relato →</button>
+            <label class="field-label" for="verify-text">Cole aqui o link ou a mensagem recebida</label>
+            <textarea id="verify-text" rows="3" placeholder="Ex.: www.correios-taxa.xyz ou 'Oi mãe, troquei de número...'" oninput="state.verifyText = this.value;">${state.verifyText}</textarea>
+            <p style="font-size: 0.78rem;">Não cole senhas, códigos de SMS, CPF nem número de cartão.</p>
+            <button class="btn btn-primary btn-center" onclick="render()">Analisar agora (100% local) →</button>
           </div>
 
-          <div class="section-label">Ou testar com um exemplo fictício</div>
+          ${localScan ? `
+            <div class="card ${localScan.cardClass} stack">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:40px; height:40px; min-width:40px; border-radius:50%; background:rgba(251,191,36,0.2); border:1px solid rgba(251,191,36,0.5); display:flex; align-items:center; justify-content:center; color:#fbbf24; font-weight:800;">!</div>
+                <div>
+                  <span class="pill ${localScan.pillClass}" style="margin-bottom:2px;">${localScan.status}</span>
+                  <div style="font-size:0.82rem; color:var(--text-muted);">Resultado da análise local instantânea</div>
+                </div>
+              </div>
+              <ul class="list-clean" style="color:var(--text);">
+                ${localScan.findings.map(f => `<li>${f}</li>`).join("")}
+              </ul>
+              <button class="btn btn-primary btn-center" onclick="state.activeStage=${localScan.stage}; navigate('stages_overview');">
+                Ver próximo passo seguro (Roteiro Reverso) →
+              </button>
+              <button class="btn btn-secondary btn-center" onclick="navigate('verify_q1')">
+                Refinar com 3 perguntas rápidas
+              </button>
+            </div>
+          ` : `
+            <button class="btn btn-primary btn-center" onclick="navigate('verify_q1')">
+              Ou responder 3 perguntas rápidas sem colar texto →
+            </button>
+          `}
+
+          <div class="section-label">Testar com exemplos reais comuns no Brasil</div>
           <div class="stack">
-            <button class="btn btn-secondary" onclick="selectFictionalExample('pix_familiar')">“Oi, troquei de número... preciso de um Pix” <span>→</span></button>
-            <button class="btn btn-secondary" onclick="selectFictionalExample('banco_codigo')">“Central de segurança: informe o código SMS” <span>→</span></button>
-            <button class="btn btn-secondary" onclick="selectFictionalExample('cobranca_duvida')">“Encomenda aguarda confirmação” <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.verifyText='Oi, troquei de número porque meu celular quebrou. Preciso pagar um Pix urgente de R$ 950 agora, depois te devolvo.'; render();">“Oi, troquei de número... preciso de um Pix” <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.verifyText='Central de segurança do banco: compra suspeita detectada. Não desligue e informe o código SMS.'; render();">“Central de segurança: informe o código SMS” <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.verifyText='Sua encomenda foi retida. Regularize a taxa em http://correios-taxa.xyz agora.'; render();">Link falso: http://correios-taxa.xyz <span>→</span></button>
           </div>
         `;
         return;
