@@ -1189,10 +1189,17 @@
             </div>
           </section>
 
-          <p style="font-size: 0.8rem; text-align: center; padding: 4px 8px;">
-            O BREQUE é um apoio à decisão: não garante prevenção de golpes nem recuperação de valores.
-            <button class="btn-ghost" style="display:inline; font-size:0.8rem; text-decoration:underline; padding:0;" onclick="navigate('privacy')">Ler Termos de Uso e LGPD</button>
-          </p>
+          <div class="card card-soft" style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px;">
+            <p style="font-size: 0.88rem; line-height: 1.55; color: var(--text);">
+              O <strong>BREQUE</strong> é um apoio à decisão: não garante prevenção de golpes nem recuperação de valores.
+            </p>
+            <button
+              style="border: 1.5px solid var(--brand); background: var(--brand-soft); color: var(--brand); border-radius: 999px; padding: 9px 18px; font-size: 0.86rem; font-weight: 700; cursor: pointer;"
+              onclick="navigate('privacy')"
+            >
+              Ler Termos de Uso e LGPD →
+            </button>
+          </div>
         `;
         return;
       }
