@@ -60,22 +60,24 @@
 
     .app-shell {
       width: 100%;
-      max-width: 430px;
+      max-width: 480px;
       min-height: 100vh;
       background: var(--bg);
       display: flex;
       flex-direction: column;
       position: relative;
-      box-shadow: 0 0 40px rgba(15, 27, 36, 0.15);
+      box-shadow: 0 0 40px rgba(15, 27, 36, 0.12);
     }
 
     .proto-strip {
-      background: #0b222c;
-      color: #cfe0e8;
-      font-size: 0.7rem;
+      background: #102a36;
+      color: #e6f1f6;
+      font-size: 0.82rem;
+      line-height: 1.35;
       text-align: center;
-      padding: 6px 12px;
+      padding: 9px 14px;
       font-weight: 500;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .topbar {
@@ -85,6 +87,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
       position: sticky;
       top: 0;
       z-index: 30;
@@ -97,32 +100,33 @@
       background: none;
       border: none;
       color: #ffffff;
-      font-size: 1.08rem;
+      font-size: 1.12rem;
       font-weight: 800;
       letter-spacing: 0.05em;
       cursor: pointer;
-      padding: 0;
+      padding: 4px 0;
     }
 
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .top-pill {
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       color: #ffffff;
       border-radius: 999px;
-      padding: 5px 10px;
-      font-size: 0.76rem;
+      min-height: 36px;
+      padding: 6px 12px;
+      font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
     }
 
     .top-pill:hover {
-      background: rgba(255, 255, 255, 0.24);
+      background: rgba(255, 255, 255, 0.26);
     }
 
     .content {
@@ -257,8 +261,22 @@
     }
 
     .action-card.amber-tone {
-      border-color: var(--accent-border);
-      background: var(--accent-bg);
+      border: 2px solid #d49b38;
+      background: linear-gradient(180deg, #fffdf7 0%, #fff6e3 100%);
+      box-shadow: 0 6px 18px rgba(180, 83, 9, 0.12);
+      padding: 18px 16px;
+    }
+
+    .priority-badge {
+      display: inline-block;
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: #fdecc8;
+      border: 1px solid #ecc67c;
+      border-radius: 999px;
+      padding: 2px 9px;
+      margin-bottom: 5px;
     }
 
     .action-card.risk-tone {
@@ -267,9 +285,9 @@
     }
 
     .icon-badge {
-      width: 44px;
-      height: 44px;
-      min-width: 44px;
+      width: 46px;
+      height: 46px;
+      min-width: 46px;
       border-radius: 13px;
       display: flex;
       align-items: center;
@@ -292,31 +310,46 @@
     }
 
     .action-title {
-      font-size: 0.98rem;
+      font-size: 1.02rem;
       font-weight: 800;
       color: var(--text);
       display: block;
     }
 
     .action-sub {
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
       display: block;
-      margin-top: 2px;
+      margin-top: 3px;
+      line-height: 1.38;
+    }
+
+    .tools-panel {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .tile-btn {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid #e4e9ee;
       border-radius: var(--radius-sm);
-      padding: 14px 12px;
+      padding: 13px 12px;
+      min-height: 76px;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 8px;
+      gap: 5px;
       text-align: left;
       cursor: pointer;
-      box-shadow: var(--shadow-sm);
+    }
+
+    .tile-btn:hover {
+      border-color: #bfd6e0;
     }
 
     .tile-btn:active {
@@ -324,15 +357,15 @@
     }
 
     .tile-title {
-      font-size: 0.88rem;
-      font-weight: 800;
+      font-size: 0.92rem;
+      font-weight: 700;
       color: var(--text);
     }
 
     .tile-sub {
-      font-size: 0.76rem;
+      font-size: 0.83rem;
       color: var(--text-muted);
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .btn {
@@ -539,7 +572,7 @@
       position: fixed;
       bottom: 0;
       width: 100%;
-      max-width: 430px;
+      max-width: 480px;
       background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(10px);
       border-top: 1px solid var(--border);
@@ -555,16 +588,53 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       color: var(--text-muted);
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
-      padding: 4px 2px;
+      padding: 6px 2px;
+      min-height: 48px;
     }
 
     .nav-item.active {
       color: var(--brand);
+    }
+
+    .secondary-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    @media (min-width: 720px) {
+      body {
+        padding: 24px 16px;
+        align-items: flex-start;
+      }
+
+      .app-shell {
+        max-width: 680px;
+        min-height: calc(100vh - 48px);
+        border-radius: 22px;
+        overflow: hidden;
+      }
+
+      .content {
+        padding: 22px 24px 104px;
+        gap: 16px;
+      }
+
+      .secondary-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .bottom-nav {
+        max-width: 680px;
+        border-radius: 0 0 22px 22px;
+      }
     }
   </style>
 </head>
@@ -908,59 +978,64 @@
 
           <div class="section-label">Comece pelo que você precisa agora</div>
           <div class="stack">
-            <button class="action-card primary-tone" onclick="navigate('verify_start')">
-              <div class="icon-badge icon-brand">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-              </div>
-              <div>
-                <span class="action-title">Quero verificar algo que recebi</span>
-                <span class="action-sub">Mensagem, ligação, link ou cobrança suspeita</span>
-              </div>
-            </button>
-
             <button class="action-card amber-tone" onclick="navigate('pressure_pause')">
               <div class="icon-badge icon-amber">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
               </div>
               <div>
+                <span class="priority-badge">Prioridade • Pausa guiada</span>
                 <span class="action-title">Estão me pressionando agora</span>
-                <span class="action-sub">Sessão de Proteção: pausa e passo a passo</span>
+                <span class="action-sub">Interrompa a pressa e siga um passo a passo calmo para conferir</span>
               </div>
             </button>
 
-            <button class="action-card risk-tone" onclick="navigate('post_start')">
-              <div class="icon-badge icon-risk">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-              </div>
-              <div>
-                <span class="action-title">Já fiz algo e preciso de ajuda</span>
-                <span class="action-sub">Mesa de Recuperação: Pix, senha, app ou documento</span>
-              </div>
-            </button>
+            <div class="secondary-actions">
+              <button class="action-card primary-tone" onclick="navigate('verify_start')">
+                <div class="icon-badge icon-brand">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                </div>
+                <div>
+                  <span class="action-title">Quero verificar algo que recebi</span>
+                  <span class="action-sub">Mensagem, ligação, link ou cobrança</span>
+                </div>
+              </button>
+
+              <button class="action-card risk-tone" onclick="navigate('post_start')">
+                <div class="icon-badge icon-risk">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                </div>
+                <div>
+                  <span class="action-title">Já fiz algo e preciso de ajuda</span>
+                  <span class="action-sub">Pix, senha, app suspeito ou documento</span>
+                </div>
+              </button>
+            </div>
           </div>
 
-          <div class="section-label">Ferramentas do BREQUE</div>
-          <div class="grid-2">
-            <button class="tile-btn" onclick="navigate('discagem_segura')">
-              <span class="tile-title">Discagem Segura</span>
-              <span class="tile-sub">Canais oficiais com fonte e data verificada</span>
-            </button>
+          <section class="tools-panel" aria-label="Ferramentas complementares">
+            <div class="section-label" style="margin-top:0;">Ferramentas complementares</div>
+            <div class="grid-2">
+              <button class="tile-btn" onclick="navigate('discagem_segura')">
+                <span class="tile-title">Discagem Segura</span>
+                <span class="tile-sub">Encontre canais oficiais com fonte e data</span>
+              </button>
 
-            <button class="tile-btn" onclick="navigate('trusted')">
-              <span class="tile-title">Pessoa de Confiança</span>
-              <span class="tile-sub">Peça apoio com prévia e confirmação</span>
-            </button>
+              <button class="tile-btn" onclick="navigate('trusted')">
+                <span class="tile-title">Pessoa de Confiança</span>
+                <span class="tile-sub">Prepare um pedido de apoio com prévia</span>
+              </button>
 
-            <button class="tile-btn" onclick="openIncidentLog()">
-              <span class="tile-title">Registro do Incidente</span>
-              <span class="tile-sub">Organize horários, relato e ações tomadas</span>
-            </button>
+              <button class="tile-btn" onclick="openIncidentLog()">
+                <span class="tile-title">Registro do Incidente</span>
+                <span class="tile-sub">Organize horários, relato e ações feitas</span>
+              </button>
 
-            <button class="tile-btn" onclick="navigate('stages_overview')">
-              <span class="tile-title">Roteiro Reverso</span>
-              <span class="tile-sub">Veja os 6 estágios e padrões de coerção</span>
-            </button>
-          </div>
+              <button class="tile-btn" onclick="navigate('stages_overview')">
+                <span class="tile-title">Roteiro Reverso</span>
+                <span class="tile-sub">Veja os 6 estágios e sinais de coerção</span>
+              </button>
+            </div>
+          </section>
         `;
         return;
       }
