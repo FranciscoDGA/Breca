@@ -8,6 +8,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="BREQUE" />
   <meta name="description" content="BREQUE — Copiloto contra golpes. Interrompa decisões sob pressão, verifique por outro canal e aja com calma." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:site_name" content="BREQUE" />
+  <meta property="og:title" content="BREQUE — Copiloto contra golpes" />
+  <meta property="og:description" content="Um breque na hora da dúvida. Interrompa decisões sob pressão, verifique por outro canal e aja com calma. Tudo processado no seu aparelho." />
+  <meta property="og:url" content="https://breca-rho.vercel.app/" />
+  <meta property="og:image" content="https://breca-rho.vercel.app/icon.svg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="BREQUE — Copiloto contra golpes" />
+  <meta name="twitter:description" content="Um breque na hora da dúvida. Interrompa decisões sob pressão e verifique por outro canal." />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icon.svg" />
@@ -1980,6 +1990,17 @@
           <button class="btn btn-primary btn-center" onclick="handleInstallClick()">Como instalar no celular (PWA)</button>
         `;
       }
+    }
+
+    // Web Share Target (Android PWA): se o usuário compartilhou um texto/link para o BREQUE, abre direto em Verificar
+    const params = new URLSearchParams(window.location.search);
+    const sharedText = [params.get("title"), params.get("text"), params.get("url")]
+      .filter(Boolean)
+      .join(" ")
+      .trim();
+    if (sharedText) {
+      state.verifyText = sharedText;
+      state.screen = "verify_start";
     }
 
     render();
