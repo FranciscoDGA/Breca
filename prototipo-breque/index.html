@@ -1493,6 +1493,13 @@
       render();
     }
 
+    // Remove qualquer Service Worker antigo em cache para evitar versões desatualizadas
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((reg) => reg.unregister());
+      });
+    }
+
     render();
   </script>
 </body>
