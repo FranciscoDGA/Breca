@@ -1188,6 +1188,11 @@
               </button>
             </div>
           </section>
+
+          <p style="font-size: 0.8rem; text-align: center; padding: 4px 8px;">
+            O BREQUE é um apoio à decisão: não garante prevenção de golpes nem recuperação de valores.
+            <button class="btn-ghost" style="display:inline; font-size:0.8rem; text-decoration:underline; padding:0;" onclick="navigate('privacy')">Ler Termos de Uso e LGPD</button>
+          </p>
         `;
         return;
       }
@@ -1669,16 +1674,33 @@
       if (state.screen === "privacy") {
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div><h1>Como o BREQUE usa seus dados</h1><p style="margin-top:6px;">Privacidade por padrão e transparência sobre o que o app não faz.</p></div>
-          <div class="card">
-            <h3>Neste protótipo PWA</h3>
-            <ul class="list-clean">
-              <li>Tudo roda localmente no seu aparelho; nenhum dado é enviado a servidores.</li>
-              <li>Ao fechar ou recarregar a página, os relatos digitados desaparecem.</li>
+          <div>
+            <span class="pill pill-brand">Transparência • Termos e LGPD</span>
+            <h1>Termos de Uso, Privacidade e LGPD</h1>
+            <p style="margin-top:6px;">Linguagem clara sobre o que o BREQUE faz, o que não promete e como seus dados são tratados.</p>
+          </div>
+
+          <div class="card card-amber stack">
+            <h3>1. Termos de Uso e Limitação de Responsabilidade</h3>
+            <ul class="list-clean" style="color:var(--text);">
+              <li><strong>Apoio à decisão, não garantia:</strong> o BREQUE é uma ferramenta educativa e de apoio para pausar decisões sob pressão. Ele <strong>não promete nem garante</strong> impedir golpes, fraudes ou perdas financeiras.</li>
+              <li><strong>Sem garantia de recuperação:</strong> orientações sobre contestação bancária, MED ou Boletim de Ocorrência são informativas e não garantem bloqueio ou devolução de valores.</li>
+              <li><strong>Não é prova jurídica garantida:</strong> o arquivo <code>relato-breque.txt</code> gerado no aparelho serve apenas para organização pessoal e não substitui laudo, perícia ou decisão judicial.</li>
+              <li><strong>Autonomia do usuário:</strong> toda decisão financeira, ligação, bloqueio ou denúncia é de responsabilidade exclusiva do usuário nos canais oficiais.</li>
             </ul>
           </div>
-          <div class="card card-soft">
-            <h3>O que o BREQUE NÃO faz</h3>
+
+          <div class="card stack">
+            <h3>2. Política de Privacidade e LGPD (Lei nº 13.709/2018)</h3>
+            <ul class="list-clean">
+              <li><strong>Processamento local:</strong> mensagens coladas, respostas do Roteiro Reverso e relatos do incidente rodam 100% no seu aparelho e desaparecem ao fechar a sessão.</li>
+              <li><strong>Quando há envio de dado:</strong> apenas se você preencher voluntariamente seu <strong>e-mail e plano de interesse</strong> na tela de Planos (armazenado no Supabase com finalidade exclusiva de avisar sobre disponibilidade do plano).</li>
+              <li><strong>Direitos do titular (art. 18 da LGPD):</strong> você pode solicitar confirmação, correção ou exclusão do seu e-mail cadastrado a qualquer momento.</li>
+            </ul>
+          </div>
+
+          <div class="card card-soft stack">
+            <h3>3. O que o BREQUE NÃO faz</h3>
             <ul class="list-clean">
               <li>Não lê WhatsApp, SMS, e-mails nem notificações.</li>
               <li>Não escuta ligações nem monitora sua tela.</li>
@@ -1686,7 +1708,9 @@
               <li>Não monitora familiares nem envia alertas silenciosos.</li>
               <li>Nunca exibe selo verde dizendo que algo “está seguro”.</li>
             </ul>
+            <div class="review-tag">Aviso: textos jurídicos e LGPD devem passar por revisão de advogado especializado antes do lançamento comercial.</div>
           </div>
+
           <button class="btn btn-primary btn-center" onclick="handleInstallClick()">Como instalar no celular (PWA)</button>
         `;
       }
