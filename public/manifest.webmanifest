@@ -1,14 +1,14 @@
 {
-  "name": "BRECA — o breque antes da decisão",
-  "short_name": "BRECA",
-  "description": "Ajuda você a decidir com calma antes de confirmar uma transferência. Não garante segurança e nunca substitui a confirmação com o seu banco.",
-  "lang": "pt-BR",
+  "name": "BREQUE — Copiloto contra golpes",
+  "short_name": "BREQUE",
+  "description": "Um breque na hora da dúvida. Interrompa decisões sob pressão, verifique por outro canal e aja com calma.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#101418",
-  "theme_color": "#101418",
+  "background_color": "#f4f6f8",
+  "theme_color": "#0f2f3d",
+  "lang": "pt-BR",
   "icons": [
     {
       "src": "/icon.svg",
