@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
@@ -12,6 +13,12 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     target: 'es2022',
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        app: fileURLToPath(new URL('./app.html', import.meta.url)),
+      },
+    },
   },
   test: {
     globals: true,

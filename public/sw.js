@@ -1,5 +1,5 @@
-const CACHE_NAME = 'breque-pwa-v2'
-const CORE_ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg']
+const CACHE_NAME = 'breque-pwa-v3'
+const CORE_ASSETS = ['/', '/index.html', '/app.html', '/manifest.webmanifest', '/icon.svg']
 
 self.addEventListener('install', (event) => {
   self.skipWaiting()
@@ -34,6 +34,10 @@ self.addEventListener('fetch', (event) => {
         }
         return response
       })
-      .catch(() => caches.match(event.request).then((cached) => cached || caches.match('/'))),
+      .catch(() =>
+        caches
+          .match(event.request)
+          .then((cached) => cached || caches.match('/app.html') || caches.match('/')),
+      ),
   )
 })

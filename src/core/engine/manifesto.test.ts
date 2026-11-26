@@ -33,9 +33,17 @@ describe('manifesto', () => {
       expect(codigo, `URL externa em ${arquivo}`).not.toMatch(/https?:\/\//)
     }
 
-    const html = readFileSync(join(RAIZ, 'index.html'), 'utf8')
-    expect(html).not.toMatch(/https?:\/\//)
-    expect(html).not.toMatch(/google-analytics|gtag|hotjar|sentry/i)
+    // A landing pode ter metadados absolutos (og:url/og:image), mas não pode
+    // carregar script de terceiro nem falar com servidor.
+    for (const pagina of ['index.html', 'app.html']) {
+      const html = readFileSync(join(RAIZ, pagina), 'utf8')
+      expect(html, `fetch em ${pagina}`).not.toMatch(/\bfetch\s*\(/)
+      expect(html, `XHR em ${pagina}`).not.toMatch(/XMLHttpRequest/)
+      expect(html, `WebSocket em ${pagina}`).not.toMatch(/new WebSocket/)
+      expect(html, `sendBeacon em ${pagina}`).not.toMatch(/sendBeacon/)
+      expect(html, `analytics em ${pagina}`).not.toMatch(/google-analytics|gtag|hotjar|sentry/i)
+      expect(html, `script externo em ${pagina}`).not.toMatch(/<script[^>]+src=["']https?:/i)
+    }
 
     const manifesto = JSON.parse(
       readFileSync(join(RAIZ, 'public', 'manifest.webmanifest'), 'utf8'),

@@ -2,7 +2,7 @@
   "name": "BREQUE — Copiloto contra golpes",
   "short_name": "BREQUE",
   "description": "Um breque na hora da dúvida. Interrompa decisões sob pressão, verifique por outro canal e aja com calma.",
-  "start_url": "/",
+  "start_url": "/app.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -18,12 +18,22 @@
     }
   ],
   "share_target": {
-    "action": "/",
+    "action": "/app.html",
     "method": "GET",
     "params": {
       "title": "title",
       "text": "text",
       "url": "url"
     }
-  }
+  },
+  "shortcuts": [
+    {
+      "name": "Verificar mensagem ou link",
+      "url": "/app.html?atalho=verificar"
+    },
+    {
+      "name": "Raio-X do Pix e boleto",
+      "url": "/app.html?atalho=raiox"
+    }
+  ]
 }

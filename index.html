@@ -2,2514 +2,725 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f2f3d" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="BREQUE" />
-  <meta name="description" content="BREQUE — Copiloto contra golpes. Interrompa decisões sob pressão, verifique por outro canal e aja com calma." />
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="pt_BR" />
-  <meta property="og:site_name" content="BREQUE" />
-  <meta property="og:title" content="BREQUE — Copiloto contra golpes" />
-  <meta property="og:description" content="Um breque na hora da dúvida. Interrompa decisões sob pressão, verifique por outro canal e aja com calma. Tudo processado no seu aparelho." />
-  <meta property="og:url" content="https://breca-rho.vercel.app/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BREQUE — Um breque na hora da dúvida, antes de o dinheiro sair</title>
+  <meta name="description" content="Golpes não invadem seu celular — eles apressam a sua decisão. O BREQUE ajuda você e sua família a pausar, conferir por outro canal e agir com calma." />
+  <meta property="og:title" content="BREQUE — Copiloto contra golpes para você e sua família" />
+  <meta property="og:description" content="Sem cadastro, sem pedir senhas e sem ler seu WhatsApp. Teste grátis no celular em 1 minuto." />
   <meta property="og:image" content="https://breca-rho.vercel.app/icon.svg" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="BREQUE — Copiloto contra golpes" />
-  <meta name="twitter:description" content="Um breque na hora da dúvida. Interrompa decisões sob pressão e verifique por outro canal." />
-  <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/icon.svg" />
-  <title>BREQUE — Copiloto contra golpes</title>
   <style>
     :root {
-      --bg: #f4f6f8;
-      --surface: #ffffff;
-      --surface-soft: #f8fafb;
-      --text: #0f1b24;
-      --text-muted: #4b5c6b;
       --brand: #0f2f3d;
       --brand-2: #17465a;
-      --brand-soft: #e6f0f4;
-      --accent: #b45309;
-      --accent-bg: #fff8eb;
-      --accent-border: #f3d092;
-      --risk: #991b1b;
-      --risk-bg: #fef2f2;
-      --risk-border: #f2bcbc;
-      --neutral-bg: #eef2f5;
-      --neutral-border: #cfd8e0;
-      --border: #e1e7ec;
-      --radius: 18px;
-      --radius-sm: 13px;
-      --shadow-sm: 0 2px 10px rgba(15, 27, 36, 0.05);
-      --shadow-md: 0 8px 24px rgba(15, 47, 61, 0.12);
-      --font-scale: 1;
+      --brand-soft: #e7f2f6;
+      --amber: #b45309;
+      --amber-bright: #f59e0b;
+      --amber-bg: #fff8eb;
+      --amber-border: #f0cc88;
+      --text: #0f1b24;
+      --muted: #4b5c6b;
+      --bg: #ffffff;
+      --soft: #f5f7f9;
+      --border: #dfe6ec;
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html {
-      font-size: calc(16px * var(--font-scale));
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      background: var(--bg);
       color: var(--text);
-      line-height: 1.48;
-      min-height: 100vh;
-    }
-
-    .app-shell {
-      width: 100%;
-      min-height: 100vh;
       background: var(--bg);
-      display: flex;
-      flex-direction: column;
-      position: relative;
+      line-height: 1.55;
     }
 
-    .proto-strip {
-      background: #0b222c;
-      color: #e2eff5;
-      font-size: 0.8rem;
-      line-height: 1.35;
-      text-align: center;
-      padding: 8px 14px;
-      font-weight: 500;
+    a { text-decoration: none; color: inherit; }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
 
-    .topbar {
-      background: var(--brand);
-      color: #ffffff;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
       z-index: 30;
-      box-shadow: 0 2px 10px rgba(15, 47, 61, 0.15);
     }
 
-    .brand-btn {
+    .nav-bar {
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 1.12rem;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      padding: 4px 0;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .top-pill {
-      background: rgba(255, 255, 255, 0.16);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #ffffff;
-      border-radius: 999px;
-      min-height: 36px;
-      padding: 6px 12px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .top-pill:hover {
-      background: rgba(255, 255, 255, 0.26);
-    }
-
-    .content {
-      flex: 1;
-      width: 100%;
-      max-width: 1040px;
-      margin: 0 auto;
-      padding: 18px 16px 96px;
-      display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 0;
       gap: 16px;
     }
 
-    .hero {
-      background: radial-gradient(circle at 85% 15%, rgba(14, 165, 198, 0.38) 0%, rgba(12, 46, 66, 0.92) 55%, #091d2b 100%);
-      color: #ffffff;
-      border-radius: var(--radius);
-      border: 1px solid rgba(56, 189, 248, 0.28);
-      padding: 22px 18px;
-      box-shadow: var(--shadow-md);
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.16rem;
+      letter-spacing: 0.05em;
+      color: var(--brand);
     }
 
-    .hero-tag {
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover { color: var(--brand); }
+
+    .btn-primary {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
+      justify-content: center;
+      gap: 8px;
+      background: var(--amber-bright);
+      color: #0f1b24;
+      font-weight: 800;
+      padding: 13px 24px;
+      border-radius: 999px;
+      font-size: 0.96rem;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.28);
+      transition: transform 0.1s ease, background 0.15s ease;
+    }
+
+    .btn-primary:hover { background: #fbbf24; transform: translateY(-1px); }
+
+    .btn-dark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--brand);
+      color: #ffffff;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      padding: 13px 24px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+    }
+
+    .btn-outline-light {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      color: #ffffff;
+      font-weight: 700;
+      padding: 13px 22px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(150deg, #0b2430 0%, #0f2f3d 52%, #194d63 100%);
+      color: #ffffff;
+      padding: 64px 0 72px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
       color: #fde68a;
-      margin-bottom: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 18px;
     }
 
     .hero h1 {
-      color: #ffffff;
-      font-size: 1.32rem;
-      line-height: 1.28;
-      margin: 0;
+      font-size: 2.65rem;
+      line-height: 1.14;
+      margin: 0 0 18px;
+      letter-spacing: -0.02em;
     }
 
     .hero p {
-      color: #d6e6ed;
-      font-size: 0.9rem;
-      margin-top: 8px;
-    }
-
-    h1 {
-      font-size: 1.35rem;
-      line-height: 1.26;
-      margin: 0;
-      color: var(--text);
-    }
-
-    h2 {
       font-size: 1.08rem;
-      line-height: 1.3;
-      margin: 0;
-      color: var(--text);
+      color: #d6e7ef;
+      margin: 0 0 28px;
+      max-width: 560px;
     }
 
-    h3 {
-      font-size: 0.96rem;
-      margin: 0 0 4px;
-      color: var(--text);
+    .hero-note {
+      font-size: 0.84rem;
+      color: #b7d3e0;
+      margin-top: 14px;
     }
 
-    p {
-      margin: 0;
-      color: var(--text-muted);
-      font-size: 0.93rem;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    /* MOCKUP DE CELULAR */
+    .phone-mock {
+      background: #0f1b24;
+      border: 6px solid #1e3342;
+      border-radius: 34px;
       padding: 16px;
-      box-shadow: var(--shadow-sm);
+      max-width: 330px;
+      margin: 0 auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
     }
 
-    .card-soft {
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-    }
-
-    .card-amber {
-      background: var(--accent-bg);
-      border: 1.5px solid var(--accent-border);
-    }
-
-    .card-risk {
-      background: var(--risk-bg);
-      border: 1.5px solid var(--risk-border);
-    }
-
-    .card-neutral {
-      background: var(--neutral-bg);
-      border: 1.5px solid var(--neutral-border);
-    }
-
-    .action-card {
-      width: 100%;
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 15px 14px;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      text-align: left;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.08s ease, border-color 0.15s ease;
-    }
-
-    .action-card:active {
-      transform: scale(0.985);
-    }
-
-    .action-card.primary-tone {
-      border-color: rgba(56, 189, 248, 0.3);
-      background: rgba(15, 39, 56, 0.88);
-    }
-
-    .action-card.amber-tone {
-      border: 2px solid rgba(251, 191, 36, 0.72);
-      background: linear-gradient(155deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 35, 50, 0.94) 100%);
-      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.16);
-      padding: 18px 16px;
-    }
-
-    .priority-badge {
-      display: inline-block;
-      font-size: 0.74rem;
-      font-weight: 800;
-      color: #fde68a;
-      background: rgba(245, 158, 11, 0.22);
-      border: 1px solid rgba(251, 191, 36, 0.5);
-      border-radius: 999px;
-      padding: 2px 9px;
-      margin-bottom: 5px;
-    }
-
-    .action-card.risk-tone {
-      border-color: var(--risk-border);
-      background: linear-gradient(155deg, rgba(220, 38, 38, 0.18) 0%, rgba(15, 31, 45, 0.94) 100%);
-    }
-
-    .icon-badge {
-      width: 46px;
-      height: 46px;
-      min-width: 46px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .icon-brand {
-      background: rgba(14, 165, 198, 0.2);
-      color: #38bdf8;
-    }
-
-    .icon-amber {
-      background: rgba(245, 158, 11, 0.22);
-      color: #fbbf24;
-    }
-
-    .icon-risk {
-      background: rgba(239, 68, 68, 0.22);
-      color: #fca5a5;
-    }
-
-    .action-title {
-      font-size: 1.02rem;
-      font-weight: 800;
+    .mock-screen {
+      background: #f4f6f8;
+      border-radius: 22px;
+      overflow: hidden;
       color: var(--text);
-      display: block;
     }
 
-    .action-sub {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      display: block;
-      margin-top: 3px;
-      line-height: 1.38;
+    .mock-top {
+      background: var(--brand);
+      color: #fff;
+      padding: 12px 14px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .tools-panel {
-      background: var(--surface-soft);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .mock-body {
       padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
 
-    .tile-btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 13px 12px;
-      min-height: 76px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
-      text-align: left;
-      cursor: pointer;
-    }
-
-    .tile-btn:hover {
-      border-color: #bfd6e0;
-    }
-
-    .tile-btn:active {
-      transform: scale(0.985);
-    }
-
-    .tile-title {
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .tile-sub {
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      line-height: 1.35;
-    }
-
-    .btn {
-      width: 100%;
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 14px 16px;
-      font-size: 0.96rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      line-height: 1.35;
-    }
-
-    .btn-primary {
-      background: var(--brand);
-      color: #ffffff;
-    }
-
-    .btn-secondary {
-      background: var(--surface);
-      color: var(--text);
-      border: 1.5px solid var(--border);
-    }
-
-    .btn-risk {
-      background: var(--risk-bg);
-      color: var(--risk);
-      border: 1.5px solid var(--risk-border);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--brand);
-      padding: 4px 0;
-      font-size: 0.9rem;
-      font-weight: 700;
-      width: auto;
-      justify-content: flex-start;
-    }
-
-    .btn-center {
-      justify-content: center;
-      text-align: center;
-    }
-
-    .section-label {
-      font-size: 0.74rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .pill {
-      display: inline-block;
-      font-size: 0.73rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 999px;
-      margin-bottom: 8px;
-    }
-
-    .pill-brand { background: var(--brand-soft); color: var(--brand); }
-    .pill-amber { background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-border); }
-    .pill-risk { background: var(--risk-bg); color: var(--risk); border: 1px solid var(--risk-border); }
-    .pill-neutral { background: var(--neutral-bg); color: var(--text); border: 1px solid var(--neutral-border); }
-    .pill-fictional { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
-
-    .field-label {
-      display: block;
-      font-size: 0.86rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: var(--text);
-    }
-
-    textarea, input[type="text"] {
-      width: 100%;
-      font-family: inherit;
-      font-size: 0.94rem;
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border);
-      background: var(--surface);
-      color: var(--text);
-      resize: vertical;
-    }
-
-    textarea:focus, input[type="text"]:focus {
-      outline: none;
-      border-color: var(--brand);
-    }
-
-    .quote-box {
-      background: var(--surface-soft);
-      border-left: 4px solid var(--brand);
-      padding: 12px 14px;
-      border-radius: 0 12px 12px 0;
-      font-size: 0.92rem;
-      color: var(--text);
-    }
-
-    .rr-block {
-      border-top: 1px solid var(--border);
-      padding-top: 11px;
-      margin-top: 11px;
-    }
-
-    .rr-title {
-      font-size: 0.76rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--brand);
-      margin-bottom: 4px;
-    }
-
-    .check-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 13px 14px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .check-item.selected {
-      border-color: var(--brand);
-      background: var(--brand-soft);
-    }
-
-    .check-box {
-      width: 22px;
-      height: 22px;
-      min-width: 22px;
-      border-radius: 6px;
-      border: 2px solid var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.82rem;
-      color: #fff;
-      background: #fff;
-    }
-
-    .check-item.selected .check-box {
-      background: var(--brand);
-      border-color: var(--brand);
-    }
-
-    .timer-box {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background: var(--brand-soft);
-      border: 1px solid #bfd6e0;
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-    }
-
-    .timer-count {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--brand);
-      min-width: 44px;
-      text-align: center;
-    }
-
-    .list-clean {
-      margin: 6px 0 0;
-      padding-left: 18px;
-      color: var(--text-muted);
-      font-size: 0.91rem;
-    }
-
-    .list-clean li {
-      margin-bottom: 6px;
-    }
-
-    .review-tag {
-      display: inline-block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #6b4e16;
-      background: #fef8e7;
-      border: 1px solid #ead39c;
-      border-radius: 6px;
-      padding: 3px 8px;
-      margin-top: 8px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-      z-index: 30;
-    }
-
-    .nav-item {
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      padding: 6px 2px;
-      min-height: 48px;
-    }
-
-    .nav-item.active {
-      color: var(--brand);
-    }
-
-    .secondary-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .welcome-screen {
-      flex: 1;
-      min-height: 100vh;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      text-align: center;
-      padding: 64px 28px 44px;
-      background:
-        radial-gradient(circle at 20% 12%, rgba(16, 185, 129, 0.34) 0%, transparent 48%),
-        radial-gradient(circle at 82% 16%, rgba(14, 165, 233, 0.34) 0%, transparent 46%),
-        radial-gradient(circle at 50% 92%, rgba(56, 189, 248, 0.55) 0%, rgba(7, 32, 52, 0.92) 48%, #040b11 100%);
-    }
-
-    .welcome-waves {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      opacity: 0.9;
-    }
-
-    .welcome-center {
-      position: relative;
-      z-index: 2;
-      margin-top: auto;
-      margin-bottom: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      max-width: 340px;
-    }
-
-    .welcome-shield {
-      width: 78px;
-      height: 78px;
-      border-radius: 24px;
-      background: rgba(10, 32, 46, 0.72);
-      border: 1.5px solid rgba(186, 230, 253, 0.35);
-      box-shadow: 0 0 36px rgba(56, 189, 248, 0.28);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .welcome-title {
-      font-size: 1.72rem;
-      font-weight: 800;
-      line-height: 1.22;
-      color: #ffffff;
-      margin: 0;
-      letter-spacing: -0.01em;
-    }
-
-    .welcome-sub {
-      font-size: 0.96rem;
-      line-height: 1.5;
-      color: #cfe4f0;
-      margin: 0;
-    }
-
-    .welcome-go {
-      position: relative;
-      z-index: 2;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255, 255, 255, 0.28);
-      background: #040b11;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
-      transition: transform 0.14s ease, background 0.14s ease;
-    }
-
-    .welcome-go:hover {
-      background: #0d2536;
-      transform: scale(1.05);
-    }
-
-    .welcome-go:active {
-      transform: scale(0.96);
-    }
-
-    .hidden-chrome {
-      display: none !important;
-    }
-
-    .status-glass {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 14px;
+    .mock-amber {
+      background: var(--amber-bg);
+      border: 1.5px solid var(--amber-border);
       border-radius: 14px;
-      background: var(--brand-soft);
-      border: 1px solid #c5dce5;
-      color: var(--brand);
-      font-size: 0.86rem;
-      font-weight: 600;
+      padding: 12px;
     }
 
-    .arc-hero {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px 16px 18px;
-      border-radius: 22px;
-      background: linear-gradient(150deg, #0f2f3d 0%, #17465a 100%);
-      border: none;
-      cursor: pointer;
-      text-align: center;
-      width: 100%;
-      box-shadow: var(--shadow-md);
-    }
-
-    .arc-hero:active {
-      transform: scale(0.99);
-    }
-
-    .arc-wrap {
-      position: relative;
-      width: 260px;
-      height: 146px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      padding-bottom: 12px;
-    }
-
-    .arc-svg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.35));
-    }
-
-    .arc-label {
-      position: relative;
-      z-index: 2;
-      font-size: 1.44rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      color: #ffffff;
-      line-height: 1.1;
-    }
-
-    .arc-sub {
-      position: relative;
-      z-index: 2;
+    .mock-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
       font-size: 0.82rem;
-      color: #fde68a;
-      font-weight: 700;
-      margin-top: 5px;
     }
 
-    .glass-trio {
+    /* FAIXA DE CONFIANÇA */
+    .trust-strip {
+      background: var(--soft);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+    }
+
+    .trust-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--brand);
     }
 
-    .glass-card {
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 14px 12px;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-      min-height: 112px;
-      color: var(--text);
-      box-shadow: var(--shadow-sm);
+    section { padding: 72px 0; }
+    .section-soft { background: var(--soft); }
+
+    .section-head {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 44px;
     }
 
-    .glass-card.amber-glass {
-      border-color: var(--accent-border);
-      background: var(--accent-bg);
-    }
-
-    .glass-card.risk-glass {
-      border-color: var(--risk-border);
-      background: var(--risk-bg);
-    }
-
-    .glass-card-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .glass-mini-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: var(--brand-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .glass-card-title {
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: var(--text);
-      line-height: 1.2;
-    }
-
-    .glass-card-sub {
+    .section-eyebrow {
       font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.32;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--amber);
+      margin-bottom: 8px;
+      display: block;
     }
 
-    .summary-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 16px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      box-shadow: var(--shadow-sm);
+    .section-head h2 {
+      font-size: 2rem;
+      line-height: 1.2;
+      margin: 0 0 12px;
+      color: var(--brand);
     }
 
-    .summary-row {
-      width: 100%;
-      background: var(--surface-soft);
+    .section-head p { margin: 0; color: var(--muted); font-size: 1.02rem; }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .chat-bubble {
+      background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 13px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      cursor: pointer;
-      text-align: left;
+      border-left: 5px solid var(--amber-bright);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 4px 16px rgba(15, 27, 36, 0.05);
+    }
+
+    .chat-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--amber);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .chat-quote {
+      font-size: 0.98rem;
+      font-weight: 600;
       color: var(--text);
+      margin: 0 0 10px;
     }
 
-    .summary-row:hover {
-      background: var(--brand-soft);
-      border-color: #bfd6e0;
+    .chat-fix {
+      font-size: 0.86rem;
+      color: var(--muted);
+      margin: 0;
     }
 
-    .summary-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .step-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 26px 22px;
     }
 
-    .summary-icon {
+    .step-num {
       width: 38px;
       height: 38px;
-      min-width: 38px;
-      border-radius: 50%;
+      border-radius: 12px;
       background: var(--brand-soft);
+      color: var(--brand);
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--brand);
+      margin-bottom: 14px;
     }
 
-    .summary-tag {
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: var(--brand);
-      white-space: nowrap;
+    .step-card h3 { margin: 0 0 8px; color: var(--brand); font-size: 1.08rem; }
+    .step-card p { margin: 0; color: var(--muted); font-size: 0.94rem; }
+
+    .family-banner {
+      background: linear-gradient(145deg, #0f2f3d 0%, #194d63 100%);
+      color: #fff;
+      border-radius: 24px;
+      padding: 40px 36px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: center;
     }
 
-    .home-layout {
+    .plan-card {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 24px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      justify-content: space-between;
+      gap: 20px;
     }
 
-    @media (min-width: 768px) {
-      .content {
-        padding: 24px 28px 104px;
-        gap: 18px;
-      }
+    .plan-card.highlight {
+      border: 2px solid #d99726;
+      background: var(--amber-bg);
+      box-shadow: 0 12px 30px rgba(180, 83, 9, 0.12);
+    }
 
-      .home-layout {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-        align-items: start;
-      }
+    .price { font-size: 1.9rem; font-weight: 800; color: var(--brand); margin: 8px 0; }
+    .plan-card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.93rem; }
+    .plan-card li { margin-bottom: 8px; }
 
-      .secondary-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
+    .faq-list {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    details {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+    }
+
+    summary {
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--brand);
+      font-size: 1rem;
+    }
+
+    details p { margin: 10px 0 0; color: var(--muted); font-size: 0.94rem; }
+
+    .final-cta {
+      background: var(--brand-soft);
+      text-align: center;
+      padding: 64px 20px;
+    }
+
+    footer {
+      background: #0b222c;
+      color: #c2d6e0;
+      padding: 40px 0;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid, .grid-3, .trust-grid, .family-banner { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2rem; }
+      .nav-links a:not(.btn-dark) { display: none; }
+      .family-banner { padding: 28px 22px; }
     }
   </style>
 </head>
 <body>
-  <div class="app-shell" role="application" aria-label="BREQUE Copiloto contra golpes">
-    <div class="proto-strip">
-      BREQUE • Processamento local no aparelho • Não acessa bancos nem WhatsApp
-    </div>
-
-    <header class="topbar">
-      <button class="brand-btn" onclick="goHome()" aria-label="Voltar ao início do BREQUE">
-        <svg width="24" height="24" viewBox="0 0 512 512" aria-hidden="true">
-          <path d="M256 64L104 128v122c0 106 64 198 152 232 88-34 152-126 152-232V128L256 64z" fill="#1b536b" stroke="#ffffff" stroke-width="26" stroke-linejoin="round"/>
+  <header>
+    <div class="container nav-bar">
+      <a href="/" class="logo">
+        <svg width="26" height="26" viewBox="0 0 512 512" aria-hidden="true">
+          <path d="M256 64L104 128v122c0 106 64 198 152 232 88-34 152-126 152-232V128L256 64z" fill="#0f2f3d" stroke="#0f2f3d" stroke-width="20"/>
           <rect x="198" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
           <rect x="274" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
         </svg>
         BREQUE
-      </button>
-      <div class="top-actions">
-        <button class="top-pill" onclick="changeFont(-0.1)" aria-label="Diminuir fonte">A-</button>
-        <button class="top-pill" onclick="changeFont(0.1)" aria-label="Aumentar fonte">A+</button>
-        <button class="top-pill" id="install-btn" onclick="handleInstallClick()">Instalar</button>
+      </a>
+      <nav class="nav-links">
+        <a href="#situacoes">Quando usar</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#planos">Planos</a>
+        <a href="#baixar" class="btn-dark" style="padding:10px 18px; font-size:0.88rem;">Baixar o app</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="hero-pill">Feito para pessoas comuns no Brasil • Análises locais no aparelho</span>
+        <h1>Golpes não invadem seu celular. Eles apressam a sua decisão.</h1>
+        <p>
+          O BREQUE é o copiloto gratuito que ajuda você e sua família a pausar na hora do susto, conferir mensagens e links com calma e saber exatamente o que fazer se algo já aconteceu.
+        </p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <a href="/app.html?install=1" class="btn-primary">Baixar o app no celular →</a>
+          <a href="#recursos" class="btn-outline-light">Ver o que ele faz</a>
+        </div>
+        <div class="hero-note">Grátis • Sem criar conta • Sem pedir senhas • Processamento no aparelho</div>
       </div>
-    </header>
 
-    <main id="app" class="content"></main>
+      <div class="phone-mock" aria-label="Prévia do aplicativo BREQUE">
+        <div class="mock-screen">
+          <div class="mock-top">
+            <span>BREQUE</span>
+            <span style="font-size:0.72rem; opacity:0.85;">100% local</span>
+          </div>
+          <div class="mock-body">
+            <div class="mock-amber">
+              <div style="font-size:0.72rem; font-weight:800; color:#b45309; text-transform:uppercase;">Sessão de Proteção</div>
+              <div style="font-weight:800; font-size:0.95rem; margin:4px 0;">Pause. Não informe códigos nem faça Pix agora.</div>
+              <div style="font-size:0.78rem; color:#4b5c6b;">Áudio-guia calmo + frases prontas para desligar sem constrangimento.</div>
+            </div>
+            <div class="mock-card"><strong>Verificar mensagem ou link</strong><br/><span style="color:#4b5c6b;">Identifica sinais de urgência, sigilo e links suspeitos no aparelho.</span></div>
+            <div class="mock-card"><strong>Já fiz Pix ou passei dados</strong><br/><span style="color:#4b5c6b;">Ordem prática de ações: banco/MED, BO e relato organizado.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <nav class="bottom-nav" aria-label="Navegação principal">
-      <button class="nav-item" id="nav-home" onclick="goHome()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>
-        Início
-      </button>
-      <button class="nav-item" id="nav-verify" onclick="navigate('verify_start')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        Verificar
-      </button>
-      <button class="nav-item" id="nav-canais" onclick="navigate('discagem_segura')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        Canais
-      </button>
-      <button class="nav-item" id="nav-privacy" onclick="navigate('privacy')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Dados
-      </button>
-    </nav>
+  <div class="trust-strip">
+    <div class="container trust-grid">
+      <div>Zero senhas ou dados bancários pedidos</div>
+      <div>Processamento local no aparelho (LGPD)</div>
+      <div>Instala em 2 toques no Android e iPhone</div>
+    </div>
   </div>
 
-  <script>
-    let deferredInstallPrompt = null;
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      deferredInstallPrompt = e;
-    });
-
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js").catch(() => {});
-      });
-    }
-
-    const SUPABASE_URL = "https://vbqvajvyurxpbisqdpmi.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_bvcgyV51ujiN5ZfYWtXzAQ_5xoVY-V9";
-
-    const state = {
-      screen: "welcome",
-      history: [],
-      fontScale: 1,
-      verifyText: "",
-      q1Origin: null,
-      q2Pressure: null,
-      q3Request: null,
-      pressureTopic: null,
-      pauseSeconds: 0,
-      pauseInterval: null,
-      postEvent: null,
-      postChecked: new Set(),
-      incidentLog: { time: "", summary: "", saved: false },
-      trustedContacts: [
-        { id: "c1", name: "Pessoa de confiança", note: "Edite ou adicione um familiar abaixo" }
-      ],
-      selectedContactId: "c1",
-      newContactName: "",
-      newContactNote: "",
-      helpPreviewText: "",
-      helpFeedback: "",
-      activeStage: 1,
-      selectedPlan: "familia_mensal",
-      planEmail: "",
-      planStatus: "", // "" | "enviando" | "ok" | "erro"
-      vacinaStep: 0,
-      vacinaFeedback: "",
-      vacinaScore: 0,
-      cardFamilyHint: "",
-      cardDownloaded: false
-    };
-
-    const VACINA_CENARIOS = [
-      {
-        titulo: "Rodada 1 de 3 • WhatsApp",
-        msg: "“Oi mãe/pai, troquei de número agora. Preciso pagar um boleto urgente de R$ 890, depois te devolvo!”",
-        opcoes: [
-          { label: "Fazer o Pix logo para ajudar", correta: false, feedback: "A pressa é o principal truque. Mesmo sendo alguém querido, vale pausar 1 minuto e conferir por fora." },
-          { label: "Ligar para o número antigo ou fazer a Pergunta Secreta da Família", correta: true, feedback: "Excelente! Confirmar por um canal antigo ou pela pergunta secreta desarma esse golpe em segundos." }
-        ]
-      },
-      {
-        titulo: "Rodada 2 de 3 • Ligação",
-        msg: "“Aqui é da central do seu banco. Detectamos uma compra suspeita. Não desligue e leia o código de 6 dígitos que chegou por SMS.”",
-        opcoes: [
-          { label: "Desligar e ligar para o número no verso do cartão", correta: true, feedback: "Perfeito! Banco de verdade nunca pede código de SMS por ligação nem proíbe você de desligar." },
-          { label: "Ler o código rápido para cancelar a compra", correta: false, feedback: "Esse código costuma ser usado para entrar na sua conta ou aprovar uma transferência. Desligar é sempre seguro." }
-        ]
-      },
-      {
-        titulo: "Rodada 3 de 3 • SMS com link",
-        msg: "“Sua encomenda foi retida. Pague a taxa de R$ 24,90 pelo link abaixo em até 1 hora.”",
-        opcoes: [
-          { label: "Abrir o site/app oficial onde fiz a compra (sem clicar no link)", correta: true, feedback: "Muito bem! Conferir direto no app ou site onde você comprou evita páginas falsas." },
-          { label: "Clicar no link para ver qual encomenda é", correta: false, feedback: "Links com prazo curto são feitos para levar você a telas clonadas. Prefira sempre o app oficial." }
-        ]
-      }
-    ];
-
-    function answerVacina(idx) {
-      const c = VACINA_CENARIOS[state.vacinaStep];
-      const opt = c.opcoes[idx];
-      if (opt.correta) state.vacinaScore += 1;
-      state.vacinaFeedback = opt.feedback;
-      render();
-    }
-
-    function nextVacina() {
-      state.vacinaFeedback = "";
-      state.vacinaStep += 1;
-      render();
-    }
-
-    function resetVacina() {
-      state.vacinaStep = 0;
-      state.vacinaFeedback = "";
-      state.vacinaScore = 0;
-      navigate("vacina_60s");
-    }
-
-    function downloadFamilyCardPng() {
-      const canvas = document.createElement("canvas");
-      canvas.width = 1080;
-      canvas.height = 1350;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Fundo limpo
-      ctx.fillStyle = "#f4f6f8";
-      ctx.fillRect(0, 0, 1080, 1350);
-
-      // Topo azul-petróleo
-      ctx.fillStyle = "#0f2f3d";
-      ctx.fillRect(0, 0, 1080, 290);
-
-      ctx.fillStyle = "#fde68a";
-      ctx.font = "bold 32px sans-serif";
-      ctx.fillText("CARTÃO DE BOLSO DA FAMÍLIA • BREQUE", 70, 105);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 56px sans-serif";
-      ctx.fillText("Na dúvida, dê um BREQUE.", 70, 190);
-
-      ctx.fillStyle = "#d6e6ed";
-      ctx.font = "30px sans-serif";
-      ctx.fillText("3 passos para proteger quem você ama", 70, 245);
-
-      // 3 Passos
-      const passos = [
-        ["1. PAUSE E DESLIGUE", "Quem é do banco ou da família de verdade espera."],
-        ["2. CONFIRME POR OUTRO CANAL", "Use o número antigo ou o telefone no verso do cartão."],
-        ["3. NUNCA PASSE CÓDIGOS", "Banco não pede código de SMS, senha nem instalar app."]
-      ];
-
-      let y = 370;
-      passos.forEach(([titulo, desc]) => {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(70, y, 940, 185);
-        ctx.strokeStyle = "#d9e2e8";
-        ctx.lineWidth = 3;
-        ctx.strokeRect(70, y, 940, 185);
-
-        ctx.fillStyle = "#0f2f3d";
-        ctx.font = "bold 36px sans-serif";
-        ctx.fillText(titulo, 110, y + 72);
-
-        ctx.fillStyle = "#334155";
-        ctx.font = "30px sans-serif";
-        ctx.fillText(desc, 110, y + 132);
-        y += 220;
-      });
-
-      // Bloco Pergunta Secreta
-      ctx.fillStyle = "#fff8eb";
-      ctx.fillRect(70, 1045, 940, 180);
-      ctx.strokeStyle = "#d49b38";
-      ctx.lineWidth = 4;
-      ctx.strokeRect(70, 1045, 940, 180);
-
-      ctx.fillStyle = "#92400e";
-      ctx.font = "bold 34px sans-serif";
-      ctx.fillText("LEMBRETE: PERGUNTA SECRETA DA FAMÍLIA", 110, 1110);
-
-      ctx.fillStyle = "#1e293b";
-      ctx.font = "28px sans-serif";
-      const hint = state.cardFamilyHint.trim() || "Faça a pergunta que combinamos pessoalmente antes de fazer Pix.";
-      ctx.fillText(hint.slice(0, 58), 110, 1170);
-
-      ctx.fillStyle = "#64748b";
-      ctx.font = "24px sans-serif";
-      ctx.fillText("BREQUE • Apoio à decisão • Não substitui confirmação oficial com seu banco", 70, 1295);
-
-      const url = canvas.toDataURL("image/png");
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "cartao-familia-breque.png";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      state.cardDownloaded = true;
-      render();
-    }
-
-    async function submitPlanInterest() {
-      const email = state.planEmail.trim();
-      if (!email || !email.includes("@")) {
-        state.planStatus = "Digite um e-mail válido para continuar.";
-        render();
-        return;
-      }
-      state.planStatus = "enviando";
-      render();
-      try {
-        const resp = await fetch(`${SUPABASE_URL}/rest/v1/interesse_planos`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            Prefer: "return=minimal"
-          },
-          body: JSON.stringify({ email, plano: state.selectedPlan })
-        });
-        if (resp.ok) {
-          state.planStatus = "ok";
-          state.planEmail = "";
-        } else {
-          state.planStatus = "erro";
-        }
-      } catch {
-        state.planStatus = "erro";
-      }
-      render();
-    }
-
-    function exportIncidentTxt() {
-      const texto = [
-        "RELATO ORGANIZADO NO BREQUE (USO PESSOAL)",
-        "-----------------------------------------",
-        `Horário aproximado: ${state.incidentLog.time || "Não informado"}`,
-        "",
-        "Resumo do ocorrido:",
-        state.incidentLog.summary || "Não informado",
-        "",
-        `Ações marcadas na Mesa de Recuperação: ${state.postChecked.size}`,
-        "",
-        "AVISO IMPORTANTE:",
-        "Gerado localmente no seu aparelho. O BREQUE não envia nem armazena este relato.",
-        "Este documento ajuda a organizar informações, mas não é prova jurídica garantida."
-      ].join("\n");
-
-      const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "relato-breque.txt";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      state.incidentLog.saved = true;
-      render();
-    }
-
-    async function shareHelpRequest() {
-      const text = state.helpPreviewText.trim();
-      if (!text) return;
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: "BREQUE — Pedido de apoio", text });
-          state.helpFeedback = "Compartilhamento aberto no seu aparelho. Você escolhe para quem enviar.";
-          render();
-          return;
-        } catch {
-          // Usuário cancelou o share nativo; cai para cópia
-        }
-      }
-      try {
-        await navigator.clipboard.writeText(text);
-        state.helpFeedback = "Texto copiado! Agora cole no WhatsApp ou SMS para enviar à sua pessoa de confiança.";
-      } catch {
-        state.helpFeedback = "Selecione e copie o texto acima para enviar manualmente.";
-      }
-      render();
-    }
-
-    const FICTIONAL_EXAMPLES = {
-      pix_familiar: {
-        text: "“Oi, troquei de número porque meu celular deu problema. Preciso fazer um Pix urgente de R$ 950 agora, depois te devolvo.”",
-        q1: "familiar_novo", q2: "sim", q3: "dinheiro"
-      },
-      banco_codigo: {
-        text: "“Central de segurança: identificamos um acesso incomum. Informe o código de 6 dígitos enviado por SMS para cancelar.”",
-        q1: "banco", q2: "sim", q3: "credencial"
-      },
-      cobranca_duvida: {
-        text: "“Sua encomenda aguarda confirmação de endereço. Regularize hoje para evitar devolução.”",
-        q1: "desconhecido", q2: "nao_sei", q3: "nenhum"
-      }
-    };
-
-    const ROTEIRO_REVERSO = {
-      1: {
-        num: 1,
-        titulo: "Recebeu um contato suspeito, mas ainda não respondeu",
-        acolhimento: "Você fez muito bem em parar para olhar isso antes de responder.",
-        acaoAgora: "Não responda à mensagem e não clique em links por enquanto.",
-        motivo: "Quando você não responde logo, ganha tempo para conferir com calma e evita entrar em uma conversa sob pressão.",
-        verificacao: "Procure a pessoa ou empresa por um canal que você já usava antes: o número antigo salvo na agenda, o aplicativo oficial já instalado ou o telefone no verso do cartão.",
-        evitar: "Evite clicar em links recebidos, baixar arquivos ou ligar para o número que veio escrito na mensagem.",
-        alternativa: "Se você não souber qual é o canal oficial, deixe a mensagem parada e peça ajuda a alguém de confiança para procurar junto.",
-        quandoPedirAjuda: "Peça ajuda se a mensagem envolver dinheiro, documento ou alguém da família e você ainda ficar em dúvida."
-      },
-      2: {
-        num: 2,
-        titulo: "Está conversando com a pessoa ou organização",
-        acolhimento: "Tudo bem estar no meio da conversa. Você pode pausar a qualquer momento.",
-        acaoAgora: "Diga que vai conferir uma informação e encerre ou pause a conversa agora.",
-        motivo: "Quem é legítimo entende uma pausa para confirmação. Sair da conversa reduz a chance de decidir no impulso.",
-        verificacao: "Desligue ou saia do chat e faça contato por fora: use o aplicativo oficial já instalado, o site digitado manualmente por você ou o número antigo da pessoa.",
-        evitar: "Evite confrontar ou discutir com quem entrou em contato, e não passe dados para “confirmar cadastro”.",
-        alternativa: "Se ficar difícil encerrar a ligação, diga apenas “preciso desligar agora” e encerre a chamada.",
-        quandoPedirAjuda: "Chame uma pessoa de confiança se sentir confusão, pressa ou receio de estar perdendo algo importante."
-      },
-      3: {
-        num: 3,
-        titulo: "Está sob pressão para enviar dinheiro, código, documento ou instalar algo",
-        acolhimento: "Pressa e pressão deixam qualquer pessoa tensa. Vamos desacelerar agora.",
-        acaoAgora: "Interrompa o contato imediatamente e não envie código, senha, dinheiro, documento nem instale aplicativos.",
-        motivo: "Pedidos urgentes com exigência de sigilo ou rapidez são a principal forma de impedir você de conferir a situação.",
-        verificacao: "Depois de encerrar o contato, confira por conta própria no aplicativo oficial já instalado, no número do verso do cartão ou ligando para o número antigo do familiar.",
-        evitar: "Evite permanecer na ligação enquanto mexe no aplicativo do banco, ler códigos de SMS em voz alta ou compartilhar a tela.",
-        alternativa: "Se estiver difícil encerrar sozinho, coloque o celular de lado por um minuto e chame alguém próximo para olhar junto.",
-        quandoPedirAjuda: "Peça ajuda agora mesmo se a pessoa insistir, tentar assustar você ou pedir para não contar para ninguém."
-      },
-      4: {
-        num: 4,
-        titulo: "Já compartilhou dados ou deu acesso ao aparelho",
-        acolhimento: "Isso acontece com muitas pessoas e não é culpa sua. Vamos cuidar do mais importante primeiro.",
-        acaoAgora: "Interrompa o contato imediatamente. Se passou senha ou código, troque a senha pelo canal oficial; se instalou um aplicativo ou deu acesso ao aparelho, pare de usar o app e busque suporte confiável.",
-        motivo: "Agir rápido reduz o tempo em que outra pessoa pode usar sua conta ou acessar seu aparelho.",
-        verificacao: "Acesse o aplicativo oficial da conta afetada (ou de outro aparelho confiável) para conferir acessos recentes e falar com o suporte oficial.",
-        evitar: "Evite aceitar ajuda de quem iniciou o contato, pagar taxas para “desbloquear” a conta ou tentar procedimentos técnicos arriscados sem orientação confiável.",
-        alternativa: "Se não conseguir trocar a senha ou remover o acesso sozinho, peça ajuda a um familiar de confiança ou ao suporte oficial.",
-        quandoPedirAjuda: "Peça ajuda logo agora — ter alguém ao lado facilita trocar senhas e falar com o suporte com mais calma.",
-        revisaoEspecializada: "Orientação de contenção de acesso requer revisão especializada antes da publicação."
-      },
-      5: {
-        num: 5,
-        titulo: "Já fez pagamento ou transferência",
-        acolhimento: "Sinto muito que isso tenha acontecido. Sem julgamento: vamos seguir a ordem mais útil para agora.",
-        acaoAgora: "Entre em contato imediatamente com o seu banco pelo canal oficial e pergunte sobre contestação ou MED (Mecanismo Especial de Devolução).",
-        motivo: "Quanto antes o banco for avisado, mais rápido ele pode iniciar a análise do caso — mas não há garantia de bloqueio nem de devolução do valor.",
-        verificacao: "Use apenas o aplicativo oficial do seu banco já instalado ou o telefone impresso no verso do cartão.",
-        evitar: "Evite fazer novos pagamentos para “estornar” o primeiro, pagar intermediários que prometem recuperar o dinheiro ou apagar o comprovante e as mensagens.",
-        alternativa: "Se estiver nervoso para falar com o banco sozinho, peça a uma pessoa de confiança para acompanhar a ligação com você.",
-        quandoPedirAjuda: "Peça ajuda agora para ligar para o banco, guardar os comprovantes e organizar o relato.",
-        revisaoEspecializada: "Orientação sobre contestação/MED requer revisão jurídica e regulatória antes da publicação."
-      },
-      6: {
-        num: 6,
-        titulo: "Está tentando organizar o que aconteceu e buscar ajuda",
-        acolhimento: "Organizar os fatos com calma ajuda você a retomar o controle da situação.",
-        acaoAgora: "Anote horário, o que aconteceu e o que você já fez, e guarde os comprovantes e prints no seu aparelho.",
-        motivo: "Ter a linha do tempo clara facilita o atendimento no banco, no suporte oficial e, se você decidir, no registro de ocorrência.",
-        verificacao: "Para registrar ocorrência ou buscar orientação formal, acesse apenas o site oficial da Polícia Civil do seu estado digitado manualmente ou canais oficiais do seu banco.",
-        evitar: "Evite compartilhar seus documentos ou comprovantes com desconhecidos que ofereçam “recuperação garantida”.",
-        alternativa: "Se for cansativo organizar tudo hoje, anote apenas o básico agora e peça ajuda a alguém de confiança para revisar depois.",
-        quandoPedirAjuda: "Compartilhe o resumo com uma pessoa de confiança quando quiser apoio para revisar os próximos passos.",
-        revisaoEspecializada: "Texto sobre registro de ocorrência e valor probatório requer revisão jurídica."
-      }
-    };
-
-    function clearTimer() {
-      if (state.pauseInterval) {
-        clearInterval(state.pauseInterval);
-        state.pauseInterval = null;
-      }
-      state.pauseSeconds = 0;
-      stopCalmGuidance();
-    }
-
-    function stopCalmGuidance() {
-      if ("speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
-      state.isSpeaking = false;
-    }
-
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-    }
-
-    function toggleCalmGuidance() {
-      if (!("speechSynthesis" in window)) return;
-      if (state.isSpeaking) {
-        stopCalmGuidance();
-        render();
-        return;
-      }
-
-      const synth = window.speechSynthesis;
-      synth.cancel();
-      synth.resume();
-
-      const text =
-        "Respira fundo. Você não precisa fazer nada agora. Não informe códigos, senhas ou dados bancários. Você pode desligar a ligação agora mesmo. Quem é do banco ou da sua família de verdade vai entender e esperar.";
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = "pt-BR";
-      utter.rate = 0.88;
-      utter.pitch = 0.98;
-      utter.volume = 1;
-
-      const voices = synth.getVoices();
-      const ptVoice =
-        voices.find(v => /pt[-_]BR/i.test(v.lang) && /natural|google|luciana|francisca|maria|antonio/i.test(v.name)) ||
-        voices.find(v => /pt[-_]BR/i.test(v.lang)) ||
-        voices.find(v => /^pt/i.test(v.lang));
-      if (ptVoice) utter.voice = ptVoice;
-
-      utter.onend = () => { state.isSpeaking = false; render(); };
-      utter.onerror = () => { state.isSpeaking = false; render(); };
-
-      window.__brequeUtter = utter;
-      state.isSpeaking = true;
-      render();
-
-      setTimeout(() => {
-        synth.resume();
-        synth.speak(utter);
-      }, 80);
-    }
-
-    function changeFont(delta) {
-      state.fontScale = Math.min(1.25, Math.max(0.9, +(state.fontScale + delta).toFixed(2)));
-      document.documentElement.style.setProperty("--font-scale", state.fontScale);
-    }
-
-    async function handleInstallClick() {
-      if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
-      } else {
-        navigate("install_guide");
-      }
-    }
-
-    function navigate(screen, pushHistory = true) {
-      clearTimer();
-      if (pushHistory && state.screen !== screen) state.history.push(state.screen);
-      state.screen = screen;
-      render();
-    }
-
-    function goBack() {
-      clearTimer();
-      state.screen = state.history.pop() || "home";
-      render();
-    }
-
-    function goHome() {
-      clearTimer();
-      state.history = [];
-      state.screen = "home";
-      render();
-    }
-
-    function startPauseTimer() {
-      clearTimer();
-      state.pauseSeconds = 10;
-      render();
-      state.pauseInterval = setInterval(() => {
-        state.pauseSeconds -= 1;
-        if (state.pauseSeconds <= 0) clearTimer();
-        render();
-      }, 1000);
-    }
-
-    function selectFictionalExample(key) {
-      const ex = FICTIONAL_EXAMPLES[key];
-      state.verifyText = ex.text;
-      state.q1Origin = ex.q1;
-      state.q2Pressure = ex.q2;
-      state.q3Request = ex.q3;
-      navigate("verify_q1");
-    }
-
-    function normalizeText(str) {
-      return (str || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-    }
-
-    function analyzeLocalTextOrLink(raw) {
-      const text = (raw || "").trim();
-      if (!text) return null;
-      const norm = normalizeText(text);
-      const findings = [];
-      let score = 0;
-
-      // 1. Análise estrutural de link (sem acessar o site)
-      const urlMatch = text.match(/(https?:\/\/[^\s]+|www\.[^\s]+|[a-z0-9-]+\.(com|net|org|xyz|top|site|online|click|vip|info|br)(\/[^\s]*)?)/i);
-      if (urlMatch) {
-        const rawUrl = urlMatch[0].toLowerCase();
-        if (/^http:\/\//.test(rawUrl)) {
-          findings.push("O link usa HTTP sem criptografia (não tem HTTPS).");
-          score += 1;
-        }
-        if (/(bit\.ly|tinyurl\.com|t\.co|cutt\.ly|rb\.gy|shorturl)/i.test(rawUrl)) {
-          findings.push("Link encurtado: esconde o endereço real do site de destino.");
-          score += 2;
-        }
-        if (/\.(xyz|top|click|site|online|vip|info)\b/i.test(rawUrl)) {
-          findings.push("Terminação de domínio muito usada em páginas temporárias de golpe.");
-          score += 2;
-        }
-        if (/(gov|correios|receita|inss|itau|bradesco|santander|nubank|caixa|serasa|bb\.|mercadopago)/i.test(rawUrl) && !/\.gov\.br\b/i.test(rawUrl)) {
-          findings.push("O link cita banco ou órgão conhecido fora de um domínio oficial verificado.");
-          score += 3;
-        }
-        if (/\b\d{1,3}(\.\d{1,3}){3}\b/.test(rawUrl)) {
-          findings.push("O link aponta para um número IP direto em vez de um site oficial.");
-          score += 3;
-        }
-      }
-
-      // 2. Análise dos 6 padrões de coerção + pedidos sensíveis
-      const rules = [
-        { name: "Urgência", pts: 2, re: /(urgente|agora|imediatamente|hoje ainda|ultima chance|em ate \d|prazo|rapido|retido|vai bloquear)/ },
-        { name: "Sigilo", pts: 3, re: /(nao conta|nao fale|nao desligue|sigiloso|confidencial|entre nos|apaga essa)/ },
-        { name: "Falsa autoridade", pts: 2, re: /(central de seguranca|central de atendimento|gerente|ouvidoria|advogado|precatorio|receita federal|inss|suporte tecnico)/ },
-        { name: "Medo de perda", pts: 2, re: /(conta foi invadida|cartao foi clonado|compra suspeita|vao bloquear|emprestimo no seu nome|devolucao|negativado)/ },
-        { name: "Ganho inesperado", pts: 2, re: /(voce foi sorteado|premio|valores a receber|resgate|indenizacao|restituicao|bonus)/ },
-        { name: "Vínculo afetivo", pts: 2, re: /(troquei de numero|numero novo|numero provisorio|oi mae|oi pai|celular quebrou|depois te devolvo)/ },
-        { name: "Pedido sensível", pts: 3, re: /(pix|boleto|taxa|transferencia|codigo|sms|senha|instalar|aplicativo|anydesk|teamviewer)/ }
-      ];
-
-      rules.forEach(r => {
-        if (r.re.test(norm)) {
-          findings.push(`Padrão identificado no texto: ${r.name}.`);
-          score += r.pts;
-        }
-      });
-
-      if (score >= 4) {
-        return {
-          status: "Sinais de risco",
-          cardClass: "card-risk",
-          pillClass: "pill-risk",
-          stage: 3,
-          findings
-        };
-      }
-      if (score >= 1) {
-        return {
-          status: "Não dá para confirmar",
-          cardClass: "card-amber",
-          pillClass: "pill-amber",
-          stage: 1,
-          findings
-        };
-      }
-      return {
-        status: "Poucos sinais encontrados — ainda vale verificar",
-        cardClass: "card-neutral",
-        pillClass: "pill-neutral",
-        stage: 1,
-        findings: ["Nenhum dos padrões locais mais comuns apareceu no texto/link, mas isso não garante que seja legítimo."]
-      };
-    }
-
-    function evaluateVerify() {
-      const reasons = [];
-      let score = 0;
-      if (state.q1Origin === "banco") { reasons.push("O contato diz ser de banco, loja ou empresa."); score += 1; }
-      else if (state.q1Origin === "familiar_novo") { reasons.push("Alguém conhecido entrou em contato por um número novo."); score += 1; }
-      else if (state.q1Origin === "desconhecido") { reasons.push("O contato veio de um número ou remetente desconhecido."); score += 1; }
-
-      if (state.q2Pressure === "sim") { reasons.push("Há pressão para agir rápido ou manter segredo."); score += 2; }
-      if (state.q3Request === "dinheiro") { reasons.push("Houve pedido de dinheiro, Pix ou pagamento."); score += 2; }
-      else if (state.q3Request === "credencial") { reasons.push("Houve pedido de código, senha, documento ou instalação de aplicativo."); score += 3; }
-
-      if (score >= 3 || state.q3Request === "credencial") {
-        return { status: "Sinais de risco", cardClass: "card-risk", pillClass: "pill-risk", stage: state.q2Pressure === "sim" ? 3 : 1, reasons };
-      }
-      if (score >= 1) {
-        return { status: "Não dá para confirmar", cardClass: "card-amber", pillClass: "pill-amber", stage: 1, reasons };
-      }
-      return {
-        status: "Poucos sinais encontrados — ainda vale verificar",
-        cardClass: "card-neutral",
-        pillClass: "pill-neutral",
-        stage: 1,
-        reasons: ["Nenhum dos sinais mais comuns foi marcado, mas isso não comprova que o contato seja legítimo."]
-      };
-    }
-
-    function openHelpPreview(contextLabel) {
-      state.helpPreviewText = state.verifyText
-        ? `Situação que quero conferir: ${state.verifyText.slice(0, 120)}`
-        : `Estou em dúvida sobre uma situação (${contextLabel}) e gostaria de conferir com você antes de decidir.`;
-      state.helpSentSimulated = false;
-      navigate("help_preview");
-    }
-
-    function openIncidentLog() {
-      if (!state.incidentLog.time) {
-        state.incidentLog.time = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-      }
-      if (!state.incidentLog.summary && state.verifyText) {
-        state.incidentLog.summary = state.verifyText;
-      }
-      state.incidentLog.saved = false;
-      navigate("incident_log");
-    }
-
-    function addTrustedContact() {
-      const name = state.newContactName.trim();
-      if (!name) return;
-      state.trustedContacts.push({
-        id: "c" + (state.trustedContacts.length + 1),
-        name,
-        note: state.newContactNote.trim() || "Contato fictício de demonstração"
-      });
-      state.newContactName = "";
-      state.newContactNote = "";
-      render();
-    }
-
-    function togglePostCheck(idx) {
-      if (state.postChecked.has(idx)) state.postChecked.delete(idx);
-      else state.postChecked.add(idx);
-      render();
-    }
-
-    function renderRoteiroCard(stageNum, extraNotice = "") {
-      const r = ROTEIRO_REVERSO[stageNum];
-      return `
-        <div class="card">
-          <span class="pill pill-brand">Roteiro Reverso • Estágio ${r.num} de 6</span>
-          <h2>${r.titulo}</h2>
-          <p style="margin-top: 8px; color: var(--text); font-weight: 500;">${r.acolhimento}</p>
-          ${extraNotice ? `<div class="quote-box" style="margin-top: 10px; border-left-color: var(--risk); background: var(--risk-bg);">${extraNotice}</div>` : ""}
-          <div class="rr-block"><div class="rr-title">Ação mais importante agora</div><p style="color: var(--text); font-weight: 600;">${r.acaoAgora}</p></div>
-          <div class="rr-block"><div class="rr-title">Por que fazer isso</div><p>${r.motivo}</p></div>
-          <div class="rr-block"><div class="rr-title">Como verificar por conta própria</div><p>${r.verificacao}</p></div>
-          <div class="rr-block"><div class="rr-title">O que evitar</div><p>${r.evitar}</p></div>
-          <div class="rr-block"><div class="rr-title">Se não conseguir fazer isso agora</div><p>${r.alternativa}</p></div>
-          <div class="rr-block"><div class="rr-title">Quando pedir ajuda a uma pessoa de confiança</div><p>${r.quandoPedirAjuda}</p></div>
-          ${r.revisaoEspecializada ? `<div class="review-tag">Nota de validação: ${r.revisaoEspecializada}</div>` : ""}
+  <section id="situacoes">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Reconhece alguma destas cenas?</span>
+        <h2>Na hora da pressa, qualquer pessoa pode travar.</h2>
+        <p>O golpista conta com o susto e o isolamento. O BREQUE entra exatamente nesses 60 segundos decisivos.</p>
+      </div>
+      <div class="grid-3">
+        <div class="chat-bubble">
+          <span class="chat-tag">WhatsApp • Número novo</span>
+          <p class="chat-quote">“Oi mãe, meu celular quebrou. Preciso pagar um boleto urgente agora, depois te devolvo.”</p>
+          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> lembra você de pausar, usar a Pergunta Secreta da Família e ligar para o número antigo.</p>
         </div>
-      `;
-    }
+        <div class="chat-bubble">
+          <span class="chat-tag">Ligação • Falsa central</span>
+          <p class="chat-quote">“Detectamos uma compra suspeita. Não desligue a ligação e informe o código que chegou por SMS.”</p>
+          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> oferece áudio calmo e frase pronta para desligar e ligar para o número no verso do cartão.</p>
+        </div>
+        <div class="chat-bubble">
+          <span class="chat-tag">SMS • Cobrança inesperada</span>
+          <p class="chat-quote">“Sua encomenda ficou retida. Regularize a taxa de R$ 27,90 em até 2 horas pelo link abaixo.”</p>
+          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> analisa o link localmente sem abrir a página perigosa e guia a conferência no app oficial.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    function updateNavHighlight() {
-      ["nav-home", "nav-verify", "nav-canais", "nav-privacy"].forEach(id => {
-        document.getElementById(id)?.classList.remove("active");
-      });
-      if (state.screen === "home") document.getElementById("nav-home")?.classList.add("active");
-      else if (state.screen.startsWith("verify")) document.getElementById("nav-verify")?.classList.add("active");
-      else if (state.screen === "discagem_segura") document.getElementById("nav-canais")?.classList.add("active");
-      else if (state.screen === "privacy") document.getElementById("nav-privacy")?.classList.add("active");
-    }
+  <section id="como-funciona" class="section-soft">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Simples de verdade</span>
+        <h2>3 passos para retomar o controle com calma</h2>
+        <p>Sem jargões técnicos, sem julgamento e sem selos falsos de “está seguro”.</p>
+      </div>
+      <div class="grid-3">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Interrompa a pressão</h3>
+          <p>Toque em <strong>BREQUE</strong> para ouvir uma orientação calma em voz alta, respirar 10 segundos e usar uma frase pronta para encerrar a ligação.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Verifique por outro canal</h3>
+          <p>Cole a mensagem ou o link para checar sinais de coerção localmente e use a <strong>Discagem Segura</strong> para encontrar canais oficiais verificados.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Aja rápido se já caiu</h3>
+          <p>Se já fez um Pix ou passou senha, a <strong>Mesa de Recuperação</strong> mostra a ordem mais útil de ações (banco/MED, troca de senha e relato organizado em .txt).</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    function render() {
-      const app = document.getElementById("app");
-      const isWelcome = state.screen === "welcome";
-      document.querySelector(".proto-strip")?.classList.toggle("hidden-chrome", isWelcome);
-      document.querySelector(".topbar")?.classList.toggle("hidden-chrome", isWelcome);
-      document.querySelector(".bottom-nav")?.classList.toggle("hidden-chrome", isWelcome);
-      app.style.padding = isWelcome ? "0" : "";
-      window.scrollTo({ top: 0, behavior: "instant" });
-      updateNavHighlight();
+  <section id="recursos">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">O que torna o BREQUE diferente</span>
+        <h2>Não é só “tomar cuidado”. É conferir antes do dinheiro sair.</h2>
+        <p>Tudo roda no seu aparelho, sem ler WhatsApp, sem pedir senha e sem prometer que algo “está seguro”.</p>
+      </div>
+      <div class="grid-3">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Raio-X do Pix e do boleto</h3>
+          <p>Cole o Pix copia-e-cola ou o código de barras. O app lê o nome do recebedor, a chave e o valor no próprio aparelho e compara com <strong>quem você acha que vai receber</strong>. Se não bater, ele te faz parar.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Cofre de destinos confiáveis</h3>
+          <p>Cadastre quem você paga sempre: filho, mercado, aluguel. Destino novo gera uma pausa e a opção de confirmar com sua <strong>Pessoa de Confiança</strong> antes de pagar.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Simulado de golpe em família</h3>
+          <p>Com um pacto prévio, o app dispara uma mensagem falsa para medir quanto tempo a pessoa leva para verificar por outro canal. O resultado fica só com a família — e vira prova de que o treino funciona.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h3>Protocolo de Incidente MED</h3>
+          <p>Se o dinheiro já saiu, o app organiza horário, valor, chave de destino e ID da transação, e mostra o caminho do botão de contestação dentro do app do banco. Tempo é o que decide a recuperação.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <h3>Registro de canais oficiais</h3>
+          <p>Uma lista aberta de domínios oficiais de bancos e órgãos, que você pode baixar e conferir. O BREQUE lê essa lista — não inventa telefone nem selo de confiança.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">6</div>
+          <h3>Painel de eficácia local</h3>
+          <p>Treinos concluídos, tempo médio até verificar e simulados feitos, tudo no seu aparelho. Sem painel bonito que esconde número ruim: se o alarme falhar, você vê.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:30px;">
+        <a href="/app.html?install=1" class="btn-primary">Abrir e instalar no celular →</a>
+      </div>
+    </div>
+  </section>
 
-      if (isWelcome) {
-        app.innerHTML = `
-          <section class="welcome-screen" aria-label="Boas-vindas ao BREQUE">
-            <svg class="welcome-waves" viewBox="0 0 430 844" preserveAspectRatio="none" aria-hidden="true">
-              <defs>
-                <linearGradient id="waveGlow" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.55"/>
-                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.08"/>
-                </linearGradient>
-              </defs>
-              <path d="M0 155 Q120 190 220 120 T430 140" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
-              <path d="M0 580 Q130 510 260 560 T430 520 L430 844 L0 844 Z" fill="url(#waveGlow)"/>
-              <path d="M0 640 Q160 570 300 630 T430 600" fill="none" stroke="rgba(186,230,253,0.45)" stroke-width="2"/>
-              <path d="M0 700 Q215 620 430 700" fill="none" stroke="rgba(125,211,252,0.35)" stroke-width="1.6"/>
-            </svg>
+  <section id="baixar" class="section-soft">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Baixe o app</span>
+        <h2>Primeiro a página. O app só se você quiser.</h2>
+        <p>Sem loja, sem cadastro e sem cobrança para usar o essencial. O ícone fica na tela inicial do celular.</p>
+      </div>
+      <div class="grid-3">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Abra no celular</h3>
+          <p>Toque em <strong>Baixar o app</strong>. Ele abre no navegador e funciona offline depois do primeiro acesso.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Instale em 2 toques</h3>
+          <p>No Android, use <strong>Instalar aplicativo</strong>. No iPhone, toque em <strong>Compartilhar → Adicionar à Tela de Início</strong>.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Configure com a família</h3>
+          <p>Combinem a Pergunta Secreta, cadastrem destinos no Cofre e façam o primeiro simulado. Leva menos de 5 minutos.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:30px;">
+        <a href="/app.html?install=1" class="btn-primary">Baixar o BREQUE grátis →</a>
+        <p style="font-size:0.82rem; color:var(--muted); margin-top:10px;">Compatível com Android e iPhone via navegador. Nenhum dado sai do aparelho.</p>
+      </div>
+    </div>
+  </section>
 
-            <div style="height: 24px;"></div>
+  <section>
+    <div class="container">
+      <div class="family-banner">
+        <div>
+          <span class="hero-pill" style="margin-bottom:12px;">Pacto Familiar de Autonomia</span>
+          <h2 style="margin:0 0 12px; font-size:1.85rem;">Proteja seus pais e avós sem espionar o celular deles.</h2>
+          <p style="margin:0 0 20px; color:#d6e7ef;">
+            Apps invasivos geram constrangimento e são desinstalados. Com o BREQUE, vocês instalam o ícone juntos em 2 minutos, combinam a Pergunta Secreta da Família e geram um Cartão de Bolso para fixar no WhatsApp.
+          </p>
+          <a href="/app.html?install=1" class="btn-primary">Configurar com minha família →</a>
+        </div>
+        <div class="mock-card" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:#fff; padding:20px;">
+          <strong style="color:#fde68a; font-size:0.95rem;">Incluso grátis no app:</strong>
+          <ul style="margin:10px 0 0; padding-left:18px; color:#e2eff5; font-size:0.9rem;">
+            <li style="margin-bottom:6px;">Vacina de 60 Segundos (treino em 3 rodadas)</li>
+            <li style="margin-bottom:6px;">Cartão da Família em PNG para WhatsApp</li>
+            <li style="margin-bottom:6px;">Pessoa de Confiança com prévia antes de enviar</li>
+            <li>Fonte ajustável (A- / A+) para leitura confortável</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            <div class="welcome-center">
-              <div class="welcome-shield">
-                <svg width="42" height="42" viewBox="0 0 512 512" aria-hidden="true">
-                  <path d="M256 64L104 128v122c0 106 64 198 152 232 88-34 152-126 152-232V128L256 64z" fill="none" stroke="#ffffff" stroke-width="28" stroke-linejoin="round"/>
-                  <rect x="198" y="186" width="38" height="140" rx="14" fill="#fbbf24"/>
-                  <rect x="276" y="186" width="38" height="140" rx="14" fill="#fbbf24"/>
-                </svg>
-              </div>
-              <h1 class="welcome-title">BREQUE<br/>Copiloto contra Golpes</h1>
-              <p class="welcome-sub">Um breque na hora da dúvida. Interrompa decisões sob pressão e verifique com calma.</p>
-            </div>
-
-            <button class="welcome-go" onclick="goHome()" aria-label="Entrar no BREQUE">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-            </button>
-          </section>
-        `;
-        return;
-      }
-
-      if (state.screen === "home") {
-        app.innerHTML = `
-          <div class="status-glass">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span>BREQUE pronto • Análises e relatos processados no seu aparelho</span>
-          </div>
-
-          <div class="home-layout">
-            <div class="stack" style="gap: 14px;">
-              <button class="arc-hero" onclick="navigate('pressure_pause')" aria-label="Estão me pressionando agora">
-                <div class="arc-wrap">
-                  <svg class="arc-svg" viewBox="0 0 280 158" aria-hidden="true">
-                    <defs>
-                      <linearGradient id="arcGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#7dd3fc"/>
-                        <stop offset="50%" stop-color="#f0f9ff"/>
-                        <stop offset="100%" stop-color="#bae6fd"/>
-                      </linearGradient>
-                    </defs>
-                    <path d="M 32 142 A 108 108 0 0 1 248 142" fill="none" stroke="rgba(186,230,253,0.14)" stroke-width="28" stroke-linecap="butt"/>
-                    <path d="M 32 142 A 108 108 0 0 1 248 142" fill="none" stroke="url(#arcGrad)" stroke-width="28" stroke-linecap="butt"/>
-                  </svg>
-                  <div class="arc-label">BREQUE</div>
-                  <div class="arc-sub">Pausa imediata →</div>
-                </div>
-              </button>
-
-              <div class="glass-trio">
-                <button class="glass-card amber-glass" onclick="navigate('pressure_pause')">
-                  <div class="glass-card-top">
-                    <span class="glass-card-title">Pressão</span>
-                    <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fde68a" stroke-width="2.4"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
-                  </div>
-                  <span class="glass-card-sub">Áudio calmo e saída agora</span>
-                </button>
-
-                <button class="glass-card" onclick="navigate('verify_start')">
-                  <div class="glass-card-top">
-                    <span class="glass-card-title">Verificar</span>
-                    <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
-                  </div>
-                  <span class="glass-card-sub">Mensagem, link ou ligação</span>
-                </button>
-
-                <button class="glass-card risk-glass" onclick="navigate('post_start')">
-                  <div class="glass-card-top">
-                    <span class="glass-card-title">Socorro</span>
-                    <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2.4"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
-                  </div>
-                  <span class="glass-card-sub">Já fiz Pix, senha ou app</span>
-                </button>
-              </div>
-            </div>
-
-            <section class="summary-box" aria-label="Ferramentas essenciais">
-              <div style="display:flex; justify-content:space-between; align-items:center; padding: 0 2px;">
-                <h2 style="font-size:1rem;">Ferramentas essenciais</h2>
-                <button class="btn-ghost" style="font-size:0.82rem; color:#7dd3fc; border:none;" onclick="navigate('central_mais')">Ver todas</button>
-              </div>
-
-              <button class="summary-row" onclick="navigate('discagem_segura')">
-                <div class="summary-left">
-                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-                  <div>
-                    <div style="font-weight:700; font-size:0.92rem;">Discagem Segura</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted);">Canais oficiais verificados (banco, 190, BO)</div>
-                  </div>
-                </div>
-                <span class="summary-tag">4 canais</span>
-              </button>
-
-              <button class="summary-row" onclick="navigate('trusted')">
-                <div class="summary-left">
-                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                  <div>
-                    <div style="font-weight:700; font-size:0.92rem;">Pessoa de Confiança</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted);">Pedir apoio com prévia no WhatsApp/SMS</div>
-                  </div>
-                </div>
-                <span class="summary-tag">Apoio</span>
-              </button>
-
-              <button class="summary-row" onclick="resetVacina()">
-                <div class="summary-left">
-                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-                  <div>
-                    <div style="font-weight:700; font-size:0.92rem;">Vacina de 60 Segundos</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted);">Treino rápido de 3 rodadas com a família</div>
-                  </div>
-                </div>
-                <span class="summary-tag">Treinar</span>
-              </button>
-
-              <button class="summary-row" onclick="state.cardDownloaded=false; navigate('cartao_familia')">
-                <div class="summary-left">
-                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10"/><path d="M7 12h6"/></svg></div>
-                  <div>
-                    <div style="font-weight:700; font-size:0.92rem;">Cartão da Família (PNG)</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted);">Imagem pronta para fixar no WhatsApp</div>
-                  </div>
-                </div>
-                <span class="summary-tag">Baixar</span>
-              </button>
-
-              <button class="summary-row" onclick="openIncidentLog()">
-                <div class="summary-left">
-                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                  <div>
-                    <div style="font-weight:700; font-size:0.92rem;">Dossiê 30 Min (MED)</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted);">Organizar relato e baixar .txt no aparelho</div>
-                  </div>
-                </div>
-                <span class="summary-tag">Abrir</span>
-              </button>
-
-              <button class="summary-row" onclick="navigate('planos')">
-                <div class="summary-left">
-                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5L12 16.5 5.5 21l2-7.5L2 9h7z"/></svg></div>
-                  <div>
-                    <div style="font-weight:700; font-size:0.92rem;">Planos BREQUE</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted);">Básico grátis • Família R$ 12,90</div>
-                  </div>
-                </div>
-                <span class="summary-tag">Ver</span>
-              </button>
-            </section>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "central_mais") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+  <section id="planos" class="section-soft">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Transparente do início ao fim</span>
+        <h2>Comece grátis. Evolua só se fizer sentido.</h2>
+        <p>Você paga pela conveniência e apoio familiar — nunca vendemos seus dados.</p>
+      </div>
+      <div class="grid-3">
+        <div class="plan-card">
           <div>
-            <span class="pill pill-brand">Central da Família & Treino</span>
-            <h1>Prepare-se antes do susto</h1>
-            <p style="margin-top:6px;">Ferramentas para treinar em 1 minuto, proteger sua família sem vigiar e gerenciar seu plano.</p>
-          </div>
-
-          <div class="stack">
-            <button class="action-card primary-tone" onclick="resetVacina()">
-              <div class="icon-badge icon-brand">60s</div>
-              <div>
-                <span class="action-title">Vacina de 60 Segundos</span>
-                <span class="action-sub">Treino rápido em 3 rodadas para criar memória muscular contra golpes</span>
-              </div>
-            </button>
-
-            <button class="action-card primary-tone" onclick="state.cardDownloaded=false; navigate('cartao_familia')">
-              <div class="icon-badge icon-brand">PNG</div>
-              <div>
-                <span class="action-title">Cartão da Família (WhatsApp / Geladeira)</span>
-                <span class="action-sub">Gere uma imagem pronta para fixar no grupo da família</span>
-              </div>
-            </button>
-
-            <button class="action-card primary-tone" onclick="navigate('pacto_familia')">
-              <div class="icon-badge icon-brand">✓</div>
-              <div>
-                <span class="action-title">Pacto Familiar de Autonomia</span>
-                <span class="action-sub">Apoio sem vigilância + Pergunta Secreta da Família</span>
-              </div>
-            </button>
-          </div>
-
-          <div class="section-label">Mais recursos</div>
-          <div class="grid-2">
-            <button class="tile-btn" onclick="navigate('trusted')">
-              <span class="tile-title">Pessoa de Confiança</span>
-              <span class="tile-sub">Prepare pedido de apoio</span>
-            </button>
-            <button class="tile-btn" onclick="openIncidentLog()">
-              <span class="tile-title">Dossiê 30 Min (MED)</span>
-              <span class="tile-sub">Organize relato e protocolo</span>
-            </button>
-            <button class="tile-btn" onclick="navigate('stages_overview')">
-              <span class="tile-title">Roteiro Reverso</span>
-              <span class="tile-sub">6 estágios e padrões</span>
-            </button>
-            <button class="tile-btn" onclick="navigate('planos')" style="border-color:#bfd6e0; background:var(--brand-soft);">
-              <span class="tile-title" style="color:var(--brand);">Planos BREQUE</span>
-              <span class="tile-sub">Grátis, Família e Gold</span>
-            </button>
-          </div>
-
-          <button class="btn btn-secondary btn-center" onclick="navigate('privacy')">Termos de Uso, Privacidade e LGPD</button>
-        `;
-        return;
-      }
-
-      if (state.screen === "vacina_60s") {
-        if (state.vacinaStep >= VACINA_CENARIOS.length) {
-          app.innerHTML = `
-            <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-            <div class="card card-amber stack">
-              <span class="pill pill-amber">Treino concluído!</span>
-              <h1>Você completou a Vacina de 60 Segundos</h1>
-              <p style="color:var(--text);">Escolhas mais seguras: <strong>${state.vacinaScore} de ${VACINA_CENARIOS.length}</strong>.</p>
-              <p>O mais importante não é acertar tudo de primeira — é lembrar de <strong>pausar e confirmar por outro canal</strong> quando a pressa aparecer.</p>
-            </div>
-            <button class="btn btn-primary btn-center" onclick="resetVacina()">Refazer treino</button>
-            <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
-          `;
-          return;
-        }
-        const c = VACINA_CENARIOS[state.vacinaStep];
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">${c.titulo}</span>
-            <h1>O que você faria agora?</h1>
-          </div>
-          <div class="card"><div class="quote-box">${c.msg}</div></div>
-          ${!state.vacinaFeedback ? `
-            <div class="stack">
-              ${c.opcoes.map((o, i) => `<button class="btn btn-secondary" onclick="answerVacina(${i})">${o.label} <span>→</span></button>`).join("")}
-            </div>
-          ` : `
-            <div class="card card-soft stack">
-              <h3>Reflexão rápida</h3>
-              <p style="color:var(--text);">${state.vacinaFeedback}</p>
-              <button class="btn btn-primary btn-center" onclick="nextVacina()">
-                ${state.vacinaStep < VACINA_CENARIOS.length - 1 ? 'Próxima rodada →' : 'Ver resultado →'}
-              </button>
-            </div>
-          `}
-        `;
-        return;
-      }
-
-      if (state.screen === "cartao_familia") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Cartão da Família • 100% local</span>
-            <h1>Imagem pronta para o WhatsApp ou geladeira</h1>
-            <p style="margin-top:6px;">Gere uma imagem limpa com os 3 passos do BREQUE e o lembrete da Pergunta Secreta da Família. Nenhum dado sai do aparelho.</p>
-          </div>
-          <div class="card stack">
-            <div>
-              <label class="field-label" for="card-hint">Lembrete opcional no cartão (não escreva a resposta secreta!)</label>
-              <input id="card-hint" type="text" placeholder="Ex.: Pergunte o nome do nosso primeiro cachorro" value="${state.cardFamilyHint}" oninput="state.cardFamilyHint=this.value" />
-            </div>
-            <button class="btn btn-primary btn-center" onclick="downloadFamilyCardPng()">
-              Baixar imagem (cartao-familia-breque.png)
-            </button>
-            ${state.cardDownloaded ? `<div class="quote-box"><strong>Imagem gerada no seu aparelho!</strong> Agora você pode fixar no grupo da família no WhatsApp ou imprimir.</div>` : ""}
-          </div>
-          <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
-        `;
-        return;
-      }
-
-      if (state.screen === "pacto_familia") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Pacto Familiar de Autonomia</span>
-            <h1>Proteger quem você ama, sem espionar</h1>
-            <p style="margin-top:6px;">Apps que vigiam o celular geram constrangimento e são desinstalados. O BREQUE funciona com respeito e acordo mútuo:</p>
-          </div>
-          <div class="card stack">
-            <div class="rr-block" style="border-top:none; margin-top:0; padding-top:0;">
-              <div class="rr-title">1. Autonomia preservada</div>
-              <p>Ninguém vê suas mensagens, ligações ou extrato. Você decide quando pedir apoio.</p>
-            </div>
-            <div class="rr-block">
-              <div class="rr-title">2. Pergunta Secreta combinada pessoalmente</div>
-              <p>Em qualquer pedido urgente de dinheiro, a família combina de sempre fazer a pergunta secreta antes.</p>
-            </div>
-            <div class="rr-block">
-              <div class="rr-title">3. Ícone na primeira tela</div>
-              <p>Deixe o BREQUE instalado ao lado do WhatsApp para lembrar de pausar na hora da dúvida.</p>
-            </div>
-          </div>
-          <div class="stack">
-            <button class="btn btn-primary btn-center" onclick="navigate('codigo_familia')">Combinar Pergunta Secreta →</button>
-            <button class="btn btn-secondary btn-center" onclick="navigate('trusted')">Configurar Pessoa de Confiança →</button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "codigo_familia") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Código da Família • 100% fora do celular</span>
-            <h1>Pergunta secreta contra número novo e voz clonada</h1>
-            <p style="margin-top: 6px;">Mesmo que alguém clone um WhatsApp ou imite uma voz, não sabe uma resposta que só a sua família combinou pessoalmente.</p>
-          </div>
-
-          <div class="card stack">
-            <h3>Como combinar em 2 minutos (sem salvar no celular)</h3>
-            <div class="rr-block">
-              <div class="rr-title">1. Escolha uma pergunta simples</div>
-              <p>Exemplo: <em>“Qual era o nome do nosso primeiro cachorro?”</em> ou <em>“Qual comida nunca falta no domingo?”</em>.</p>
-            </div>
-            <div class="rr-block">
-              <div class="rr-title">2. Combine pessoalmente ou por chamada de vídeo</div>
-              <p>Não escreva a resposta no WhatsApp nem salve no aplicativo. Ela existe só na memória de vocês.</p>
-            </div>
-            <div class="rr-block">
-              <div class="rr-title">3. Use sempre que houver pedido de dinheiro</div>
-              <p>Se alguém mandar mensagem de número novo ou ligar com pressa, faça a pergunta combinada antes de qualquer transferência.</p>
-            </div>
-          </div>
-
-          <button class="btn btn-primary btn-center" onclick="navigate('install_guide')">
-            Como configurar o BREQUE com sua família →
-          </button>
-        `;
-        return;
-      }
-
-      if (state.screen === "install_guide") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div class="card stack">
-            <span class="pill pill-brand">PWA Instalável • Almoço de Domingo</span>
-            <h1>Instalar o BREQUE no celular (ou ajudar um familiar)</h1>
-            <p>O BREQUE funciona como aplicativo direto da tela inicial, sem precisar baixar em loja e sem tirar a autonomia de ninguém.</p>
-            <div class="rr-block">
-              <div class="rr-title">No Android (Chrome / Edge)</div>
-              <p>Toque nos <strong>3 pontinhos</strong> no canto superior direito e escolha <strong>“Adicionar à tela inicial”</strong> ou <strong>“Instalar aplicativo”</strong>.</p>
-            </div>
-            <div class="rr-block">
-              <div class="rr-title">No iPhone (Safari)</div>
-              <p>Toque no ícone de <strong>Compartilhar</strong> (quadrado com seta para cima) e escolha <strong>“Adicionar à Tela de Início”</strong>.</p>
-            </div>
-            <div class="rr-block">
-              <div class="rr-title">Dica para configurar com pais ou avós (2 minutos)</div>
-              <p>1. Coloque o ícone do BREQUE na primeira tela, ao lado do WhatsApp.<br/>2. Combinem juntos a <strong>Pergunta Secreta da Família</strong>.<br/>3. Mostrem que o app não vigia ninguém — só ajuda a pausar na hora da dúvida.</p>
-            </div>
-          </div>
-          <button class="btn btn-primary btn-center" onclick="goHome()">Voltar ao início</button>
-        `;
-        return;
-      }
-
-      if (state.screen === "verify_start") {
-        const localScan = state.verifyText.trim().length >= 4 ? analyzeLocalTextOrLink(state.verifyText) : null;
-        app.innerHTML = `
-          <div style="position:relative; border-radius:20px; overflow:hidden; padding:18px 16px 20px; background:radial-gradient(circle at 50% 35%, rgba(16,185,129,0.28) 0%, rgba(14,165,233,0.2) 45%, rgba(6,16,24,0.95) 100%); border:1px solid rgba(125,211,252,0.2); text-align:center;">
-            <button class="btn btn-ghost" style="position:absolute; left:12px; top:12px; color:#fff;" onclick="goBack()">←</button>
-            <div style="font-size:0.86rem; font-weight:700; color:#d6eef7; margin-bottom:12px;">Verificar Mensagem ou Link</div>
-            <div style="width:62px; height:62px; margin:0 auto 10px; border-radius:50%; background:rgba(14,165,198,0.2); border:1.5px solid rgba(125,211,252,0.5); box-shadow:0 0 24px rgba(56,189,248,0.4); display:flex; align-items:center; justify-content:center;">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e0f7ff" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-            </div>
-            <p style="font-size:0.84rem; color:#bfe0ee;">Análise 100% local no aparelho. O BREQUE não abre links nem envia textos para servidores.</p>
-          </div>
-
-          <div class="card stack">
-            <label class="field-label" for="verify-text">Cole aqui o link ou a mensagem recebida</label>
-            <textarea id="verify-text" rows="3" placeholder="Ex.: www.correios-taxa.xyz ou 'Oi mãe, troquei de número...'" oninput="state.verifyText = this.value;">${state.verifyText}</textarea>
-            <p style="font-size: 0.78rem;">Não cole senhas, códigos de SMS, CPF nem número de cartão.</p>
-            <button class="btn btn-primary btn-center" onclick="render()">Analisar agora (100% local) →</button>
-          </div>
-
-          ${localScan ? `
-            <div class="card ${localScan.cardClass} stack">
-              <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:40px; height:40px; min-width:40px; border-radius:50%; background:rgba(251,191,36,0.2); border:1px solid rgba(251,191,36,0.5); display:flex; align-items:center; justify-content:center; color:#fbbf24; font-weight:800;">!</div>
-                <div>
-                  <span class="pill ${localScan.pillClass}" style="margin-bottom:2px;">${localScan.status}</span>
-                  <div style="font-size:0.82rem; color:var(--text-muted);">Resultado da análise local instantânea</div>
-                </div>
-              </div>
-              <ul class="list-clean" style="color:var(--text);">
-                ${localScan.findings.map(f => `<li>${f}</li>`).join("")}
-              </ul>
-              <button class="btn btn-primary btn-center" onclick="state.activeStage=${localScan.stage}; navigate('stages_overview');">
-                Ver próximo passo seguro (Roteiro Reverso) →
-              </button>
-              <button class="btn btn-secondary btn-center" onclick="navigate('verify_q1')">
-                Refinar com 3 perguntas rápidas
-              </button>
-            </div>
-          ` : `
-            <button class="btn btn-primary btn-center" onclick="navigate('verify_q1')">
-              Ou responder 3 perguntas rápidas sem colar texto →
-            </button>
-          `}
-
-          <div class="section-label">Testar com exemplos reais comuns no Brasil</div>
-          <div class="stack">
-            <button class="btn btn-secondary" onclick="state.verifyText='Oi, troquei de número porque meu celular quebrou. Preciso pagar um Pix urgente de R$ 950 agora, depois te devolvo.'; render();">“Oi, troquei de número... preciso de um Pix” <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.verifyText='Central de segurança do banco: compra suspeita detectada. Não desligue e informe o código SMS.'; render();">“Central de segurança: informe o código SMS” <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.verifyText='Sua encomenda foi retida. Regularize a taxa em http://correios-taxa.xyz agora.'; render();">Link falso: http://correios-taxa.xyz <span>→</span></button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "verify_q1") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar (relato mantido)</button>
-          <div><span class="pill pill-brand">Pergunta 1 de 3</span><h1>Quem iniciou o contato?</h1></div>
-          ${state.verifyText ? `<div class="quote-box">${state.verifyText}</div>` : ""}
-          <div class="stack">
-            <button class="btn ${state.q1Origin === 'banco' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='banco'; navigate('verify_q2')">Alguém dizendo ser banco, loja ou empresa <span>→</span></button>
-            <button class="btn ${state.q1Origin === 'familiar_novo' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='familiar_novo'; navigate('verify_q2')">Familiar ou conhecido em um número novo <span>→</span></button>
-            <button class="btn ${state.q1Origin === 'desconhecido' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='desconhecido'; navigate('verify_q2')">Um número ou remetente desconhecido <span>→</span></button>
-            <button class="btn ${state.q1Origin === 'eu_iniciei' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='eu_iniciei'; navigate('verify_q2')">Eu mesmo procurei o contato (app já instalado ou verso do cartão) <span>→</span></button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "verify_q2") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div><span class="pill pill-brand">Pergunta 2 de 3</span><h1>Há pressão para agir rápido ou manter segredo?</h1></div>
-          <div class="stack">
-            <button class="btn ${state.q2Pressure === 'sim' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q2Pressure='sim'; navigate('verify_q3')">Sim, pediram pressa ou para não contar a ninguém <span>→</span></button>
-            <button class="btn ${state.q2Pressure === 'nao' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q2Pressure='nao'; navigate('verify_q3')">Não percebi pressa nem segredo <span>→</span></button>
-            <button class="btn ${state.q2Pressure === 'nao_sei' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q2Pressure='nao_sei'; navigate('verify_q3')">Não tenho certeza <span>→</span></button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "verify_q3") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div><span class="pill pill-brand">Pergunta 3 de 3</span><h1>Pediram dinheiro, código, senha ou instalação de aplicativo?</h1></div>
-          <div class="stack">
-            <button class="btn ${state.q3Request === 'dinheiro' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q3Request='dinheiro'; navigate('verify_result')">Sim, pediram dinheiro, Pix ou pagamento <span>→</span></button>
-            <button class="btn ${state.q3Request === 'credencial' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q3Request='credencial'; navigate('verify_result')">Sim, pediram código, senha, documento ou instalar app <span>→</span></button>
-            <button class="btn ${state.q3Request === 'nenhum' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q3Request='nenhum'; navigate('verify_result')">Não pediram nada disso <span>→</span></button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "verify_result") {
-        const res = evaluateVerify();
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar e ajustar respostas</button>
-          <div class="card ${res.cardClass}">
-            <span class="pill ${res.pillClass}">${res.status}</span>
-            <h2>Leitura baseada nas 3 respostas marcadas</h2>
-            <ul class="list-clean" style="color: var(--text);">${res.reasons.map(r => `<li>${r}</li>`).join("")}</ul>
-            <p style="font-size: 0.8rem; margin-top: 8px;">O texto digitado não foi analisado automaticamente neste protótipo.</p>
-          </div>
-          ${renderRoteiroCard(res.stage)}
-          <div class="stack">
-            <button class="btn btn-primary btn-center" onclick="openHelpPreview('verificação de contato recebido')">Pedir ajuda a uma pessoa de confiança</button>
-            <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "pressure_pause") {
-        const pauseHtml = state.pauseSeconds > 0
-          ? `<div class="timer-box"><div><strong>Respire fundo</strong><p style="font-size:0.84rem;">Nenhuma decisão séria precisa ser tomada em segundos.</p></div><div class="timer-count">${state.pauseSeconds}s</div></div>`
-          : `<button class="btn btn-secondary btn-center" onclick="startPauseTimer()">Fazer uma pausa de 10 segundos (opcional)</button>`;
-        const audioBtn = "speechSynthesis" in window
-          ? `<button class="action-card" style="${state.isSpeaking ? 'background:var(--brand); color:#fff; border:2px solid var(--brand);' : 'background:var(--brand-soft); border:2px solid var(--brand);'}" onclick="toggleCalmGuidance()">
-              <div class="icon-badge" style="${state.isSpeaking ? 'background:rgba(255,255,255,0.18); color:#fff;' : 'background:var(--brand); color:#fff;'}">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">${state.isSpeaking ? '<rect x="6" y="6" width="12" height="12" rx="2"/>' : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>'}</svg>
-              </div>
-              <div>
-                <span class="action-title" style="${state.isSpeaking ? 'color:#fff;' : 'color:var(--brand);'}">${state.isSpeaking ? 'Parar áudio de orientação' : 'Ouvir orientação calma'}</span>
-                <span class="action-sub" style="${state.isSpeaking ? 'color:#d6e6ed;' : 'color:var(--text);'}">${state.isSpeaking ? 'Reproduzindo orientação em voz alta...' : 'Toque para ouvir sem precisar ler agora'}</span>
-              </div>
-            </button>`
-          : "";
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div class="card card-amber">
-            <span class="pill pill-amber">Sessão de Proteção • Primeiro passo</span>
-            <h1>Pause. Não informe códigos, senhas ou dados bancários.</h1>
-            <p style="margin-top: 8px; color: var(--text);">Você não precisa resolver isso correndo. Quem é legítimo espera você confirmar.</p>
-          </div>
-
-          ${audioBtn}
-          ${pauseHtml}
-
-          <div class="card stack">
-            <h3>Frases prontas para desligar sem constrangimento</h3>
-            <div class="quote-box">“Meu celular está acabando a bateria. Vou ligar para o número do verso do meu cartão.”</div>
-            <div class="quote-box">“Vou conferir isso com a minha família e já retorno.”</div>
-            <p style="font-size: 0.82rem;">Se for familiar em número novo, faça a <strong>Pergunta Secreta da Família</strong> antes de fazer qualquer transferência.</p>
-          </div>
-
-          <button class="btn btn-primary btn-center" onclick="navigate('pressure_topic')">Continuar com calma →</button>
-        `;
-        return;
-      }
-
-      if (state.screen === "pressure_topic") {
-        const topics = [
-          { id: "dinheiro", label: "Pedido de dinheiro ou Pix" },
-          { id: "banco", label: "Contato que diz ser do banco" },
-          { id: "familiar", label: "Familiar pedindo ajuda" },
-          { id: "ameaca", label: "Ameaça ou intimidação" },
-          { id: "investimento", label: "Promessa de investimento ou ganho rápido" },
-          { id: "suporte", label: "Suporte técnico pedindo acesso ao aparelho" },
-          { id: "outro", label: "Outra situação" }
-        ];
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div><span class="pill pill-amber">Sessão de Proteção</span><h1>O que está acontecendo?</h1></div>
-          <div class="stack">${topics.map(t => `<button class="btn btn-secondary" onclick="state.pressureTopic='${t.id}'; navigate('pressure_guide')">${t.label} <span>→</span></button>`).join("")}</div>
-        `;
-        return;
-      }
-
-      if (state.screen === "pressure_guide") {
-        const extra = state.pressureTopic === "ameaca"
-          ? "<strong>Atenção à sua segurança física:</strong> se você estiver sob ameaça imediata ou em risco físico, procure ajuda local apropriada imediatamente (como a polícia pelo 190)."
-          : "";
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          ${renderRoteiroCard(3, extra)}
-          <div class="stack">
-            <button class="btn btn-primary btn-center" onclick="openHelpPreview('pressão acontecendo agora')">Pedir ajuda a uma pessoa de confiança</button>
-            <button class="btn btn-risk btn-center" onclick="navigate('post_start')">Já passei dados ou fiz um pagamento</button>
-            <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "post_start") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div class="card card-soft">
-            <span class="pill pill-risk">Mesa de Recuperação</span>
-            <h1>Sem julgamento. Vamos cuidar de um passo por vez.</h1>
-            <p style="margin-top: 6px;">O que chegou a acontecer?</p>
-          </div>
-          <div class="stack">
-            <button class="btn btn-risk" onclick="state.postEvent='pix'; state.postChecked=new Set(); navigate('post_plan')">Fiz Pix ou pagamento <span>→</span></button>
-            <button class="btn btn-risk" onclick="state.postEvent='credencial'; state.postChecked=new Set(); navigate('post_plan')">Compartilhei código ou senha <span>→</span></button>
-            <button class="btn btn-risk" onclick="state.postEvent='app'; state.postChecked=new Set(); navigate('post_plan')">Instalei aplicativo ou dei acesso ao aparelho <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.postEvent='documento'; state.postChecked=new Set(); navigate('post_plan')">Enviei documento ou foto <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.postEvent='outro'; state.postChecked=new Set(); navigate('post_plan')">Outra situação / quero organizar o relato <span>→</span></button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "post_plan") {
-        const stageMap = { pix: 5, credencial: 4, app: 4, documento: 4, outro: 6 };
-        const stepsMap = {
-          pix: [
-            "Contate imediatamente o seu banco pelo canal oficial (app já instalado ou verso do cartão) e pergunte sobre contestação/MED — sem garantia de bloqueio ou devolução.",
-            "Guarde o comprovante, a chave usada e prints da conversa.",
-            "Organize o relato e avalie registrar ocorrência na Delegacia Virtual oficial do seu estado."
-          ],
-          credencial: [
-            "Acesse o serviço oficial por um canal confiável e troque a senha imediatamente.",
-            "Troque a mesma senha em outros serviços onde ela for usada.",
-            "Avise o banco ou serviço oficial caso note acessos desconhecidos."
-          ],
-          app: [
-            "Interrompa imediatamente o contato com quem pediu a instalação.",
-            "Evite abrir bancos neste aparelho até buscar suporte confiável.",
-            "Se possível, troque senhas importantes a partir de outro aparelho confiável."
-          ],
-          documento: [
-            "Interrompa o contato e não envie novos documentos ou selfies.",
-            "Guarde prints e anote quais documentos foram enviados.",
-            "Acompanhe contas e chaves no seu CPF pelo Registrato oficial do Banco Central."
-          ],
-          outro: [
-            "Anote horário e o que aconteceu enquanto está recente.",
-            "Guarde mensagens, números e comprovantes.",
-            "Converse com uma pessoa de confiança para decidir o próximo passo."
-          ]
-        };
-        const steps = stepsMap[state.postEvent] || stepsMap.outro;
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          ${renderRoteiroCard(stageMap[state.postEvent] || 6)}
-          <div class="section-label">Próximos passos priorizados</div>
-          <div class="stack">
-            ${steps.map((txt, idx) => {
-              const checked = state.postChecked.has(idx);
-              return `<div class="check-item ${checked ? "selected" : ""}" onclick="togglePostCheck(${idx})"><div class="check-box">${checked ? "✓" : ""}</div><div style="font-size:0.92rem; ${checked ? "text-decoration:line-through; opacity:0.75;" : ""}">${txt}</div></div>`;
-            }).join("")}
-          </div>
-          <div class="stack">
-            <button class="btn btn-primary btn-center" onclick="openIncidentLog()">Organizar registro do incidente →</button>
-            <button class="btn btn-secondary btn-center" onclick="openHelpPreview('apoio após incidente')">Pedir ajuda a uma pessoa de confiança</button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "incident_log") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Registro local • 100% no seu aparelho</span>
-            <h1>Registro do Incidente</h1>
-            <p style="margin-top: 6px;">Ajuda a organizar horários, relato e ações tomadas para falar com o banco ou buscar apoio, mas <strong>não é prova jurídica garantida</strong>.</p>
-          </div>
-          <div class="card stack">
-            <div><label class="field-label" for="log-time">Horário aproximado</label><input id="log-time" type="text" value="${state.incidentLog.time}" oninput="state.incidentLog.time=this.value" /></div>
-            <div><label class="field-label" for="log-summary">Seu relato</label><textarea id="log-summary" rows="4" placeholder="Anote o que aconteceu e o que você já fez..." oninput="state.incidentLog.summary=this.value">${state.incidentLog.summary}</textarea></div>
-            <button class="btn btn-primary btn-center" onclick="exportIncidentTxt()">Confirmar e baixar relato-breque.txt no aparelho</button>
-            ${state.incidentLog.saved ? `<div class="quote-box"><strong>Arquivo relato-breque.txt gerado localmente!</strong><br/>Nenhum dado foi enviado para servidores. Ao fechar o app, os campos desta tela são limpos.</div>` : ""}
-          </div>
-          <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
-        `;
-        return;
-      }
-
-      if (state.screen === "discagem_segura") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Discagem Segura • Canais oficiais</span>
-            <h1>Fale com canais oficiais por conta própria</h1>
-            <p style="margin-top: 6px;">Nunca retorne para o número suspeito nem use o telefone enviado na mensagem recebida.</p>
-          </div>
-          <div class="card stack"><h3>Seu banco (contestação e MED)</h3><p>Abra o aplicativo oficial já instalado ou ligue para o telefone impresso no verso do cartão.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> Banco Central do Brasil (MED) • <strong>Verificado em:</strong> 2026-11-21</p></div>
-          <div class="card stack"><h3>Emergência policial (190)</h3><p>Disque 190 diretamente no discador do celular em caso de risco físico ou ameaça imediata.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> Serviço público de emergência policial • <strong>Verificado em:</strong> 2026-11-21</p></div>
-          <div class="card stack"><h3>Delegacia Virtual / Polícia Civil</h3><p>Digite manualmente o portal oficial do seu estado (domínio .gov.br) ou procure delegacia presencial.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> MJSP / Polícias Civis estaduais • <strong>Verificado em:</strong> 2026-11-21</p></div>
-          <div class="card stack"><h3>Registrato (Banco Central)</h3><p>Acesse manualmente bcb.gov.br com sua conta Gov.br para conferir contas, chaves Pix e empréstimos no seu CPF.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> Banco Central do Brasil • <strong>Verificado em:</strong> 2026-11-21</p></div>
-        `;
-        return;
-      }
-
-      if (state.screen === "trusted") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-fictional">Demonstração visual</span>
-            <h1>Pessoa de Confiança</h1>
-            <p style="margin-top: 6px;">Você decide quando pedir ajuda e revisa exatamente o texto antes de confirmar. O BREQUE <strong>não</strong> monitora ninguém nem envia alertas silenciosos.</p>
-          </div>
-          <div class="stack">
-            ${state.trustedContacts.map(c => `<div class="card card-soft" style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.82rem; color:var(--text-muted);">${c.note}</div></div><button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" onclick="state.selectedContactId='${c.id}'; openHelpPreview('pedido de apoio');">Ver prévia</button></div>`).join("")}
-          </div>
-          <div class="card stack">
-            <h3>Adicionar contato (demonstração)</h3>
-            <input type="text" placeholder="Nome (ex.: João - filho)" value="${state.newContactName}" oninput="state.newContactName=this.value" />
-            <input type="text" placeholder="Relação (opcional)" value="${state.newContactNote}" oninput="state.newContactNote=this.value" />
-            <button class="btn btn-primary btn-center" onclick="addTrustedContact()">Adicionar contato fictício</button>
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "help_preview") {
-        const contact = state.trustedContacts.find(c => c.id === state.selectedContactId) || state.trustedContacts[0];
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Prévia antes de compartilhar</span>
-            <h1>Pedido de ajuda para ${contact.name}</h1>
-            <p style="margin-top: 6px;">Revise o texto abaixo. O BREQUE não envia nada sozinho — ao confirmar, você abre o compartilhamento do seu celular ou copia o texto.</p>
-          </div>
-          <div class="card stack">
-            <label class="field-label" for="help-msg">Conteúdo que será compartilhado</label>
-            <textarea id="help-msg" rows="4" oninput="state.helpPreviewText=this.value">${state.helpPreviewText}</textarea>
-            <button class="btn btn-primary btn-center" onclick="shareHelpRequest()">Confirmar e compartilhar / copiar texto</button>
-            ${state.helpFeedback ? `<div class="quote-box">${state.helpFeedback}</div>` : ""}
-          </div>
-          <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
-        `;
-        return;
-      }
-
-      if (state.screen === "planos") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Planos BREQUE</span>
-            <h1>Proteção acessível, sem vender seus dados</h1>
-            <p style="margin-top: 6px;">O socorro essencial é gratuito. Os planos pagos ampliam o apoio para sua família e sustentam o projeto.</p>
-          </div>
-
-          <div class="card stack">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h2>Básico</h2>
-              <strong style="color:var(--brand); font-size:1.1rem;">Grátis</strong>
-            </div>
-            <ul class="list-clean">
-              <li>Roteiro Reverso (6 estágios) e 6 padrões de coerção</li>
-              <li>Sessão de Proteção com Áudio-Guia e frases de saída</li>
-              <li>Discagem Segura (canais oficiais verificados)</li>
-              <li>Código da Família e Mesa de Recuperação</li>
+            <h3>Básico</h3>
+            <div class="price">Grátis</div>
+            <ul>
+              <li>Sessão de Proteção + Áudio-Guia</li>
+              <li>Verificador local de mensagens e links</li>
+              <li>Roteiro Reverso (6 estágios) e Discagem Segura</li>
+              <li>Vacina 60s, Cartão da Família e Mesa de Recuperação</li>
             </ul>
           </div>
+          <a href="/app.html" class="btn-dark">Usar grátis agora</a>
+        </div>
 
-          <div class="card card-amber stack">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <span class="priority-badge">Para famílias</span>
-                <h2>Plus / Família</h2>
-              </div>
-              <div style="text-align:right;">
-                <strong style="color:var(--text); font-size:1.15rem;">R$ 12,90/mês</strong>
-                <div style="font-size:0.78rem; color:var(--text-muted);">ou R$ 99/ano (até 5 pessoas)</div>
-              </div>
-            </div>
-            <ul class="list-clean" style="color:var(--text);">
-              <li>Tudo do plano Básico para até 5 familiares</li>
+        <div class="plan-card highlight">
+          <div>
+            <span class="section-eyebrow" style="margin-bottom:4px;">Para famílias</span>
+            <h3 style="margin:0;">Plus / Família</h3>
+            <div class="price">R$ 12,90<span style="font-size:0.9rem; font-weight:600;">/mês</span></div>
+            <p style="font-size:0.84rem; color:var(--muted); margin:-4px 0 12px;">ou R$ 99/ano (até 5 familiares)</p>
+            <ul>
+              <li>Tudo do Básico para até 5 pessoas</li>
               <li>Até 5 Pessoas de Confiança cadastradas</li>
-              <li>Exportação completa do Registro do Incidente (.txt)</li>
-              <li>Atualizações prioritárias de canais oficiais e golpes</li>
-            </ul>
-            <button class="btn btn-primary btn-center" onclick="state.selectedPlan='familia_mensal'; document.getElementById('plan-signup').scrollIntoView({behavior:'smooth'});">
-              Escolher Família (R$ 12,90/mês)
-            </button>
-          </div>
-
-          <div class="card stack">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h2>Gold</h2>
-              <div style="text-align:right;">
-                <strong style="color:var(--text); font-size:1.1rem;">R$ 29,90/mês</strong>
-                <div style="font-size:0.78rem; color:var(--text-muted);">em preparação com parceiros</div>
-              </div>
-            </div>
-            <ul class="list-clean">
-              <li>Tudo do plano Família</li>
-              <li>Apoio guiado na Mesa de Recuperação</li>
-              <li>Microsseguro digital via seguradora parceira (SUSEP)</li>
-            </ul>
-            <button class="btn btn-secondary btn-center" onclick="state.selectedPlan='gold'; document.getElementById('plan-signup').scrollIntoView({behavior:'smooth'});">
-              Tenho interesse no Gold
-            </button>
-          </div>
-
-          <div class="card card-soft stack">
-            <h3>Cooperativas, bancos e empresas (B2B2C)</h3>
-            <p>A partir de R$ 0,50 a R$ 1,50 por usuário ativo/mês para oferecer o BREQUE gratuitamente à sua base.</p>
-            <button class="btn btn-secondary btn-center" onclick="state.selectedPlan='institucional'; document.getElementById('plan-signup').scrollIntoView({behavior:'smooth'});">
-              Falar sobre plano institucional
-            </button>
-          </div>
-
-          <div class="card stack" id="plan-signup">
-            <h3>Reservar plano / entrar na lista prioritária</h3>
-            <p style="font-size:0.84rem;">Ao confirmar, salvamos <strong>apenas seu e-mail e o plano escolhido</strong> no banco de dados (Supabase) para avisar assim que o pagamento for liberado.</p>
-            <div>
-              <label class="field-label" for="plan-select">Plano escolhido</label>
-              <select id="plan-select" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface-soft); color:var(--text);" onchange="state.selectedPlan=this.value">
-                <option value="familia_mensal" ${state.selectedPlan === 'familia_mensal' ? 'selected' : ''}>Plus / Família — R$ 12,90/mês</option>
-                <option value="familia_anual" ${state.selectedPlan === 'familia_anual' ? 'selected' : ''}>Plus / Família Anual — R$ 99,00/ano</option>
-                <option value="gold" ${state.selectedPlan === 'gold' ? 'selected' : ''}>Gold — R$ 29,90/mês</option>
-                <option value="institucional" ${state.selectedPlan === 'institucional' ? 'selected' : ''}>Cooperativa / Empresa (B2B2C)</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label" for="plan-email">Seu e-mail</label>
-              <input id="plan-email" type="text" placeholder="voce@exemplo.com" value="${state.planEmail}" oninput="state.planEmail=this.value" />
-            </div>
-            <button class="btn btn-primary btn-center" onclick="submitPlanInterest()">
-              ${state.planStatus === 'enviando' ? 'Salvando...' : 'Confirmar interesse no plano'}
-            </button>
-            ${state.planStatus === 'ok' ? `<div class="quote-box"><strong>Interesse registrado no Supabase!</strong> Avisaremos você por e-mail assim que o checkout for liberado.</div>` : ""}
-            ${state.planStatus === 'erro' ? `<div class="quote-box" style="border-left-color:var(--risk); background:var(--risk-bg);">Não foi possível gravar agora. Verifique se o <code>supabase/schema.sql</code> já foi executado no SQL Editor do Supabase.</div>` : ""}
-            ${state.planStatus && !['enviando','ok','erro'].includes(state.planStatus) ? `<p style="color:var(--risk); font-size:0.86rem;">${state.planStatus}</p>` : ""}
-          </div>
-        `;
-        return;
-      }
-
-      if (state.screen === "stages_overview") {
-        const tabs = [1, 2, 3, 4, 5, 6].map(n => `<button class="top-pill" style="flex:1; background:${state.activeStage === n ? 'var(--brand)' : 'var(--surface)'}; color:${state.activeStage === n ? '#fff' : 'var(--text)'}; border-color:var(--border);" onclick="state.activeStage=${n}; render();">${n}</button>`).join("");
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div><h1>Roteiro Reverso (6 estágios)</h1><p style="margin-top:4px;">Toque em um estágio para ver a ação curta e segura recomendada.</p></div>
-          <div style="display:flex; gap:6px;">${tabs}</div>
-          ${renderRoteiroCard(state.activeStage)}
-          <div class="card card-soft">
-            <h3>Os 6 padrões de coerção</h3>
-            <p>Nem todo golpe se reduz a estes padrões, mas eles costumam aparecer combinados:</p>
-            <ul class="list-clean">
-              <li><strong>Urgência</strong> • <strong>Sigilo</strong> • <strong>Falsa autoridade</strong></li>
-              <li><strong>Medo de perda</strong> • <strong>Ganho inesperado</strong> • <strong>Vínculo afetivo</strong></li>
+              <li>Exportação completa do Dossiê 30 Min (.txt)</li>
+              <li>Plano de Proteção Pessoal (exclusivo assinantes)</li>
             </ul>
           </div>
-        `;
-        return;
-      }
+          <a href="/app.html" class="btn-primary">Reservar plano Família</a>
+        </div>
 
-      if (state.screen === "privacy") {
-        app.innerHTML = `
-          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+        <div class="plan-card">
           <div>
-            <span class="pill pill-brand">Transparência • Termos e LGPD</span>
-            <h1>Termos de Uso, Privacidade e LGPD</h1>
-            <p style="margin-top:6px;">Linguagem clara sobre o que o BREQUE faz, o que não promete e como seus dados são tratados.</p>
-          </div>
-
-          <div class="card card-amber stack">
-            <h3>1. Termos de Uso e Limitação de Responsabilidade</h3>
-            <ul class="list-clean" style="color:var(--text);">
-              <li><strong>Apoio à decisão, não garantia:</strong> o BREQUE é uma ferramenta educativa e de apoio para pausar decisões sob pressão. Ele <strong>não promete nem garante</strong> impedir golpes, fraudes ou perdas financeiras.</li>
-              <li><strong>Sem garantia de recuperação:</strong> orientações sobre contestação bancária, MED ou Boletim de Ocorrência são informativas e não garantem bloqueio ou devolução de valores.</li>
-              <li><strong>Não é prova jurídica garantida:</strong> o arquivo <code>relato-breque.txt</code> gerado no aparelho serve apenas para organização pessoal e não substitui laudo, perícia ou decisão judicial.</li>
-              <li><strong>Autonomia do usuário:</strong> toda decisão financeira, ligação, bloqueio ou denúncia é de responsabilidade exclusiva do usuário nos canais oficiais.</li>
+            <h3>Cooperativas e Empresas</h3>
+            <div class="price" style="font-size:1.35rem;">B2B2C • Sob consulta</div>
+            <ul>
+              <li>A partir de R$ 0,50 a R$ 1,50 por usuário ativo/mês</li>
+              <li>Canais oficiais da instituição em destaque</li>
+              <li>Apoio à redução de fraudes e judicialização</li>
+              <li>Arquitetura LGPD local-first</li>
             </ul>
           </div>
+          <a href="/app.html" class="btn-dark" style="background:var(--brand-soft); color:var(--brand);">Falar sobre parceria</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-          <div class="card stack">
-            <h3>2. Política de Privacidade e LGPD (Lei nº 13.709/2018)</h3>
-            <ul class="list-clean">
-              <li><strong>Processamento local:</strong> mensagens coladas, respostas do Roteiro Reverso e relatos do incidente rodam 100% no seu aparelho e desaparecem ao fechar a sessão.</li>
-              <li><strong>Quando há envio de dado:</strong> apenas se você preencher voluntariamente seu <strong>e-mail e plano de interesse</strong> na tela de Planos (armazenado no Supabase com finalidade exclusiva de avisar sobre disponibilidade do plano).</li>
-              <li><strong>Direitos do titular (art. 18 da LGPD):</strong> você pode solicitar confirmação, correção ou exclusão do seu e-mail cadastrado a qualquer momento.</li>
-            </ul>
-          </div>
+  <section id="duvidas">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Sem letras miúdas</span>
+        <h2>Perguntas frequentes</h2>
+        <p>Respondemos com honestidade o que o BREQUE faz — e o que ele não faz.</p>
+      </div>
+      <div class="faq-list">
+        <details open>
+          <summary>Posso confiar? O BREQUE pede senha do banco ou lê meu WhatsApp?</summary>
+          <p>Não. O BREQUE nunca pede senha, código de SMS, CPF ou número de cartão, e não acessa seu WhatsApp nem seu banco. Tudo roda localmente no seu aparelho.</p>
+        </details>
+        <details>
+          <summary>O BREQUE garante que nunca vou cair em golpe ou que vou recuperar meu dinheiro?</summary>
+          <p>Não — e desconfie de quem promete isso. O BREQUE é um apoio à decisão: ajuda você a pausar sob pressão, verificar por outro canal e organizar rapidamente os passos junto ao seu banco (como o MED), cuja análise depende do banco e das regras do Banco Central.</p>
+        </details>
+        <details>
+          <summary>Preciso baixar na Google Play ou App Store?</summary>
+          <p>Não precisa. Ele funciona como aplicativo instalável direto pelo navegador (PWA): basta abrir no celular e tocar em “Instalar” para colocar o ícone na tela inicial.</p>
+        </details>
+      </div>
+    </div>
+  </section>
 
-          <div class="card card-soft stack">
-            <h3>3. O que o BREQUE NÃO faz</h3>
-            <ul class="list-clean">
-              <li>Não lê WhatsApp, SMS, e-mails nem notificações.</li>
-              <li>Não escuta ligações nem monitora sua tela.</li>
-              <li>Não acessa contas bancárias, saldos ou transações Pix.</li>
-              <li>Não monitora familiares nem envia alertas silenciosos.</li>
-              <li>Nunca exibe selo verde dizendo que algo “está seguro”.</li>
-            </ul>
-            <div class="review-tag">Aviso: textos jurídicos e LGPD devem passar por revisão de advogado especializado antes do lançamento comercial.</div>
-          </div>
+  <section class="final-cta">
+    <div class="container">
+      <h2 style="font-size:1.95rem; color:var(--brand); margin:0 0 12px;">Teste o BREQUE agora em menos de 1 minuto.</h2>
+      <p style="color:var(--muted); max-width:560px; margin:0 auto 24px;">Sem cadastro, sem cartão e sem instalar nada pesado. Abra no celular e veja como funciona.</p>
+      <a href="/app.html?install=1" class="btn-primary">Baixar o BREQUE grátis →</a>
+    </div>
+  </section>
 
-          <button class="btn btn-primary btn-center" onclick="handleInstallClick()">Como instalar no celular (PWA)</button>
-        `;
-      }
-    }
-
-    // Web Share Target (Android PWA): se o usuário compartilhou um texto/link para o BREQUE, abre direto em Verificar
-    const params = new URLSearchParams(window.location.search);
-    const sharedText = [params.get("title"), params.get("text"), params.get("url")]
-      .filter(Boolean)
-      .join(" ")
-      .trim();
-    if (sharedText) {
-      state.verifyText = sharedText;
-      state.screen = "verify_start";
-    }
-
-    render();
-  </script>
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div>
+        <strong style="color:#fff;">BREQUE — Copiloto contra golpes</strong>
+        <p style="margin:6px 0 0; max-width:540px;">Ferramenta de apoio à decisão. Não garante prevenção de golpes, não garante recuperação de valores e não substitui a confirmação oficial com o seu banco.</p>
+      </div>
+      <div style="display:flex; gap:18px; align-items:center;">
+        <a href="/app.html" style="color:#fde68a; font-weight:700;">Abrir o App</a>
+        <a href="#duvidas" style="color:#c2d6e0;">Dúvidas e LGPD</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
