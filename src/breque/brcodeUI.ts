@@ -18,6 +18,14 @@ import {
   limparOperadora,
 } from './canais'
 import {
+  DESCULPA_OFICIAL_JORNADA,
+  TEXTO_FIM_JORNADA,
+  TEXTO_NEUTRO_JORNADA,
+  avaliarEstadoJornada,
+  limitarDuracaoPausaMin,
+  limitarValorCompromisso,
+} from './agenda'
+import {
   CATALOGO_DENUNCIAS,
   LEMBRETE_FIXO_ESCUDO,
   classificarChavePix,
@@ -56,6 +64,14 @@ declare global {
       hashChavePix: typeof hashChavePix
       diagnosticarChavePix: typeof diagnosticarChavePix
     }
+    BREQUE_AGENDA?: {
+      textoNeutro: string
+      desculpaOficial: string
+      textoFim: string
+      limitarDuracaoPausaMin: typeof limitarDuracaoPausaMin
+      limitarValorCompromisso: typeof limitarValorCompromisso
+      avaliarEstadoJornada: typeof avaliarEstadoJornada
+    }
   }
 }
 
@@ -91,6 +107,15 @@ window.BREQUE_ESCUDO = {
   classificarChavePix,
   hashChavePix,
   diagnosticarChavePix,
+}
+
+window.BREQUE_AGENDA = {
+  textoNeutro: TEXTO_NEUTRO_JORNADA,
+  desculpaOficial: DESCULPA_OFICIAL_JORNADA,
+  textoFim: TEXTO_FIM_JORNADA,
+  limitarDuracaoPausaMin,
+  limitarValorCompromisso,
+  avaliarEstadoJornada,
 }
 
 window.dispatchEvent(new CustomEvent('breque:modulos-prontos'))

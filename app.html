@@ -1068,7 +1068,8 @@
       discagemBusca: "",
       bancoFavoritoId: "",
       operadoraCodigo: "",
-      pausa: { ativo: false, inicio: 0, duracaoMin: 60, motivo: "banco" },
+      compromisso: { valorMinimo: 200, duracaoMin: 60, confirmarConfianca: true, configurado: false },
+      pausa: { ativo: false, inicio: 0, duracaoMin: 60, motivo: "banco", concluida: false },
       pausaInterval: null,
       pausaAviso: "",
       medChecklist: {}
@@ -1081,6 +1082,7 @@
       simulado: "breca.simulado.v1",
       metricas: "breca.metricas.v1",
       pausa: "breca.pausa.v1",
+      compromisso: "breca.compromisso.v1",
       vacinaAgenda: "breca.vacinaAgenda.v1",
       med: "breca.med.v1",
       bancoFavorito: "breca.bancoFavorito.v1",
@@ -1108,6 +1110,7 @@
     state.favorecidos = lerLocal(CHAVES_LOCAIS.favorecidos, []);
     state.denunciasLocais = lerLocal(CHAVES_LOCAIS.denuncias, []);
     state.metricas = { ...state.metricas, ...lerLocal(CHAVES_LOCAIS.metricas, {}) };
+    state.compromisso = { ...state.compromisso, ...lerLocal(CHAVES_LOCAIS.compromisso, {}) };
     state.pausa = { ...state.pausa, ...lerLocal(CHAVES_LOCAIS.pausa, {}) };
     state.vacinaAgenda = { ...state.vacinaAgenda, ...lerLocal(CHAVES_LOCAIS.vacinaAgenda, {}) };
     state.medChecklist = lerLocal(CHAVES_LOCAIS.med, {});
@@ -2067,46 +2070,94 @@
       }, 1000);
     }
 
-    // ---------- Pausa Programada (Fase 3) ----------
-    function salvarPausa() {
-      gravarLocal(CHAVES_LOCAIS.pausa, {
-        ativo: !!state.pausa.ativo,
-        inicio: state.pausa.inicio || 0,
-        duracaoMin: state.pausa.duracaoMin || 60,
-        motivo: state.pausa.motivo || "banco"
-      });
-    }
-
-    function restantePausaSegundos() {
-      if (!state.pausa.ativo || !state.pausa.inicio) return 0;
-      const fim = state.pausa.inicio + (state.pausa.duracaoMin || 60) * 60000;
-      return Math.max(0, Math.round((fim - Date.now()) / 1000));
-    }
-
-    function iniciarTickPausa() {
-      if (state.pausaInterval) clearInterval(state.pausaInterval);
-      state.pausaInterval = setInterval(() => {
-        if (restantePausaSegundos() <= 0) {
-          state.pausa.ativo = false;
-          salvarPausa();
-          if (state.pausaInterval) {
-            clearInterval(state.pausaInterval);
-            state.pausaInterval = null;
-          }
+    function startBreathTimer() {
+      if (state.pauseInterval) {
+        clearInterval(state.pauseInterval);
+        state.pauseInterval = null;
+      }
+      state.pauseSeconds = 10;
+      render();
+      state.pauseInterval = setInterval(() => {
+        state.pauseSeconds -= 1;
+        if (state.pauseSeconds <= 0) {
+          clearInterval(state.pauseInterval);
+          state.pauseInterval = null;
+          state.pauseSeconds = 0;
         }
         render();
       }, 1000);
     }
 
-    function notificarPausaBestEffort(minutos) {
+    // ---------- Jornada de Espera / Pausa Programada (Fase 3) ----------
+    function salvarCompromisso() {
+      const valInput = document.getElementById("compromisso-valor");
+      const durInput = document.getElementById("compromisso-duracao");
+      const confInput = document.getElementById("compromisso-confianca");
+      const valorBruto = valInput ? Number(valInput.value) : state.compromisso.valorMinimo;
+      const duracaoBruta = durInput ? Number(durInput.value) : state.compromisso.duracaoMin;
+      const limitarVal = window.BREQUE_AGENDA && window.BREQUE_AGENDA.limitarValorCompromisso
+        ? window.BREQUE_AGENDA.limitarValorCompromisso
+        : (v) => (Number.isFinite(v) && v >= 10 ? Math.min(100000, Math.round(v)) : 200);
+      const limitarDur = window.BREQUE_AGENDA && window.BREQUE_AGENDA.limitarDuracaoPausaMin
+        ? window.BREQUE_AGENDA.limitarDuracaoPausaMin
+        : (v) => (Number.isFinite(v) && v >= 1 ? Math.min(1440, Math.round(v)) : 60);
+
+      state.compromisso = {
+        valorMinimo: limitarVal(valorBruto),
+        duracaoMin: limitarDur(duracaoBruta),
+        confirmarConfianca: confInput ? !!confInput.checked : !!state.compromisso.confirmarConfianca,
+        configurado: true
+      };
+      gravarLocal(CHAVES_LOCAIS.compromisso, state.compromisso);
+      state.pausaAviso = `Compromisso salvo no aparelho: Pix novo acima de R$ ${state.compromisso.valorMinimo} → esperar ${formatarDuracaoCurta(state.compromisso.duracaoMin)}.`;
+      render();
+    }
+
+    function formatarDuracaoCurta(minutos) {
+      const m = Number(minutos) || 60;
+      if (m >= 60 && m % 60 === 0) {
+        const h = m / 60;
+        return h === 1 ? "1 hora" : `${h} horas`;
+      }
+      return `${m} minutos`;
+    }
+
+    function salvarPausa() {
+      gravarLocal(CHAVES_LOCAIS.pausa, {
+        ativo: !!state.pausa.ativo,
+        inicio: state.pausa.inicio || 0,
+        duracaoMin: state.pausa.duracaoMin || 60,
+        motivo: state.pausa.motivo || "banco",
+        concluida: !!state.pausa.concluida
+      });
+    }
+
+    function estadoAtualJornada() {
+      if (window.BREQUE_AGENDA && typeof window.BREQUE_AGENDA.avaliarEstadoJornada === "function") {
+        return window.BREQUE_AGENDA.avaliarEstadoJornada(state.pausa, Date.now());
+      }
+      const dur = state.pausa.duracaoMin || 60;
+      const total = dur * 60;
+      if (state.pausa.ativo && state.pausa.inicio) {
+        const rest = Math.max(0, Math.round((state.pausa.inicio + dur * 60000 - Date.now()) / 1000));
+        if (rest > 0) {
+          return { fase: "em_andamento", restanteSegundos: rest, totalSegundos: total, progressoPct: Math.min(100, Math.round(((total - rest) / total) * 100)) };
+        }
+        return { fase: "concluida", restanteSegundos: 0, totalSegundos: total, progressoPct: 100 };
+      }
+      return { fase: state.pausa.concluida ? "concluida" : "inativa", restanteSegundos: 0, totalSegundos: total, progressoPct: state.pausa.concluida ? 100 : 0 };
+    }
+
+    function restantePausaSegundos() {
+      return estadoAtualJornada().restanteSegundos;
+    }
+
+    function notificarLocalBestEffort(titulo, corpo, tag) {
       try {
         if (!("Notification" in window)) return;
         const aviso = () => {
           try {
-            new Notification("BREQUE — pausa programada", {
-              body: `Você escolheu esperar ${minutos} minutos. Nada foi bloqueado; a decisão continua sua.`,
-              tag: "breca-pausa"
-            });
+            new Notification(titulo, { body: corpo, tag });
           } catch {
             // Notificação é só um lembrete extra; o app funciona sem ela.
           }
@@ -2120,15 +2171,51 @@
       }
     }
 
+    function sincronizarConclusaoJornada() {
+      const est = estadoAtualJornada();
+      if (state.pausa.ativo && est.fase === "concluida") {
+        state.pausa.ativo = false;
+        state.pausa.concluida = true;
+        salvarPausa();
+        if (state.pausaInterval) {
+          clearInterval(state.pausaInterval);
+          state.pausaInterval = null;
+        }
+        const textoFim = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.textoFim) ||
+          "Passou a hora. Golpista não espera. Se a pessoa continua com pressa, é sinal vermelho.";
+        notificarLocalBestEffort("BREQUE — Jornada de Espera concluída", textoFim, "breca-pausa-fim");
+        return true;
+      }
+      return false;
+    }
+
+    function iniciarTickPausa() {
+      if (state.pausaInterval) clearInterval(state.pausaInterval);
+      state.pausaInterval = setInterval(() => {
+        sincronizarConclusaoJornada();
+        render();
+      }, 1000);
+    }
+
+    function notificarPausaBestEffort(minutos) {
+      notificarLocalBestEffort(
+        "BREQUE — Jornada de Espera iniciada",
+        `Você escolheu esperar ${formatarDuracaoCurta(minutos)}. Nada foi bloqueado; a decisão continua sua.`,
+        "breca-pausa"
+      );
+    }
+
     function iniciarPausaProgramada(minutos) {
       const n = Number(minutos);
-      const duracao = Number.isFinite(n) ? Math.min(1440, Math.max(1, Math.round(n))) : 60;
+      const duracao = Number.isFinite(n) ? Math.min(1440, Math.max(1, Math.round(n))) : (state.compromisso.duracaoMin || 60);
       state.pausa = {
         ativo: true,
         inicio: Date.now(),
         duracaoMin: duracao,
-        motivo: state.pausa.motivo || "banco"
+        motivo: state.pausa.motivo || "banco",
+        concluida: false
       };
+      state.pausaAviso = "";
       salvarPausa();
       notificarPausaBestEffort(duracao);
       iniciarTickPausa();
@@ -2137,6 +2224,9 @@
 
     function encerrarPausaProgramada() {
       state.pausa.ativo = false;
+      state.pausa.concluida = false;
+      state.pausa.inicio = 0;
+      state.pausaAviso = "";
       salvarPausa();
       if (state.pausaInterval) {
         clearInterval(state.pausaInterval);
@@ -2145,12 +2235,22 @@
       render();
     }
 
+    function concluirJornadaSeguir() {
+      encerrarPausaProgramada();
+      goHome();
+    }
+
+    function concluirJornadaFoiGolpe() {
+      encerrarPausaProgramada();
+      navigate("post_start");
+    }
+
     function formatarContagem(totalSegundos) {
       const seg = Math.max(0, Math.round(totalSegundos));
       const h = Math.floor(seg / 3600);
       const m = Math.floor((seg % 3600) / 60);
       const s = seg % 60;
-      if (h > 0) return `${h}h ${String(m).padStart(2, "0")}min`;
+      if (h > 0) return `${h}h ${String(m).padStart(2, "0")}min ${String(s).padStart(2, "0")}s`;
       return `${m}min ${String(s).padStart(2, "0")}s`;
     }
 
@@ -2161,19 +2261,29 @@
     }
 
     function repetirPausa() {
-      iniciarPausaProgramada(state.pausa.duracaoMin || 60);
+      iniciarPausaProgramada(state.pausa.duracaoMin || state.compromisso.duracaoMin || 60);
     }
 
     async function copiarDesculpaPausa() {
-      const texto = "Obrigado(a), mas não vou decidir agora. Vou conferir com calma por outro canal e retorno depois.";
+      const texto = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.desculpaOficial) ||
+        "O app de segurança do meu celular aplicou um período de espera obrigatório. Não dá para liberar antes. Amanhã eu te oriento.";
       try {
         await navigator.clipboard.writeText(texto);
-        state.pausaAviso = "Frase copiada. Use no chat ou na ligação para ganhar tempo.";
+        state.pausaAviso = "Desculpa pronta copiada! Agora cole no WhatsApp ou SMS para enviar.";
       } catch {
-        state.pausaAviso = "Não foi possível copiar automaticamente. Selecione a frase abaixo e copie manualmente.";
+        state.pausaAviso = "Não foi possível copiar automaticamente. Selecione a frase acima e copie manualmente.";
       }
       render();
     }
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        sincronizarConclusaoJornada();
+        if (state.screen === "pausa_programada" || state.screen === "home") {
+          render();
+        }
+      }
+    });
 
     // ---------- Prazos do MED + impressão digital do relato (Fase 4) ----------
     function dataLimiteMed() {
@@ -2522,6 +2632,8 @@
       }
 
       if (state.screen === "home") {
+        sincronizarConclusaoJornada();
+        const estJornada = estadoAtualJornada();
         const meuBanco = obterBancoFavorito();
         const telPrincipal = meuBanco && meuBanco.telefones && meuBanco.telefones[0] ? meuBanco.telefones[0] : null;
         const numeroPrincipal = telPrincipal ? numeroDiscavel(telPrincipal.numero, telPrincipal.dddInterurbano) : "";
@@ -2555,6 +2667,30 @@
               </div>
             </button>`;
 
+        const atalhoJornadaHtml = estJornada.fase === "em_andamento"
+          ? `<button class="action-card" style="background:var(--accent-bg); border:2px solid var(--accent-border);" onclick="navigate('pausa_programada')">
+              <div class="icon-badge icon-amber">⏱</div>
+              <div>
+                <span class="action-title">Jornada de Espera em andamento (${escapeHtml(formatarContagem(estJornada.restanteSegundos))})</span>
+                <span class="action-sub">Toque para ver a desculpa pronta, respirar 10s ou avisar sua Pessoa de Confiança</span>
+              </div>
+            </button>`
+          : estJornada.fase === "concluida"
+            ? `<button class="action-card" style="background:var(--accent-bg); border:2px solid var(--accent);" onclick="navigate('pausa_programada')">
+                <div class="icon-badge icon-amber">!</div>
+                <div>
+                  <span class="action-title">Passou a hora da sua Jornada de Espera</span>
+                  <span class="action-sub">Golpista não espera. Toque para decidir com calma ou abrir a Mesa de Recuperação</span>
+                </div>
+              </button>`
+            : `<button class="action-card" onclick="navigate('pausa_programada')">
+                <div class="icon-badge icon-brand">24h</div>
+                <div>
+                  <span class="action-title">Iniciar Jornada de Espera</span>
+                  <span class="action-sub">Pix novo acima de R$ ${escapeHtml(state.compromisso.valorMinimo)} → esperar ${escapeHtml(formatarDuracaoCurta(state.compromisso.duracaoMin))} com desculpa pronta</span>
+                </div>
+              </button>`;
+
         app.innerHTML = `
           <div class="status-glass">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -2582,6 +2718,7 @@
               </button>
 
               ${atalhoBancoHtml}
+              ${atalhoJornadaHtml}
 
               <div class="glass-trio">
                 <button class="glass-card amber-glass" onclick="navigate('pressure_pause')">
@@ -3576,11 +3713,25 @@
       }
 
       if (state.screen === "pausa_programada") {
-        const ativo = state.pausa.ativo && restantePausaSegundos() > 0;
+        sincronizarConclusaoJornada();
+        const est = estadoAtualJornada();
+        const ativo = est.fase === "em_andamento";
+        const concluida = est.fase === "concluida";
         if (ativo && !state.pausaInterval) iniciarTickPausa();
-        const restante = restantePausaSegundos();
-        const total = (state.pausa.duracaoMin || 60) * 60;
-        const progresso = ativo ? Math.min(100, Math.round(((total - restante) / total) * 100)) : 0;
+        const restante = est.restanteSegundos;
+        const progresso = est.progressoPct;
+        const textoNeutro = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.textoNeutro) ||
+          "Isso não é você sendo paranoico. É um período automático de segurança que você mesma configurou.";
+        const desculpaOficial = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.desculpaOficial) ||
+          "O app de segurança do meu celular aplicou um período de espera obrigatório. Não dá para liberar antes. Amanhã eu te oriento.";
+        const textoFim = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.textoFim) ||
+          "Passou a hora. Golpista não espera. Se a pessoa continua com pressa, é sinal vermelho.";
+        const breathHtml = state.pauseSeconds > 0
+          ? `<div class="timer-box"><div><strong>Respire fundo (10 segundos)</strong><p style="font-size:0.84rem;">Inspire devagar, solte o ar. Nenhuma decisão séria precisa ser tomada correndo.</p></div><div class="timer-count">${state.pauseSeconds}s</div></div>`
+          : `<button class="btn btn-secondary btn-center" onclick="startBreathTimer()">Fazer respiração guiada de 10 segundos</button>`;
+        const audioJornadaBtn = "speechSynthesis" in window
+          ? `<button class="btn btn-secondary btn-center" onclick="toggleCalmGuidance()">${state.isSpeaking ? "Parar áudio calmo" : "Ouvir orientação calma em voz alta"}</button>`
+          : "";
         const motivos = [
           { id: "banco", label: "Contato do banco / falsa central" },
           { id: "familiar", label: "Familiar pedindo dinheiro" },
@@ -3591,57 +3742,104 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
-            <span class="pill pill-brand">Pausa Programada • Decisão sua</span>
-            <h1>${ativo ? "Você escolheu esperar. Nada foi bloqueado." : "Dê um tempo antes de decidir"}</h1>
-            <p style="margin-top:6px;">${ativo ? "O BREQUE só conta o tempo. Você pode encerrar a pausa, ligar ou pedir ajuda a qualquer momento." : "A pressão pede pressa. Uma pausa de 30 minutos a 4 horas esfria a conversa. O app nunca bloqueia pagamento, ligação ou acesso."}</p>
+            <span class="pill pill-brand">Jornada de Espera • Desliga-a-Pressão</span>
+            <h1>${concluida ? "O período de espera terminou." : ativo ? "Você ativou sua Jornada de Espera." : "Elimine a pressa antes de pagar"}</h1>
+            <p style="margin-top:6px;">${concluida ? "Você deu tempo para a emoção baixar. Agora a decisão é sua, com cabeça fria." : ativo ? "O BREQUE só conta o tempo e dá uma desculpa pronta. Nada foi bloqueado e você pode sair quando quiser." : "Se o risco do golpe é a pressa, o remédio é tirar a pressa da conversa. Configure seu compromisso pessoal uma vez e acione quando alguém pressionar."}</p>
           </div>
 
-          ${ativo ? `
+          ${concluida ? `
             <div class="card card-amber stack">
-              <span class="pill pill-amber">Pausa em andamento</span>
+              <span class="pill pill-amber">Contagem concluída</span>
+              <h2>${escapeHtml(textoFim)}</h2>
+              <p style="color:var(--text);">Se a pessoa ou empresa era legítima, ela entendeu a pausa e você já pode conferir por um canal oficial.</p>
+              <div class="stack">
+                <button class="btn btn-primary btn-center" onclick="concluirJornadaSeguir()">Vou pagar com calma (conferir antes)</button>
+                <button class="btn btn-risk btn-center" onclick="concluirJornadaFoiGolpe()">Foi golpe, ir para Mesa de Recuperação →</button>
+                <button class="btn btn-secondary btn-center" onclick="repetirPausa()">Esperar mais ${escapeHtml(formatarDuracaoCurta(state.pausa.duracaoMin || state.compromisso.duracaoMin))}</button>
+              </div>
+            </div>
+          ` : ativo ? `
+            <div class="card card-amber stack">
+              <span class="pill pill-amber">Jornada em andamento • Sem bloqueio</span>
+              <div class="quote-box" style="margin:0; border-left-color:var(--brand); background:var(--surface);">
+                <strong>${escapeHtml(textoNeutro)}</strong>
+              </div>
               <div class="timer-box">
                 <div>
-                  <strong>Faltam ${formatarContagem(restante)}</strong>
-                  <p style="font-size:0.84rem;">Duração escolhida: ${state.pausa.duracaoMin} minutos.</p>
+                  <strong>Faltam ${escapeHtml(formatarContagem(restante))}</strong>
+                  <p style="font-size:0.84rem;">Duração escolhida: ${escapeHtml(formatarDuracaoCurta(state.pausa.duracaoMin))}.</p>
                 </div>
-                <div class="timer-count">${formatarContagem(restante)}</div>
+                <div class="timer-count">${escapeHtml(formatarContagem(restante))}</div>
               </div>
               <div style="height:10px; border-radius:999px; background:var(--neutral-bg); overflow:hidden;">
                 <div style="height:100%; width:${progresso}%; background:var(--brand);"></div>
               </div>
-              <p style="font-size:0.82rem; color:var(--text-muted);">O contador é recalculado pelo horário do aparelho. Não há promessa de aviso com o app fechado.</p>
-              <button class="btn btn-primary btn-center" onclick="encerrarPausaProgramada()">Já me acalmei, encerrar pausa</button>
+              ${breathHtml}
+              ${audioJornadaBtn}
+              <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">O contador continua correndo pelo relógio do aparelho mesmo com o app em segundo plano.</p>
             </div>
 
             <div class="card stack">
-              <h3>Frase pronta para ganhar tempo</h3>
-              <div class="quote-box">“Obrigado(a), mas não vou decidir agora. Vou conferir com calma por outro canal e retorno depois.”</div>
-              <button class="btn btn-secondary btn-center" onclick="copiarDesculpaPausa()">Copiar frase</button>
+              <h3>Desculpa pronta para enviar no WhatsApp ou SMS</h3>
+              <p style="font-size:0.84rem;">Você não precisa parecer desconfiada: jogue a responsabilidade para o período de segurança do app.</p>
+              <div class="quote-box">“${escapeHtml(desculpaOficial)}”</div>
+              <button class="btn btn-primary btn-center" onclick="copiarDesculpaPausa()">Copiar para WhatsApp / SMS</button>
               ${state.pausaAviso ? `<div class="quote-box">${escapeHtml(state.pausaAviso)}</div>` : ""}
             </div>
+
+            <div class="card card-soft stack">
+              <button class="btn btn-secondary btn-center" onclick="openHelpPreview('confirmação durante Jornada de Espera')">Avisar minha Pessoa de Confiança (com prévia) →</button>
+              <button class="btn btn-secondary btn-center" onclick="navigate('discagem_segura')">Abrir Discagem Segura (canais oficiais)</button>
+              <button class="btn btn-ghost btn-center" onclick="encerrarPausaProgramada()">Encerrar espera agora (a decisão é minha)</button>
+            </div>
           ` : `
+            <div class="card card-amber stack">
+              <span class="pill pill-amber">Meu compromisso pessoal (configura 1 vez)</span>
+              <p style="color:var(--text); font-weight:600; margin:0;">
+                “Se eu for fazer um Pix para alguém <strong>novo</strong> acima de <strong>R$ ${escapeHtml(state.compromisso.valorMinimo)}</strong>, quero esperar <strong>${escapeHtml(formatarDuracaoCurta(state.compromisso.duracaoMin))}</strong>${state.compromisso.confirmarConfianca ? " e confirmar com minha <strong>Pessoa de Confiança</strong>" : ""}.”
+              </p>
+              <button class="btn btn-primary btn-center" onclick="iniciarPausaProgramada(${state.compromisso.duracaoMin || 60})">
+                Iniciar Jornada de Espera agora (${escapeHtml(formatarDuracaoCurta(state.compromisso.duracaoMin || 60))}) →
+              </button>
+              <details>
+                <summary style="font-size:0.86rem; font-weight:700; color:var(--brand); cursor:pointer;">Ajustar meu compromisso pessoal</summary>
+                <div class="stack" style="margin-top:12px;">
+                  <div>
+                    <label class="field-label" for="compromisso-valor">Valor de Pix novo que dispara minha espera (R$)</label>
+                    <input id="compromisso-valor" type="number" min="10" max="100000" step="10" value="${escapeHtml(state.compromisso.valorMinimo)}" />
+                  </div>
+                  <div>
+                    <label class="field-label" for="compromisso-duracao">Tempo de espera padrão</label>
+                    <select id="compromisso-duracao" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface-soft); color:var(--text);">
+                      <option value="60" ${state.compromisso.duracaoMin === 60 ? "selected" : ""}>1 hora (recomendado)</option>
+                      <option value="240" ${state.compromisso.duracaoMin === 240 ? "selected" : ""}>4 horas</option>
+                      <option value="1440" ${state.compromisso.duracaoMin === 1440 ? "selected" : ""}>24 horas (até amanhã)</option>
+                    </select>
+                  </div>
+                  <label style="display:flex; gap:10px; align-items:flex-start; font-size:0.88rem;">
+                    <input id="compromisso-confianca" type="checkbox" style="width:auto; margin-top:3px;" ${state.compromisso.confirmarConfianca ? "checked" : ""} />
+                    <span>Lembrar de confirmar com minha Pessoa de Confiança</span>
+                  </label>
+                  <button class="btn btn-secondary btn-center" onclick="salvarCompromisso()">Salvar meu compromisso no aparelho</button>
+                </div>
+              </details>
+            </div>
+
             <div class="card stack">
               <div>
-                <label class="field-label" for="pausa-motivo">O que está pressionando?</label>
+                <label class="field-label" for="pausa-motivo">O que está pressionando agora? (opcional)</label>
                 <select id="pausa-motivo" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface-soft); color:var(--text);" onchange="state.pausa.motivo=this.value;">
                   ${motivos.map((m) => `<option value="${m.id}" ${state.pausa.motivo === m.id ? "selected" : ""}>${m.label}</option>`).join("")}
                 </select>
               </div>
-              <p style="font-size:0.86rem;">Escolha a duração. Você continua livre para encerrar antes.</p>
+              <p style="font-size:0.86rem;">Ou escolha outra duração rápida:</p>
               <div class="grid-2">
                 <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(30)">30 minutos</button>
                 <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(60)">1 hora</button>
                 <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(240)">4 horas</button>
-                <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(1440)">Até 24 horas</button>
+                <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(1440)">24 horas</button>
               </div>
-              <div>
-                <label class="field-label" for="pausa-custom">Outra duração em horas (1 a 24)</label>
-                <div style="display:flex; gap:8px;">
-                  <input id="pausa-custom" type="number" min="1" max="24" step="1" value="2" style="flex:1;" />
-                  <button class="btn btn-secondary" style="width:auto; padding:10px 14px;" onclick="iniciarPausaComMotivo(Number(document.getElementById('pausa-custom').value) * 60)">Começar</button>
-                </div>
-              </div>
-              <p style="font-size:0.8rem; color:var(--text-muted);">A notificação é opcional e só funciona se você autorizar. Sem app aberto, o tempo é calculado quando você voltar.</p>
+              <p style="font-size:0.8rem; color:var(--text-muted);">A notificação local é opcional e só aparece se você autorizar. Nada sai do aparelho.</p>
             </div>
             ${state.pausaAviso ? `<div class="quote-box">${escapeHtml(state.pausaAviso)}</div>` : ""}
           `}
@@ -3649,12 +3847,10 @@
           <div class="card card-soft stack">
             <h3>Enquanto espera, faça uma coisa útil</h3>
             <ul class="list-clean" style="color:var(--text);">
-              <li>Ligue para o número do verso do cartão, não para o número da mensagem.</li>
+              <li>Ligue para o número do verso do cartão ou use a Discagem Segura.</li>
+              <li>Verifique a chave Pix no Escudo do Destinatário.</li>
               <li>Confirme com a pessoa por um número antigo ou pela Pergunta Secreta da Família.</li>
-              <li>Escreva o que foi pedido e qual é a pressa. Reler esfria a decisão.</li>
             </ul>
-            <button class="btn btn-secondary btn-center" onclick="navigate('discagem_segura')">Abrir canais oficiais para ligar</button>
-            <button class="btn btn-secondary btn-center" onclick="openHelpPreview('pausa programada')">Avisar uma pessoa de confiança</button>
           </div>
 
           <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>

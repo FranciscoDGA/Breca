@@ -10,6 +10,7 @@ const ARQUIVOS_NUCLEO = [
   'canais.ts',
   'brcode.ts',
   'escudoPix.ts',
+  'agenda.ts',
   'posIncidente.ts',
   'compartilhamento.ts',
 ]
