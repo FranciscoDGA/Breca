@@ -26,6 +26,15 @@ import {
   limitarValorCompromisso,
 } from './agenda'
 import {
+  CATALOGO_VACINAS,
+  INTERVALO_VACINA_PADRAO_DIAS,
+  PERGUNTAS_CHECKUP,
+  SAFRAS_VACINA,
+  avaliarCheckup,
+  avaliarStatusVacina,
+  safraPorId,
+} from './vacinas'
+import {
   MED_FONTE_OFICIAL,
   MED_NAO_COBRE,
   MED_REGRAS_RESUMO,
@@ -88,6 +97,15 @@ declare global {
       resumirPrazosMed: typeof resumirPrazosMed
       gerarDossieMed: typeof gerarDossieMed
     }
+    BREQUE_VACINAS?: {
+      versao: string
+      intervaloPadraoDias: number
+      safras: typeof SAFRAS_VACINA
+      safraPorId: typeof safraPorId
+      avaliarStatusVacina: typeof avaliarStatusVacina
+      perguntasCheckup: typeof PERGUNTAS_CHECKUP
+      avaliarCheckup: typeof avaliarCheckup
+    }
   }
 }
 
@@ -141,6 +159,16 @@ window.BREQUE_DOSSIE = {
   calcularMarcosPosContestacao,
   resumirPrazosMed,
   gerarDossieMed,
+}
+
+window.BREQUE_VACINAS = {
+  versao: CATALOGO_VACINAS.versao,
+  intervaloPadraoDias: INTERVALO_VACINA_PADRAO_DIAS,
+  safras: SAFRAS_VACINA,
+  safraPorId,
+  avaliarStatusVacina,
+  perguntasCheckup: PERGUNTAS_CHECKUP,
+  avaliarCheckup,
 }
 
 window.dispatchEvent(new CustomEvent('breque:modulos-prontos'))

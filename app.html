@@ -1118,9 +1118,12 @@
       selectedPlan: "familia_mensal",
       planCopyFeedback: "",
       vacinaStep: 0,
+      vacinaSafraId: "para-banpara-2025",
       vacinaFeedback: "",
       vacinaScore: 0,
-      vacinaAgenda: { proxima: "", criadoEm: 0 },
+      vacinaNotificouVencida: false,
+      vacinaAgenda: { ultima: "", proxima: "", intervaloDias: 60, criadoEm: 0 },
+      checkup: { respostas: {}, resultado: null, feedback: "" },
       cardFamilyHint: "",
       cardDownloaded: false,
       cofre: [],
@@ -1254,8 +1257,61 @@
       }
     ];
 
+    function obterSafrasVacina() {
+      if (window.BREQUE_VACINAS && Array.isArray(window.BREQUE_VACINAS.safras) && window.BREQUE_VACINAS.safras.length) {
+        return window.BREQUE_VACINAS.safras;
+      }
+      return [{
+        id: "classicos-brasil",
+        titulo: "Golpes clássicos do dia a dia",
+        safra: "Safra permanente",
+        resumo: "Treino rápido de 3 rodadas.",
+        sinais_chave: [],
+        desfecho_educativo: "Pausar e conferir por outro canal quebra a pressa.",
+        rodadas: VACINA_CENARIOS
+      }];
+    }
+
+    function obterSafraAtiva() {
+      const safras = obterSafrasVacina();
+      return safras.find((s) => s.id === state.vacinaSafraId) || safras[0];
+    }
+
+    function obterStatusVacina() {
+      const hojeIso = new Date().toISOString().slice(0, 10);
+      const intervalo = Number(state.vacinaAgenda.intervaloDias) || 60;
+      if (window.BREQUE_VACINAS && typeof window.BREQUE_VACINAS.avaliarStatusVacina === "function") {
+        return window.BREQUE_VACINAS.avaliarStatusVacina(
+          state.vacinaAgenda.ultima || "",
+          state.vacinaAgenda.proxima || "",
+          hojeIso,
+          intervalo
+        );
+      }
+      return {
+        fezAlgumaVez: !!state.vacinaAgenda.ultima,
+        vencida: false,
+        diasRestantes: null,
+        ultimaIso: state.vacinaAgenda.ultima || "",
+        proximaIso: state.vacinaAgenda.proxima || "",
+        textoResumo: state.vacinaAgenda.ultima
+          ? `Última vacina: ${formatarDataBr(state.vacinaAgenda.ultima).slice(0, 5)}`
+          : "Ainda sem vacina feita • leva 60 segundos"
+      };
+    }
+
+    function selecionarSafraVacina(id) {
+      state.vacinaSafraId = id;
+      state.vacinaStep = 0;
+      state.vacinaFeedback = "";
+      state.vacinaScore = 0;
+      render();
+    }
+
     function answerVacina(idx) {
-      const c = VACINA_CENARIOS[state.vacinaStep];
+      const safra = obterSafraAtiva();
+      const c = safra.rodadas[state.vacinaStep];
+      if (!c) return;
       const opt = c.opcoes[idx];
       if (opt.correta) state.vacinaScore += 1;
       state.vacinaFeedback = opt.feedback;
@@ -1263,20 +1319,58 @@
     }
 
     function nextVacina() {
+      const safra = obterSafraAtiva();
       state.vacinaFeedback = "";
       state.vacinaStep += 1;
-      if (state.vacinaStep >= VACINA_CENARIOS.length) {
+      if (state.vacinaStep >= safra.rodadas.length) {
         state.metricas.vacinas += 1;
         gravarLocal(CHAVES_LOCAIS.metricas, state.metricas);
+        const hojeIso = new Date().toISOString().slice(0, 10);
+        const intervalo = Number(state.vacinaAgenda.intervaloDias) || 60;
+        const proxima = sugestaoDataVacina(intervalo);
+        state.vacinaAgenda = {
+          ultima: hojeIso,
+          proxima,
+          intervaloDias: intervalo,
+          criadoEm: Date.now()
+        };
+        gravarLocal(CHAVES_LOCAIS.vacinaAgenda, state.vacinaAgenda);
       }
       render();
     }
 
-    function resetVacina() {
+    function resetVacina(safraId) {
+      if (safraId) state.vacinaSafraId = safraId;
       state.vacinaStep = 0;
       state.vacinaFeedback = "";
       state.vacinaScore = 0;
       navigate("vacina_60s");
+    }
+
+    function safras_proxima() {
+      const safras = obterSafrasVacina();
+      const idx = safras.findIndex((s) => s.id === state.vacinaSafraId);
+      const next = safras[(idx + 1) % safras.length];
+      return next ? next.id : "para-banpara-2025";
+    }
+
+    function gerarCheckupFamilia() {
+      if (!window.BREQUE_VACINAS || typeof window.BREQUE_VACINAS.avaliarCheckup !== "function") return;
+      state.checkup.resultado = window.BREQUE_VACINAS.avaliarCheckup(state.checkup.respostas);
+      state.checkup.feedback = "";
+      render();
+    }
+
+    async function copiarBriefingCheckup() {
+      const res = state.checkup.resultado;
+      if (!res) return;
+      try {
+        await navigator.clipboard.writeText(res.briefingFamiliar);
+        state.checkup.feedback = "Briefing Familiar copiado! Compartilhe no grupo da família se quiser.";
+      } catch {
+        state.checkup.feedback = "Não foi possível copiar automaticamente. Selecione o texto acima.";
+      }
+      render();
     }
 
     function formatarSegundos(total) {
@@ -2477,20 +2571,29 @@
     // ---------- Agenda da Vacina de 60 Segundos (Fase 5) ----------
     function salvarAgendaVacina() {
       const campo = document.getElementById("vacina-data");
-      const proxima = campo ? campo.value : "";
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(proxima)) {
-        state.vacinaFeedback = "Escolha uma data válida para o próximo treino.";
-        render();
-        return;
-      }
-      state.vacinaAgenda = { proxima, criadoEm: Date.now() };
+      const intCampo = document.getElementById("vacina-intervalo");
+      const intervalo = intCampo ? Number(intCampo.value) || 60 : (Number(state.vacinaAgenda.intervaloDias) || 60);
+      const proxima = campo && /^\d{4}-\d{2}-\d{2}$/.test(campo.value)
+        ? campo.value
+        : sugestaoDataVacina(intervalo);
+      state.vacinaAgenda = {
+        ultima: state.vacinaAgenda.ultima || new Date().toISOString().slice(0, 10),
+        proxima,
+        intervaloDias: intervalo,
+        criadoEm: Date.now()
+      };
       gravarLocal(CHAVES_LOCAIS.vacinaAgenda, state.vacinaAgenda);
-      state.vacinaFeedback = `Treino anotado para ${formatarDataBr(proxima)}. O BREQUE mostra o aviso quando você abrir o app; não há promessa de notificação com o app fechado.`;
+      notificarLocalBestEffort(
+        "BREQUE — lembrete da Vacina salvo",
+        `Próximo reforço de 60 segundos marcado para ${formatarDataBr(proxima)} (a cada ${intervalo} dias).`,
+        "breca-vacina-agenda"
+      );
+      state.vacinaFeedback = `Reforço marcado para ${formatarDataBr(proxima)} (a cada ${intervalo} dias). O BREQUE avisa na tela inicial quando vencer.`;
       render();
     }
 
     function limparAgendaVacina() {
-      state.vacinaAgenda = { proxima: "", criadoEm: 0 };
+      state.vacinaAgenda = { ultima: "", proxima: "", intervaloDias: 60, criadoEm: 0 };
       gravarLocal(CHAVES_LOCAIS.vacinaAgenda, state.vacinaAgenda);
       state.vacinaFeedback = "";
       render();
@@ -2503,16 +2606,12 @@
     }
 
     function diasAteVacina() {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(state.vacinaAgenda.proxima || "")) return null;
-      const alvo = new Date(state.vacinaAgenda.proxima + "T12:00:00");
-      if (Number.isNaN(alvo.getTime())) return null;
-      const hoje = new Date();
-      hoje.setHours(12, 0, 0, 0);
-      return Math.ceil((alvo.getTime() - hoje.getTime()) / 86400000);
+      return obterStatusVacina().diasRestantes;
     }
 
-    function sugestaoDataVacina() {
-      return new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+    function sugestaoDataVacina(dias) {
+      const janela = Number.isFinite(Number(dias)) && Number(dias) > 0 ? Math.round(Number(dias)) : 60;
+      return new Date(Date.now() + janela * 86400000).toISOString().slice(0, 10);
     }
 
     function selectFictionalExample(key) {
@@ -2767,6 +2866,25 @@
       if (state.screen === "home") {
         sincronizarConclusaoJornada();
         const estJornada = estadoAtualJornada();
+        const statusVacina = obterStatusVacina();
+        if (statusVacina.vencida && !state.vacinaNotificouVencida) {
+          state.vacinaNotificouVencida = true;
+          notificarLocalBestEffort(
+            "BREQUE — Vacina de 60 segundos",
+            "Sua vacina venceu. 60 segundos para se atualizar?",
+            "breca-vacina-vencida"
+          );
+        }
+        const barraVacinaHtml = `<button class="summary-row" style="${statusVacina.vencida ? "background:var(--accent-bg); border:1.5px solid var(--accent-border);" : ""}" onclick="resetVacina('para-banpara-2025')">
+          <div class="summary-left">
+            <div class="summary-icon" style="${statusVacina.vencida ? "background:rgba(245,158,11,0.22); color:var(--accent);" : ""}">60s</div>
+            <div>
+              <div style="font-weight:700; font-size:0.88rem;">${escapeHtml(statusVacina.textoResumo)}</div>
+              <div style="font-size:0.76rem; color:var(--text-muted);">Safra atual: Portal falso / caso Banpará (Pará)</div>
+            </div>
+          </div>
+          <span class="summary-tag">${statusVacina.vencida ? "Atualizar" : "Treinar"}</span>
+        </button>`;
         const meuBanco = obterBancoFavorito();
         const telPrincipal = meuBanco && meuBanco.telefones && meuBanco.telefones[0] ? meuBanco.telefones[0] : null;
         const numeroPrincipal = telPrincipal ? numeroDiscavel(telPrincipal.numero, telPrincipal.dddInterurbano) : "";
@@ -2852,6 +2970,7 @@
 
               ${atalhoBancoHtml}
               ${atalhoJornadaHtml}
+              ${barraVacinaHtml}
 
               <div class="glass-trio">
                 <button class="glass-card amber-glass" onclick="navigate('pressure_pause')">
@@ -3049,6 +3168,14 @@
               </div>
             </button>
 
+            <button class="action-card primary-tone" onclick="navigate('checkup_familia')">
+              <div class="icon-badge icon-brand">6</div>
+              <div>
+                <span class="action-title">Check-up Rápido (6 perguntas → Briefing Familiar)</span>
+                <span class="action-sub">Descubra onde a pressa mais pega e gere uma frase pronta de defesa</span>
+              </div>
+            </button>
+
             <button class="action-card primary-tone" onclick="navigate('pacto_familia')">
               <div class="icon-badge icon-brand">✓</div>
               <div>
@@ -3130,48 +3257,131 @@
       }
 
       if (state.screen === "vacina_60s") {
-        if (state.vacinaStep >= VACINA_CENARIOS.length) {
+        const safras = obterSafrasVacina();
+        const safra = obterSafraAtiva();
+        const rodadas = safra.rodadas || [];
+        const statusVacina = obterStatusVacina();
+        const intervaloAtual = Number(state.vacinaAgenda.intervaloDias) || 60;
+
+        if (state.vacinaStep >= rodadas.length) {
           app.innerHTML = `
             <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
             <div class="card card-amber stack">
-              <span class="pill pill-amber">Treino concluído!</span>
-              <h1>Você completou a Vacina de 60 Segundos</h1>
-              <p style="color:var(--text);">Escolhas mais seguras: <strong>${state.vacinaScore} de ${VACINA_CENARIOS.length}</strong>.</p>
-              <p>O mais importante não é acertar tudo de primeira — é lembrar de <strong>pausar e confirmar por outro canal</strong> quando a pressa aparecer.</p>
+              <span class="pill pill-amber">Vacina concluída • ${escapeHtml(safra.safra)}</span>
+              <h1>Reforço de 60 segundos atualizado!</h1>
+              <p style="color:var(--text);">Sem nota punitiva: o que protege você não é decorar tudo, é lembrar de <strong>pausar e conferir por outro canal</strong>.</p>
+              ${safra.sinais_chave && safra.sinais_chave.length ? `
+                <div class="rr-block">
+                  <div class="rr-title">Os 3 sinais desta safra</div>
+                  <ul class="list-clean" style="color:var(--text);">
+                    ${safra.sinais_chave.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}
+                  </ul>
+                </div>
+              ` : ""}
+              ${safra.desfecho_educativo ? `<div class="quote-box" style="margin:0;"><strong>Lição principal:</strong> ${escapeHtml(safra.desfecho_educativo)}</div>` : ""}
             </div>
-            <button class="btn btn-primary btn-center" onclick="resetVacina()">Refazer treino</button>
+
             <div class="card card-soft stack">
-              <h3>Agendar o próximo treino de 60 segundos</h3>
-              <p style="font-size:0.86rem; color:var(--text);">Escolha uma data para lembrar a família. O app mostra o aviso quando você abrir; não há promessa de notificação com o app fechado.</p>
-              <input id="vacina-data" type="date" value="${escapeHtml(state.vacinaAgenda.proxima || sugestaoDataVacina())}" />
-              <button class="btn btn-secondary btn-center" onclick="salvarAgendaVacina()">Anotar no aparelho</button>
+              <h3>Reforço programado (padrão: a cada 60 dias)</h3>
+              <p style="font-size:0.84rem; color:var(--text);">${escapeHtml(statusVacina.textoResumo)}</p>
+              <div>
+                <label class="field-label" for="vacina-intervalo">Frequência do reforço</label>
+                <select id="vacina-intervalo" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface); color:var(--text);" onchange="document.getElementById('vacina-data').value=sugestaoDataVacina(Number(this.value));">
+                  <option value="30" ${intervaloAtual === 30 ? "selected" : ""}>A cada 30 dias</option>
+                  <option value="60" ${intervaloAtual === 60 ? "selected" : ""}>A cada 60 dias (recomendado)</option>
+                  <option value="90" ${intervaloAtual === 90 ? "selected" : ""}>A cada 90 dias</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="vacina-data">Próxima data de atualização</label>
+                <input id="vacina-data" type="date" value="${escapeHtml(state.vacinaAgenda.proxima || sugestaoDataVacina(intervaloAtual))}" />
+              </div>
+              <button class="btn btn-secondary btn-center" onclick="salvarAgendaVacina()">Salvar lembrete local no aparelho</button>
               ${state.vacinaFeedback ? `<div class="quote-box">${escapeHtml(state.vacinaFeedback)}</div>` : ""}
             </div>
-            <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
+
+            <div class="stack">
+              <button class="btn btn-primary btn-center" onclick="resetVacina(safras_proxima())">Treinar outra safra →</button>
+              <button class="btn btn-secondary btn-center" onclick="navigate('checkup_familia')">Fazer Check-up Rápido (6 perguntas → Briefing Familiar)</button>
+              <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>
+            </div>
           `;
           return;
         }
-        const c = VACINA_CENARIOS[state.vacinaStep];
+        const c = rodadas[state.vacinaStep];
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
-            <span class="pill pill-brand">${c.titulo}</span>
-            <h1>O que você faria agora?</h1>
+            <span class="pill pill-brand">${escapeHtml(safra.safra)} • ${escapeHtml(c.titulo)}</span>
+            <h1>${escapeHtml(safra.titulo)}</h1>
+            <p style="margin-top:4px; font-size:0.84rem;">${escapeHtml(statusVacina.textoResumo)}</p>
           </div>
-          <div class="card"><div class="quote-box">${c.msg}</div></div>
+          ${safras.length > 1 && state.vacinaStep === 0 && !state.vacinaFeedback ? `
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              ${safras.map((s) => `<button class="top-pill" style="background:${s.id === safra.id ? "var(--brand)" : "var(--surface)"}; color:${s.id === safra.id ? "#fff" : "var(--text)"}; border-color:var(--border);" onclick="selecionarSafraVacina('${escapeHtml(s.id)}')">${escapeHtml(s.safra)}</button>`).join("")}
+            </div>
+          ` : ""}
+          <div class="card"><div class="quote-box">${escapeHtml(c.msg)}</div></div>
           ${!state.vacinaFeedback ? `
             <div class="stack">
-              ${c.opcoes.map((o, i) => `<button class="btn btn-secondary" onclick="answerVacina(${i})">${o.label} <span>→</span></button>`).join("")}
+              ${c.opcoes.map((o, i) => `<button class="btn btn-secondary" onclick="answerVacina(${i})">${escapeHtml(o.label)} <span>→</span></button>`).join("")}
             </div>
           ` : `
             <div class="card card-soft stack">
-              <h3>Reflexão rápida</h3>
-              <p style="color:var(--text);">${state.vacinaFeedback}</p>
+              <h3>Reflexão calma (sem nota punitiva)</h3>
+              <p style="color:var(--text);">${escapeHtml(state.vacinaFeedback)}</p>
               <button class="btn btn-primary btn-center" onclick="nextVacina()">
-                ${state.vacinaStep < VACINA_CENARIOS.length - 1 ? 'Próxima rodada →' : 'Ver resultado →'}
+                ${state.vacinaStep < rodadas.length - 1 ? "Próxima rodada →" : "Concluir vacina →"}
               </button>
             </div>
           `}
+        `;
+        return;
+      }
+
+      if (state.screen === "checkup_familia") {
+        const perguntas = (window.BREQUE_VACINAS && window.BREQUE_VACINAS.perguntasCheckup) || [];
+        const res = state.checkup.resultado;
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">Check-up Rápido • 6 perguntas • 100% local</span>
+            <h1>Onde a pressa mais pega você?</h1>
+            <p style="margin-top:6px;">Responda 6 perguntas curtas para gerar um <strong>Briefing Familiar</strong> com uma frase pronta de defesa. Nada sai do aparelho.</p>
+          </div>
+
+          <div class="stack">
+            ${perguntas.map((p, idx) => {
+              const atual = state.checkup.respostas[p.id];
+              return `
+                <div class="card stack" style="padding:14px;">
+                  <div style="font-size:0.76rem; font-weight:800; color:var(--brand); text-transform:uppercase;">${idx + 1}/6 • ${escapeHtml(p.titulo)}</div>
+                  <p style="color:var(--text); font-weight:600;">${escapeHtml(p.pergunta)}</p>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <button class="btn ${atual === 0 ? "btn-primary" : "btn-secondary"}" style="flex:1; min-width:95px; padding:9px 10px; font-size:0.84rem;" onclick="state.checkup.respostas['${p.id}']=0; render();">Quase nunca</button>
+                    <button class="btn ${atual === 1 ? "btn-primary" : "btn-secondary"}" style="flex:1; min-width:95px; padding:9px 10px; font-size:0.84rem;" onclick="state.checkup.respostas['${p.id}']=1; render();">Às vezes</button>
+                    <button class="btn ${atual === 2 ? "btn-primary" : "btn-secondary"}" style="flex:1; min-width:95px; padding:9px 10px; font-size:0.84rem;" onclick="state.checkup.respostas['${p.id}']=2; render();">Com frequência</button>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <button class="btn btn-primary btn-center" onclick="gerarCheckupFamilia()">Gerar meu Briefing Familiar →</button>
+
+          ${res ? `
+            <div class="card card-amber stack">
+              <span class="pill pill-amber">Seu ponto principal de atenção: ${escapeHtml(res.principal.titulo)}</span>
+              <h2>Frase pronta para usar na hora do aperto</h2>
+              <div class="quote-box" style="margin:0;"><strong>${escapeHtml(res.principal.fraseDefesa)}</strong></div>
+              <p style="color:var(--text);"><strong>Combinado em família:</strong> ${escapeHtml(res.principal.dicaFamilia)}</p>
+              <button class="btn btn-primary btn-center" onclick="copiarBriefingCheckup()">Copiar Briefing Familiar</button>
+              ${state.checkup.feedback ? `<div class="quote-box">${escapeHtml(state.checkup.feedback)}</div>` : ""}
+              <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">O check-up orienta o treino em família e não é selo de segurança.</p>
+            </div>
+          ` : ""}
+
+          <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>
         `;
         return;
       }

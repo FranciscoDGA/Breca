@@ -1,0 +1,131 @@
+{
+  "versao": "1.0.0",
+  "atualizado_em": "2026-11-26",
+  "intervalo_padrao_dias": 60,
+  "safras": [
+    {
+      "id": "para-banpara-2025",
+      "titulo": "Portal de notícia falso (caso real, Pará, nov/2025)",
+      "safra": "Safra nov/2025 • Pará",
+      "resumo": "Um contato encaminha link de suposto portal de notícias com susto local sobre fraude via Pix no Banpará. Ao abrir, cai numa página genérica \"Edições\" sem a matéria prometida.",
+      "sinais_chave": [
+        "Domínio com hífen ou nome genérico (ex.: cdn-noticias.com.br) em vez do veículo oficial.",
+        "Link com código/token rastreável na URL.",
+        "Página genérica diferente da matéria prometida: o clique em si é o produto."
+      ],
+      "desfecho_educativo": "Matérias legítimas de segurança existem e orientam sobre o MED — mas conteúdo bom não autoriza forma ruim. Se um contato confiável ou uma conta boa um dia mandar link estranho ou pedir dado, a regra continua valendo.",
+      "rodadas": [
+        {
+          "titulo": "Rodada 1 de 3 • Link no WhatsApp",
+          "msg": "Um conhecido encaminha no grupo: \"ALERTA URGENTE: fraude via Pix no Banpará, veja se sua conta foi afetada!\" seguido de um link como cdn-noticias.com.br/edicao?tk=98a7f1.",
+          "opcoes": [
+            {
+              "label": "Não clicar: olhar o domínio genérico com hífen e o código rastreável no fim do link",
+              "correta": true,
+              "feedback": "Muito bem! Dois sinais clássicos aparecem antes mesmo de abrir: domínio genérico com hífen (cdn-noticias.com.br) e token rastreável no final (?tk=...). Se quiser confirmar uma notícia, abra o portal oficial digitando o endereço."
+            },
+            {
+              "label": "Clicar rápido porque quem mandou é uma pessoa conhecida",
+              "correta": false,
+              "feedback": "Sem julgamento: muita gente clica por confiar em quem encaminhou. Mas conhecidos também encaminham links sem perceber. Vale sempre olhar o endereço do site antes de tocar."
+            }
+          ]
+        },
+        {
+          "titulo": "Rodada 2 de 3 • Página genérica \"Edições\"",
+          "msg": "Alguém tocou no link e, em vez da matéria sobre o Banpará, abriu uma página genérica chamada \"Edições\", cheia de botões ou pedidos de permissão, sem a reportagem prometida.",
+          "opcoes": [
+            {
+              "label": "Fechar a aba na hora e não aceitar notificações nem digitar dados",
+              "correta": true,
+              "feedback": "Exato! Quando a página não entrega a matéria prometida, o seu clique é o produto (para capturar tráfego, empurrar anúncios maliciosos ou pedir permissões). Fechar imediatamente interrompe o risco."
+            },
+            {
+              "label": "Ficar clicando nos menus da página procurando a reportagem",
+              "correta": false,
+              "feedback": "É exatamente isso que a armadilha espera. Se o endereço não bate e a matéria não está lá, feche a aba e procure a informação direto no canal oficial do banco."
+            }
+          ]
+        },
+        {
+          "titulo": "Rodada 3 de 3 • Conteúdo bom x forma ruim",
+          "msg": "No dia seguinte, você descobre que existe sim uma matéria real de segurança orientando clientes sobre o MED. O que isso ensina para a próxima vez?",
+          "opcoes": [
+            {
+              "label": "Conteúdo bom não autoriza forma ruim: mesmo vindo de conta boa, link estranho ou pedido de dado continua proibido",
+              "correta": true,
+              "feedback": "Perfeito! Golpistas se aproveitam de assuntos reais e úteis (como alertas sobre Pix e MED). A regra de ouro nunca muda: confira direto no app oficial do banco ou na Discagem Segura."
+            },
+            {
+              "label": "Se o assunto da mensagem for verdadeiro, posso confiar em qualquer link sobre ele",
+              "correta": false,
+              "feedback": "Justamente os assuntos verdadeiros e urgentes são usados como isca. O que protege você é o canal por onde você verifica, não o tema da mensagem."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "classicos-brasil",
+      "titulo": "Golpes clássicos do dia a dia (WhatsApp, ligação e SMS)",
+      "safra": "Safra permanente • Brasil",
+      "resumo": "Treino rápido de 3 cenas comuns: falso parente em número novo, falsa central pedindo código SMS e SMS de taxa de encomenda.",
+      "sinais_chave": [
+        "Número novo pedindo Pix urgente para pagar boleto.",
+        "Ligação proibindo você de desligar e pedindo código de SMS.",
+        "SMS com prazo de 1 hora e link para pagar taxa pequena."
+      ],
+      "desfecho_educativo": "Em qualquer um dos três cenários, pausar 1 minuto e conferir por um canal antigo ou oficial quebra o roteiro do golpista.",
+      "rodadas": [
+        {
+          "titulo": "Rodada 1 de 3 • WhatsApp",
+          "msg": "\"Oi mãe/pai, troquei de número agora. Preciso pagar um boleto urgente de R$ 890, depois te devolvo!\"",
+          "opcoes": [
+            {
+              "label": "Ligar para o número antigo ou fazer a Pergunta Secreta da Família",
+              "correta": true,
+              "feedback": "Excelente! Confirmar por um canal antigo ou pela pergunta secreta desarma esse golpe em segundos."
+            },
+            {
+              "label": "Fazer o Pix logo para ajudar",
+              "correta": false,
+              "feedback": "A pressa é o principal truque. Mesmo sendo alguém querido, vale pausar 1 minuto e conferir por fora."
+            }
+          ]
+        },
+        {
+          "titulo": "Rodada 2 de 3 • Ligação",
+          "msg": "\"Aqui é da central do seu banco. Detectamos uma compra suspeita. Não desligue e leia o código de 6 dígitos que chegou por SMS.\"",
+          "opcoes": [
+            {
+              "label": "Desligar e ligar pelo canal oficial (Discagem Segura ou verso do cartão)",
+              "correta": true,
+              "feedback": "Perfeito! Banco de verdade nunca pede código de SMS por ligação nem proíbe você de desligar."
+            },
+            {
+              "label": "Ler o código rápido para cancelar a compra",
+              "correta": false,
+              "feedback": "Esse código costuma ser usado para entrar na sua conta ou aprovar uma transferência. Desligar é sempre seguro."
+            }
+          ]
+        },
+        {
+          "titulo": "Rodada 3 de 3 • SMS com link",
+          "msg": "\"Sua encomenda foi retida. Pague a taxa de R$ 24,90 pelo link abaixo em até 1 hora.\"",
+          "opcoes": [
+            {
+              "label": "Abrir o site/app oficial onde fiz a compra (sem clicar no link)",
+              "correta": true,
+              "feedback": "Muito bem! Conferir direto no app ou site onde você comprou evita páginas falsas."
+            },
+            {
+              "label": "Clicar no link para ver qual encomenda é",
+              "correta": false,
+              "feedback": "Links com prazo curto são feitos para levar você a telas clonadas. Prefira sempre o app oficial."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
