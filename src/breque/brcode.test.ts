@@ -6,6 +6,7 @@ import {
   crc16,
   destinoConhecido,
   fatorParaData,
+  tipoDeChave,
 } from './brcode'
 
 // BR Code estático de exemplo, com CRC calculado pelo padrão.
@@ -90,5 +91,21 @@ describe('Cofre de destinos', () => {
     expect(destinoConhecido('Fulano de Tal', [{ nome: 'fulano' }])).toBe(true)
     expect(destinoConhecido('Maria Silva', [{ nome: 'Fulano de Tal' }])).toBe(false)
     expect(destinoConhecido('', [{ nome: 'Fulano' }])).toBe(false)
+  })
+})
+
+describe('Tipo de chave Pix (atrito, não veredito)', () => {
+  it('classifica formatos comuns', () => {
+    expect(tipoDeChave('fulano@exemplo.com.br')).toBe('EMAIL')
+    expect(tipoDeChave('123.456.789-01')).toBe('CPF')
+    expect(tipoDeChave('12345678901')).toBe('CPF')
+    expect(tipoDeChave('12.345.678/0001-90')).toBe('CNPJ')
+    expect(tipoDeChave('+55 11 98765-4321')).toBe('TELEFONE')
+    expect(tipoDeChave('a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d')).toBe('ALEATORIA')
+  })
+
+  it('não inventa classificação para texto livre', () => {
+    expect(tipoDeChave('')).toBe('DESCONHECIDA')
+    expect(tipoDeChave('pix do mercado')).toBe('DESCONHECIDA')
   })
 })

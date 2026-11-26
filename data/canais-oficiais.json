@@ -1,0 +1,308 @@
+{
+  "catalogo_versao": "1.0.0",
+  "verificado_em": "2026-11-26",
+  "reverificar_apos": "2027-02-26",
+  "aviso": "Catálogo de apoio 100% offline, conferido nas páginas oficiais indicadas em cada linha. Não é selo de confiança: em caso de dúvida, vale sempre o número impresso no verso do seu cartão ou o app oficial do banco.",
+  "instituicoes": [
+    {
+      "id": "banco-central",
+      "nome": "Banco Central do Brasil",
+      "tipo": "regulador",
+      "dominios": ["bcb.gov.br", "registrato.bcb.gov.br"],
+      "canais": [
+        {
+          "rotulo": "Fale Conosco (telefone)",
+          "telefone": "145",
+          "descricao": "Reclamar de banco, tirar dúvidas sobre MED e pedir orientação sobre golpes (segunda a sexta, 8h às 18h)",
+          "fonte": "https://www.bcb.gov.br/acessoinformacao/enderecostelefones",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Fale Conosco (internet)",
+          "telefone": "",
+          "url": "https://www.bcb.gov.br/meubc/faleconosco",
+          "descricao": "Registrar reclamação formal contra banco se a contestação MED for negada",
+          "fonte": "https://www.bcb.gov.br/meubc/faleconosco",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "banco-do-brasil",
+      "nome": "Banco do Brasil",
+      "tipo": "banco",
+      "dominios": ["bb.com.br"],
+      "orientacao_med": "No app do BB: acesse Extratos → toque no Pix → \"Contestar Lançamento\".",
+      "canais": [
+        {
+          "rotulo": "Central de Atendimento (capitais e regiões metropolitanas)",
+          "telefone": "4004 0001",
+          "descricao": "Bloqueios, suspeita de golpe e contestação de Pix/MED (ou pelo app em Extratos → Contestar Lançamento)",
+          "fonte": "https://www.bb.com.br/site/atendimento/",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Central de Atendimento (demais localidades)",
+          "telefone": "0800 729 0001",
+          "descricao": "Bloqueios, suspeita de golpe e contestação de Pix/MED para interior e demais regiões",
+          "fonte": "https://www.bb.com.br/site/atendimento/",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "caixa",
+      "nome": "Caixa Econômica Federal",
+      "tipo": "banco",
+      "dominios": ["caixa.gov.br"],
+      "canais": [
+        {
+          "rotulo": "Alô CAIXA (capitais e regiões metropolitanas)",
+          "telefone": "4004 0104",
+          "descricao": "Contestações de Pix/MED, bloqueios e atendimento sobre contas e cartões",
+          "fonte": "https://www.caixa.gov.br/atendimento/Paginas/default.aspx",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Alô CAIXA (demais localidades)",
+          "telefone": "0800 104 0104",
+          "descricao": "Contestações de Pix/MED, bloqueios e atendimento para demais regiões",
+          "fonte": "https://www.caixa.gov.br/atendimento/Paginas/default.aspx",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "itau",
+      "nome": "Itaú",
+      "tipo": "banco",
+      "dominios": ["itau.com.br"],
+      "canais": [
+        {
+          "rotulo": "Central de Atendimento (capitais e regiões metropolitanas)",
+          "telefone": "4004 4828",
+          "descricao": "Contestações de Pix/MED, bloqueio de cartão e conferência de transações",
+          "fonte": "https://www.itau.com.br/atendimento-itau/para-voce/telefones",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Central de Atendimento (demais localidades)",
+          "telefone": "0800 970 4828",
+          "descricao": "Contestações de Pix/MED, bloqueio de cartão e atendimento para demais regiões",
+          "fonte": "https://www.itau.com.br/atendimento-itau/para-voce/telefones",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "WhatsApp oficial do Itaú",
+          "telefone": "(11) 4004 4828",
+          "descricao": "Atendimento oficial via WhatsApp — confira o selo verificado antes de informar qualquer dado",
+          "fonte": "https://www.itau.com.br/atendimento-itau/para-voce/telefones",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "bradesco",
+      "nome": "Bradesco",
+      "tipo": "banco",
+      "dominios": ["bradesco.com.br", "banco.bradesco"],
+      "canais": [
+        {
+          "rotulo": "Fone Fácil (capitais e regiões metropolitanas)",
+          "telefone": "4002 0022",
+          "descricao": "Bloqueios, conferência de transações e contestação de Pix/MED",
+          "fonte": "https://banco.bradesco/html/prime/atendimento/fale-conosco/centrais-de-atendimento.shtm",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Fone Fácil (demais localidades)",
+          "telefone": "0800 570 0022",
+          "descricao": "Bloqueios, conferência de transações e contestação de Pix/MED",
+          "fonte": "https://banco.bradesco/html/prime/atendimento/fale-conosco/centrais-de-atendimento.shtm",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Alô Bradesco (SAC)",
+          "telefone": "0800 704 8383",
+          "descricao": "Reclamações, cancelamentos e registro formal de protocolo",
+          "fonte": "https://banco.bradesco/html/prime/atendimento/fale-conosco/centrais-de-atendimento.shtm",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "santander",
+      "nome": "Santander",
+      "tipo": "banco",
+      "dominios": ["santander.com.br"],
+      "canais": [
+        {
+          "rotulo": "Central Pessoa Física (capitais e regiões metropolitanas)",
+          "telefone": "4004 3535",
+          "descricao": "Contestações de Pix/MED, bloqueios e segurança para conta PF",
+          "fonte": "https://www.santander.com.br/ajuda/telefones",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Central Pessoa Física (demais localidades)",
+          "telefone": "0800 702 3535",
+          "descricao": "Contestações de Pix/MED, bloqueios e segurança para conta PF",
+          "fonte": "https://www.santander.com.br/ajuda/telefones",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Central Pessoa Jurídica (capitais e regiões metropolitanas)",
+          "telefone": "4004 2125",
+          "descricao": "Contestações e segurança para contas de empresas (PJ)",
+          "fonte": "https://www.santander.com.br/ajuda/telefones",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Central Pessoa Jurídica (demais localidades)",
+          "telefone": "0800 726 2125",
+          "descricao": "Contestações e segurança para contas de empresas (PJ)",
+          "fonte": "https://www.santander.com.br/ajuda/telefones",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "nubank",
+      "nome": "Nubank",
+      "tipo": "banco",
+      "dominios": ["nubank.com.br"],
+      "sem_telefone_publico": true,
+      "aviso_especial": "O Nubank não tem telefone de atendimento. Se alguém ligar se passando pelo Nubank, é golpe. Atendimento só pelo chat dentro do app.",
+      "canais": [
+        {
+          "rotulo": "Atendimento 24h pelo chat dentro do app",
+          "telefone": "",
+          "url": "https://nubank.com.br/contato/",
+          "descricao": "O Nubank não tem telefone de atendimento. Se alguém ligar se passando pelo Nubank, é golpe. Atendimento só pelo chat dentro do app.",
+          "fonte": "https://nubank.com.br/contato/",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "banco-inter",
+      "nome": "Banco Inter",
+      "tipo": "banco",
+      "dominios": ["bancointer.com.br", "inter.co"],
+      "canais": [
+        {
+          "rotulo": "SAC 24h",
+          "telefone": "0800 940 9999",
+          "descricao": "Bloqueios, suspeita de golpe, contestação de Pix/MED e protocolos 24 horas",
+          "fonte": "https://inter.co/canais-de-atendimento",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "banpara",
+      "nome": "Banpará",
+      "tipo": "banco",
+      "dominios": ["banpara.b.br"],
+      "destaque_regional": "Banco local do Pará",
+      "canais": [
+        {
+          "rotulo": "Central de Atendimento (Belém e Região Metropolitana)",
+          "telefone": "3004 4444",
+          "descricao": "Contestações de Pix/MED e bloqueios em Belém e RM (demais capitais: código de operadora + DDD 91)",
+          "ddd_interurbano": "91",
+          "fonte": "https://www.banpara.b.br/central-de-atendimento/",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Central de Atendimento (demais localidades, telefone fixo)",
+          "telefone": "0800 285 8080",
+          "descricao": "Contestações de Pix/MED, bloqueios e atendimento para o interior do Pará e demais localidades",
+          "fonte": "https://www.banpara.b.br/central-de-atendimento/",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "sicredi",
+      "nome": "Sicredi",
+      "tipo": "cooperativa",
+      "dominios": ["sicredi.com.br", "sicredi.coop.br"],
+      "canais": [
+        {
+          "rotulo": "Central de Atendimento",
+          "telefone": "0800 724 4770",
+          "descricao": "Contestações de Pix/MED, bloqueios e apoio a associados",
+          "fonte": "https://www.sicredi.com.br/site/atendimento/telefones/",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "sicoob",
+      "nome": "Sicoob",
+      "tipo": "cooperativa",
+      "dominios": ["sicoob.com.br"],
+      "canais": [
+        {
+          "rotulo": "Central de Atendimento (capitais e regiões metropolitanas)",
+          "telefone": "4000 1111",
+          "descricao": "Contestações de Pix/MED, bloqueios e apoio a cooperados",
+          "fonte": "https://www.sicoob.com.br/web/sicoob/fale-conosco",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Central de Atendimento (demais localidades)",
+          "telefone": "0800 642 0000",
+          "descricao": "Contestações de Pix/MED, bloqueios e apoio para demais regiões",
+          "fonte": "https://www.sicoob.com.br/web/sicoob/fale-conosco",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "banrisul",
+      "nome": "Banrisul",
+      "tipo": "banco",
+      "dominios": ["banrisul.com.br"],
+      "canais": [
+        {
+          "rotulo": "SAC Banrisul",
+          "telefone": "0800 646 1515",
+          "descricao": "Reclamações, contestações de Pix/MED e protocolos formais",
+          "fonte": "https://www.banrisul.com.br/bob/site/link/banrifone.html",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Banrifone (Porto Alegre e região)",
+          "telefone": "(51) 3210 0122",
+          "descricao": "Bloqueios, conferência de conta e atendimento telefônico",
+          "fonte": "https://www.banrisul.com.br/bob/site/link/banrifone.html",
+          "verificado_em": "2026-11-26"
+        },
+        {
+          "rotulo": "Banrifone (demais localidades)",
+          "telefone": "0800 541 8855",
+          "descricao": "Bloqueios e atendimento para interior do RS e fora do estado",
+          "fonte": "https://www.banrisul.com.br/bob/site/link/banrifone.html",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "policia-190",
+      "nome": "Polícia Militar (Emergência)",
+      "tipo": "emergencia",
+      "dominios": [],
+      "canais": [
+        {
+          "rotulo": "Emergência policial",
+          "telefone": "190",
+          "descricao": "Ameaça presencial, extorsão imediata ou risco físico",
+          "fonte": "https://www.gov.br/pt-br/servicos",
+          "verificado_em": "2026-11-26"
+        }
+      ]
+    }
+  ]
+}

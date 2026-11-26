@@ -6,7 +6,8 @@
   "description": "BRECA — o breque antes da decisão financeira. App brasileiro antigolpe, processamento 100% no dispositivo.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/validar-catalogo.mjs && tsc --noEmit && vite build",
+    "check:catalogo": "node scripts/validar-catalogo.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:engine": "vitest run src/core/engine",

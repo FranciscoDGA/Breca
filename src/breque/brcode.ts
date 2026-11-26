@@ -81,6 +81,33 @@ function limparChave(chave: string): string {
   return chave.trim()
 }
 
+export type TipoChave = 'CPF' | 'CNPJ' | 'EMAIL' | 'TELEFONE' | 'ALEATORIA' | 'DESCONHECIDA'
+
+/**
+ * Classifica o formato da chave Pix. É só um rótulo para atrito:
+ * não consulta o DICT, não valida titularidade e nunca gera veredito "seguro".
+ * Chave só de dígitos com 11 posições é ambígua entre CPF e telefone local;
+ * nesse caso rotulamos CPF e a tela avisa que o formato sozinho não confirma nada.
+ */
+export function tipoDeChave(chave: string): TipoChave {
+  const valor = String(chave ?? '').trim()
+  if (valor === '') return 'DESCONHECIDA'
+
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor)) return 'EMAIL'
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(valor)) {
+    return 'ALEATORIA'
+  }
+
+  const digitos = valor.replace(/\D/g, '')
+  const internacional = /^\s*\+?55[\s\d().-]+$/.test(valor)
+  if (internacional && digitos.length >= 12 && digitos.length <= 13) return 'TELEFONE'
+  if (/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/.test(valor)) return 'CPF'
+  if (/^\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}$/.test(valor)) return 'CNPJ'
+  if (digitos.length === 14 && /^[\d./-]+$/.test(valor)) return 'CNPJ'
+  if (/^[+\d\s().-]+$/.test(valor) && digitos.length >= 10 && digitos.length <= 13) return 'TELEFONE'
+  return 'DESCONHECIDA'
+}
+
 export function analisarBRCode(payloadOriginal: string): ResultadoPix {
   const payload = payloadOriginal.trim().replace(/[\r\n\t]/g, '')
   const avisos: string[] = []

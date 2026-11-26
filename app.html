@@ -929,6 +929,32 @@
         gap: 12px;
       }
     }
+
+    @media print {
+      body.modo-impressao .topbar,
+      body.modo-impressao .proto-strip,
+      body.modo-impressao .bottom-nav,
+      body.modo-impressao .nav-item {
+        display: none !important;
+      }
+      body.modo-impressao #app > * {
+        display: none !important;
+      }
+      body.modo-impressao #app #relato-print {
+        display: block !important;
+      }
+      body.modo-impressao #relato-print {
+        display: block !important;
+        white-space: pre-wrap;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+        background: #fff;
+        padding: 0;
+        margin: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1002,7 +1028,7 @@
       pauseInterval: null,
       postEvent: null,
       postChecked: new Set(),
-      incidentLog: { time: "", summary: "", saved: false, valor: "", chave: "", transacaoId: "", canal: "", tempo: "", copiado: false, copiaErro: false, contabilizado: false },
+      incidentLog: { data: "", time: "", summary: "", saved: false, valor: "", chave: "", transacaoId: "", canal: "", tempo: "", copiado: false, copiaErro: false, contabilizado: false, hash: "", hashErro: "" },
       trustedContacts: [
         { id: "c1", name: "Pessoa de confiança", note: "Edite ou adicione um familiar abaixo" }
       ],
@@ -1017,6 +1043,7 @@
       vacinaStep: 0,
       vacinaFeedback: "",
       vacinaScore: 0,
+      vacinaAgenda: { proxima: "", criadoEm: 0 },
       cardFamilyHint: "",
       cardDownloaded: false,
       cofre: [],
@@ -1026,13 +1053,25 @@
       simulado: { consentiu: false, cenario: "familiar", nome: "", ativo: false, inicio: 0, mensagem: "", resultado: null, segundos: 0 },
       simuladoInterval: null,
       metricas: { vacinas: 0, simulados: 0, segundosTotal: 0, verificou: 0, incidentes: 0 },
-      registroCanais: { consulta: "", resultado: null }
+      registroCanais: { consulta: "", resultado: null },
+      discagemBusca: "",
+      bancoFavoritoId: "",
+      operadoraCodigo: "",
+      pausa: { ativo: false, inicio: 0, duracaoMin: 60, motivo: "banco" },
+      pausaInterval: null,
+      pausaAviso: "",
+      medChecklist: {}
     };
 
     const CHAVES_LOCAIS = {
       cofre: "breca.cofre.v1",
       simulado: "breca.simulado.v1",
-      metricas: "breca.metricas.v1"
+      metricas: "breca.metricas.v1",
+      pausa: "breca.pausa.v1",
+      vacinaAgenda: "breca.vacinaAgenda.v1",
+      med: "breca.med.v1",
+      bancoFavorito: "breca.bancoFavorito.v1",
+      operadora: "breca.operadora.v1"
     };
 
     function lerLocal(chave, padrao) {
@@ -1054,24 +1093,38 @@
 
     state.cofre = lerLocal(CHAVES_LOCAIS.cofre, []);
     state.metricas = { ...state.metricas, ...lerLocal(CHAVES_LOCAIS.metricas, {}) };
+    state.pausa = { ...state.pausa, ...lerLocal(CHAVES_LOCAIS.pausa, {}) };
+    state.vacinaAgenda = { ...state.vacinaAgenda, ...lerLocal(CHAVES_LOCAIS.vacinaAgenda, {}) };
+    state.medChecklist = lerLocal(CHAVES_LOCAIS.med, {});
+    state.bancoFavoritoId = String(lerLocal(CHAVES_LOCAIS.bancoFavorito, "") || "");
+    state.operadoraCodigo = String(lerLocal(CHAVES_LOCAIS.operadora, "") || "");
 
-    const CANAIS_OFICIAIS = [
-      { nome: "Banco do Brasil", dominios: ["bb.com.br"], tipo: "Banco" },
-      { nome: "Caixa Econômica Federal", dominios: ["caixa.gov.br"], tipo: "Banco" },
-      { nome: "Itaú", dominios: ["itau.com.br"], tipo: "Banco" },
-      { nome: "Bradesco", dominios: ["bradesco.com.br"], tipo: "Banco" },
-      { nome: "Santander", dominios: ["santander.com.br"], tipo: "Banco" },
-      { nome: "Nubank", dominios: ["nubank.com.br"], tipo: "Banco" },
-      { nome: "Banco Inter", dominios: ["bancointer.com.br"], tipo: "Banco" },
-      { nome: "C6 Bank", dominios: ["c6bank.com.br"], tipo: "Banco" },
-      { nome: "Sicredi", dominios: ["sicredi.com.br"], tipo: "Cooperativa" },
-      { nome: "Sicoob", dominios: ["sicoob.com.br"], tipo: "Cooperativa" },
-      { nome: "Mercado Pago", dominios: ["mercadopago.com.br"], tipo: "Pagamento" },
-      { nome: "PicPay", dominios: ["picpay.com"], tipo: "Pagamento" },
-      { nome: "Banco Central do Brasil", dominios: ["bcb.gov.br"], tipo: "Órgão público" },
-      { nome: "Registrato", dominios: ["registrato.bcb.gov.br"], tipo: "Órgão público" },
-      { nome: "Gov.br", dominios: ["gov.br"], tipo: "Órgão público" }
+    const CANAIS_FALLBACK = [
+      { nome: "Banco do Brasil", dominios: ["bb.com.br"], tipo: "Banco", telefones: [] },
+      { nome: "Caixa Econômica Federal", dominios: ["caixa.gov.br"], tipo: "Banco", telefones: [] },
+      { nome: "Itaú", dominios: ["itau.com.br"], tipo: "Banco", telefones: [] },
+      { nome: "Bradesco", dominios: ["bradesco.com.br"], tipo: "Banco", telefones: [] },
+      { nome: "Santander", dominios: ["santander.com.br"], tipo: "Banco", telefones: [] },
+      { nome: "Nubank", dominios: ["nubank.com.br"], tipo: "Banco", telefones: [] },
+      { nome: "Banco Inter", dominios: ["bancointer.com.br"], tipo: "Banco", telefones: [] },
+      { nome: "C6 Bank", dominios: ["c6bank.com.br"], tipo: "Banco", telefones: [] },
+      { nome: "Sicredi", dominios: ["sicredi.com.br"], tipo: "Cooperativa", telefones: [] },
+      { nome: "Sicoob", dominios: ["sicoob.com.br"], tipo: "Cooperativa", telefones: [] },
+      { nome: "Mercado Pago", dominios: ["mercadopago.com.br"], tipo: "Pagamento", telefones: [] },
+      { nome: "PicPay", dominios: ["picpay.com"], tipo: "Pagamento", telefones: [] },
+      { nome: "Banco Central do Brasil", dominios: ["bcb.gov.br"], tipo: "Órgão público", telefones: [] },
+      { nome: "Registrato", dominios: ["registrato.bcb.gov.br"], tipo: "Órgão público", telefones: [] },
+      { nome: "Gov.br", dominios: ["gov.br"], tipo: "Órgão público", telefones: [] }
     ];
+
+    // O catálogo completo vem do bundle (src/breque/canais.ts). O fallback só
+    // cobre o instante em que o módulo ainda não carregou.
+    function canaisOficiais() {
+      const catalogo = window.BREQUE_CANAIS;
+      return catalogo && Array.isArray(catalogo.canais) && catalogo.canais.length
+        ? catalogo.canais
+        : CANAIS_FALLBACK;
+    }
 
     const VACINA_CENARIOS = [
       {
@@ -1181,8 +1234,27 @@
       render();
     }
 
-    function adicionarResultadoAoCofre() {
-      const resultado = state.raioX.resultado;
+    function rotuloTipoChave(chave) {
+      if (!window.BRECODE || typeof window.BRECODE.tipoDeChave !== "function") {
+        return "formato não identificado";
+      }
+      const mapa = {
+        CPF: "CPF (11 dígitos)",
+        CNPJ: "CNPJ (14 dígitos)",
+        EMAIL: "e-mail",
+        TELEFONE: "telefone",
+        ALEATORIA: "chave aleatória (EVP)",
+        DESCONHECIDA: "formato não identificado"
+      };
+      return mapa[window.BRECODE.tipoDeChave(chave)] || "formato não identificado";
+    }
+
+    function destinoEstaNoCofre(nome) {
+      if (!window.BRECODE || typeof window.BRECODE.destinoConhecido !== "function") return false;
+      return window.BRECODE.destinoConhecido(nome || "", state.cofre);
+    }
+
+    function adicionarResultadoAoCofre() {      const resultado = state.raioX.resultado;
       const nome = (resultado && resultado.nomeRecebedor) || state.raioX.nomeEsperado.trim();
       if (!nome) return;
       state.cofre.push({ nome, nota: "Adicionado pelo Raio-X", criadoEm: Date.now() });
@@ -1207,6 +1279,10 @@
       entrega: {
         titulo: "Taxa falsa de entrega",
         texto: () => "“Sua encomenda está retida. Pague a taxa de R$ 27,90 em até 2 horas neste link: correios-entrega.xyz”"
+      },
+      banpara: {
+        titulo: "Falsa central do Banpará (cenário baseado em relato)",
+        texto: () => "“Central Banpará: detectamos um Pix suspeito. Confirme seus dados neste link: banpara-atendimento.exemplo” — domínio fictício; o cenário é ilustrativo, não é um caso confirmado."
       }
     };
 
@@ -1268,24 +1344,26 @@
       let bruto = state.registroCanais.consulta.trim().toLowerCase();
       if (!bruto) return;
       bruto = bruto.replace(/^https?:\/\//, "").split("/")[0].replace(/^www\./, "");
-      const canal = CANAIS_OFICIAIS.find((c) =>
+      const canais = canaisOficiais();
+      const canal = canais.find((c) =>
         c.dominios.some((d) => bruto === d || bruto.endsWith("." + d))
       );
-      const pareceBanco = /(banco|itau|bradesco|santander|nubank|caixa|sicredi|sicoob|picpay|mercadopago|correios|receita|inss)/.test(bruto)
+      const pareceBanco = /(banco|itau|bradesco|santander|nubank|caixa|sicredi|sicoob|picpay|mercadopago|correios|receita|inss|banpara)/.test(bruto)
         || /(^|[.-])(bb|inter|c6|gov)([.-]|$)/.test(bruto);
       state.registroCanais.resultado = canal
-        ? { tipo: "OFICIAL", texto: `${bruto} pertence a ${canal.nome} (${canal.tipo}) na lista aberta. Ainda assim, confirme no app oficial.` }
+        ? { tipo: "OFICIAL", texto: `${bruto} pertence a ${canal.nome} (${canal.tipo}) no catálogo local. Ainda assim, confirme no app oficial.` }
         : pareceBanco
-          ? { tipo: "SUSPEITO", texto: `${bruto} cita nome de banco ou órgão, mas NÃO está na lista aberta. Digite o endereço oficial manualmente.` }
-          : { tipo: "DESCONHECIDO", texto: `${bruto} não está na lista aberta. Isso não prova que é golpe, mas confirme por outro canal.` };
+          ? { tipo: "SUSPEITO", texto: `${bruto} cita nome de banco ou órgão, mas NÃO está no catálogo local. Digite o endereço oficial manualmente.` }
+          : { tipo: "DESCONHECIDO", texto: `${bruto} não está no catálogo local. Isso não prova que é golpe, mas confirme por outro canal.` };
       render();
     }
 
     function exportarRegistroCanais() {
       const conteudo = {
-        versao: "2026-11-25",
-        aviso: "Lista aberta e comunitária. Não é assinada pelas instituições. Confirme sempre no app oficial.",
-        canais: CANAIS_OFICIAIS
+        versao: 1,
+        verificadoEm: (window.BREQUE_CANAIS && window.BREQUE_CANAIS.verificadoEm) || "2026-11-26",
+        aviso: "Catálogo local de apoio, conferido nas páginas oficiais de cada instituição. Não é um selo de confiança e não substitui o app oficial.",
+        canais: canaisOficiais()
       };
       const blob = new Blob([JSON.stringify(conteudo, null, 2)], { type: "application/json;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -1297,6 +1375,146 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       render();
+    }
+
+    function canaisFiltrados(termo) {
+      const canais = canaisOficiais();
+      if (window.BREQUE_CANAIS && typeof window.BREQUE_CANAIS.buscar === "function") {
+        return window.BREQUE_CANAIS.buscar(termo, canais);
+      }
+      const alvo = normalizeText(termo);
+      if (!alvo) return canais;
+      return canais.filter((c) =>
+        normalizeText([c.nome, c.tipo, ...(c.dominios || [])].join(" ")).includes(alvo)
+      );
+    }
+
+    function numeroDiscavel(numero, dddInterurbano) {
+      if (window.BREQUE_CANAIS && typeof window.BREQUE_CANAIS.formatarDiscagem === "function") {
+        return window.BREQUE_CANAIS.formatarDiscagem(numero, state.operadoraCodigo, dddInterurbano || "");
+      }
+      if (window.BREQUE_CANAIS && typeof window.BREQUE_CANAIS.discavel === "function") {
+        return window.BREQUE_CANAIS.discavel(numero);
+      }
+      return String(numero || "").replace(/\D/g, "");
+    }
+
+    function obterBancoFavorito() {
+      if (!state.bancoFavoritoId) return null;
+      const canais = canaisOficiais();
+      return canais.find((c) => c.id === state.bancoFavoritoId) || null;
+    }
+
+    function definirBancoFavorito(id) {
+      state.bancoFavoritoId = String(id || "");
+      gravarLocal(CHAVES_LOCAIS.bancoFavorito, state.bancoFavoritoId);
+      render();
+    }
+
+    function atualizarOperadora(valor) {
+      const limpo = String(valor || "").replace(/\D/g, "").slice(0, 2);
+      state.operadoraCodigo = limpo;
+      gravarLocal(CHAVES_LOCAIS.operadora, limpo);
+      const listaEl = document.getElementById("lista-canais-oficiais");
+      if (listaEl) {
+        listaEl.innerHTML = renderListaCanais(state.discagemBusca);
+      }
+    }
+
+    function atualizarBuscaCanais(valor) {
+      state.discagemBusca = valor;
+      const listaEl = document.getElementById("lista-canais-oficiais");
+      const contadorEl = document.getElementById("contador-canais-oficiais");
+      if (listaEl) {
+        const lista = canaisFiltrados(valor);
+        listaEl.innerHTML = renderListaCanais(valor);
+        if (contadorEl) {
+          const verif = formatarDataBr((window.BREQUE_CANAIS && window.BREQUE_CANAIS.verificadoEm) || "2026-11-26");
+          contadorEl.textContent = `${lista.length} instituição(ões) no catálogo offline • verificado pela equipe em ${verif}.`;
+        }
+      } else {
+        render();
+      }
+    }
+
+    function renderListaCanais(termo) {
+      const lista = canaisFiltrados(termo);
+      if (!lista.length) {
+        return `<div class="card card-amber"><strong>Nenhuma instituição encontrada para “${escapeHtml(termo)}”.</strong><p>Confira a grafia ou procure o telefone no verso do seu cartão. Ausência no catálogo não prova que o número é golpe.</p></div>`;
+      }
+      return lista.map((canal) => {
+        const ehFavorito = state.bancoFavoritoId === canal.id;
+        const telefonesHtml = (canal.telefones || []).map((tel) => {
+          const discar = numeroDiscavel(tel.numero, tel.dddInterurbano);
+          if (!discar) return "";
+          const dataLinha = formatarDataBr(tel.verificadoEm || canal.verificadoEm);
+          return `
+            <div style="border:1.5px solid var(--border); border-radius:14px; padding:12px; background:var(--surface-soft); display:flex; flex-direction:column; gap:6px;">
+              <a class="btn btn-primary" style="text-decoration:none; text-align:left; display:block; padding:12px 14px;" href="tel:${escapeHtml(discar)}">
+                <strong style="display:block; font-size:1.05rem;">Ligar ${escapeHtml(tel.numero)}</strong>
+                <span style="font-size:0.8rem; font-weight:500; opacity:0.9;">${escapeHtml(tel.rotulo)}</span>
+              </a>
+              ${tel.descricao ? `<div style="font-size:0.82rem; color:var(--text);"><strong>Quando usar:</strong> ${escapeHtml(tel.descricao)}</div>` : ""}
+              ${state.operadoraCodigo && discar !== String(tel.numero || "").replace(/\D/g, "") ? `<div style="font-size:0.76rem; color:var(--brand);">Discando com operadora ${escapeHtml(state.operadoraCodigo)}: <strong>${escapeHtml(discar)}</strong></div>` : ""}
+              <div style="font-size:0.74rem; color:var(--text-muted);">
+                <strong>Fonte oficial:</strong> <a href="${escapeHtml(tel.fonte || canal.fonte)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand); text-decoration:underline;">abrir página oficial</a>
+                • <span>verificado pela equipe em ${escapeHtml(dataLinha)}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        const linksHtml = (canal.links || []).map((lnk) => {
+          const dataLinha = formatarDataBr(lnk.verificadoEm || canal.verificadoEm);
+          return `
+            <div style="border:1.5px solid var(--border); border-radius:14px; padding:12px; background:var(--surface-soft); display:flex; flex-direction:column; gap:6px;">
+              <a class="btn btn-secondary" style="text-decoration:none; text-align:left; display:block; padding:11px 14px;" href="${escapeHtml(lnk.url)}" target="_blank" rel="noopener noreferrer">
+                <strong style="display:block;">${escapeHtml(lnk.rotulo)} →</strong>
+              </a>
+              <div style="font-size:0.82rem; color:var(--text);">${escapeHtml(lnk.descricao)}</div>
+              <div style="font-size:0.74rem; color:var(--text-muted);">
+                <strong>Fonte oficial:</strong> <a href="${escapeHtml(lnk.fonte || canal.fonte)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand); text-decoration:underline;">abrir página oficial</a>
+                • <span>verificado pela equipe em ${escapeHtml(dataLinha)}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <div class="card ${canal.destaqueRegional ? "card-amber" : ""} stack" style="padding:16px;">
+            <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;">
+              <div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
+                  ${canal.destaqueRegional ? `<span class="pill pill-amber">${escapeHtml(canal.destaqueRegional)}</span>` : ""}
+                  ${ehFavorito ? `<span class="pill pill-brand">Meu banco na tela inicial</span>` : ""}
+                </div>
+                <div style="font-weight:800; font-size:1.06rem;">${escapeHtml(canal.nome)}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml((canal.dominios || []).join(", ") || "sem domínio informado")}</div>
+              </div>
+              <span class="pill pill-neutral" style="white-space:nowrap;">${escapeHtml(canal.tipo)}</span>
+            </div>
+
+            ${canal.semTelefonePublico ? `
+              <div class="card card-risk" style="padding:12px; margin:0;">
+                <strong>Atenção: sem telefone público</strong>
+                <p style="font-size:0.86rem; color:var(--text); margin-top:4px;">${escapeHtml(canal.avisoEspecial || "Atendimento apenas dentro do aplicativo oficial.")}</p>
+              </div>
+            ` : ""}
+
+            ${canal.orientacaoMed ? `<div class="quote-box" style="margin:0;"><strong>Contestação MED no app:</strong> ${escapeHtml(canal.orientacaoMed)}</div>` : ""}
+
+            ${telefonesHtml}
+            ${linksHtml}
+
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; padding-top:4px;">
+              ${ehFavorito
+                ? `<button class="btn btn-ghost" style="padding:6px 10px; font-size:0.8rem;" onclick="definirBancoFavorito('')">Remover da tela inicial</button>`
+                : `<button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" onclick="definirBancoFavorito('${escapeHtml(canal.id)}')">Salvar como meu banco (1 toque na tela inicial)</button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function limparMetricas() {
@@ -1612,6 +1830,10 @@
         clearInterval(state.pauseInterval);
         state.pauseInterval = null;
       }
+      if (state.pausaInterval) {
+        clearInterval(state.pausaInterval);
+        state.pausaInterval = null;
+      }
       if (state.simuladoInterval) {
         clearInterval(state.simuladoInterval);
         state.simuladoInterval = null;
@@ -1722,6 +1944,211 @@
         if (state.pauseSeconds <= 0) clearTimer();
         render();
       }, 1000);
+    }
+
+    // ---------- Pausa Programada (Fase 3) ----------
+    function salvarPausa() {
+      gravarLocal(CHAVES_LOCAIS.pausa, {
+        ativo: !!state.pausa.ativo,
+        inicio: state.pausa.inicio || 0,
+        duracaoMin: state.pausa.duracaoMin || 60,
+        motivo: state.pausa.motivo || "banco"
+      });
+    }
+
+    function restantePausaSegundos() {
+      if (!state.pausa.ativo || !state.pausa.inicio) return 0;
+      const fim = state.pausa.inicio + (state.pausa.duracaoMin || 60) * 60000;
+      return Math.max(0, Math.round((fim - Date.now()) / 1000));
+    }
+
+    function iniciarTickPausa() {
+      if (state.pausaInterval) clearInterval(state.pausaInterval);
+      state.pausaInterval = setInterval(() => {
+        if (restantePausaSegundos() <= 0) {
+          state.pausa.ativo = false;
+          salvarPausa();
+          if (state.pausaInterval) {
+            clearInterval(state.pausaInterval);
+            state.pausaInterval = null;
+          }
+        }
+        render();
+      }, 1000);
+    }
+
+    function notificarPausaBestEffort(minutos) {
+      try {
+        if (!("Notification" in window)) return;
+        const aviso = () => {
+          try {
+            new Notification("BREQUE — pausa programada", {
+              body: `Você escolheu esperar ${minutos} minutos. Nada foi bloqueado; a decisão continua sua.`,
+              tag: "breca-pausa"
+            });
+          } catch {
+            // Notificação é só um lembrete extra; o app funciona sem ela.
+          }
+        };
+        if (Notification.permission === "granted") aviso();
+        else if (Notification.permission === "default") {
+          Notification.requestPermission().then((p) => { if (p === "granted") aviso(); }).catch(() => {});
+        }
+      } catch {
+        // Sem permissão ou API: ignora.
+      }
+    }
+
+    function iniciarPausaProgramada(minutos) {
+      const n = Number(minutos);
+      const duracao = Number.isFinite(n) ? Math.min(1440, Math.max(1, Math.round(n))) : 60;
+      state.pausa = {
+        ativo: true,
+        inicio: Date.now(),
+        duracaoMin: duracao,
+        motivo: state.pausa.motivo || "banco"
+      };
+      salvarPausa();
+      notificarPausaBestEffort(duracao);
+      iniciarTickPausa();
+      render();
+    }
+
+    function encerrarPausaProgramada() {
+      state.pausa.ativo = false;
+      salvarPausa();
+      if (state.pausaInterval) {
+        clearInterval(state.pausaInterval);
+        state.pausaInterval = null;
+      }
+      render();
+    }
+
+    function formatarContagem(totalSegundos) {
+      const seg = Math.max(0, Math.round(totalSegundos));
+      const h = Math.floor(seg / 3600);
+      const m = Math.floor((seg % 3600) / 60);
+      const s = seg % 60;
+      if (h > 0) return `${h}h ${String(m).padStart(2, "0")}min`;
+      return `${m}min ${String(s).padStart(2, "0")}s`;
+    }
+
+    function iniciarPausaComMotivo(minutos) {
+      const select = document.getElementById("pausa-motivo");
+      if (select) state.pausa.motivo = select.value;
+      iniciarPausaProgramada(minutos);
+    }
+
+    function repetirPausa() {
+      iniciarPausaProgramada(state.pausa.duracaoMin || 60);
+    }
+
+    async function copiarDesculpaPausa() {
+      const texto = "Obrigado(a), mas não vou decidir agora. Vou conferir com calma por outro canal e retorno depois.";
+      try {
+        await navigator.clipboard.writeText(texto);
+        state.pausaAviso = "Frase copiada. Use no chat ou na ligação para ganhar tempo.";
+      } catch {
+        state.pausaAviso = "Não foi possível copiar automaticamente. Selecione a frase abaixo e copie manualmente.";
+      }
+      render();
+    }
+
+    // ---------- Prazos do MED + impressão digital do relato (Fase 4) ----------
+    function dataLimiteMed() {
+      const bruto = state.incidentLog.data;
+      if (!bruto || !/^\d{4}-\d{2}-\d{2}$/.test(bruto)) return null;
+      const base = new Date(bruto + "T12:00:00");
+      if (Number.isNaN(base.getTime())) return null;
+      return new Date(base.getTime() + 80 * 86400000);
+    }
+
+    function diasRestantesMed() {
+      const limite = dataLimiteMed();
+      if (!limite) return null;
+      const hoje = new Date();
+      hoje.setHours(12, 0, 0, 0);
+      return Math.ceil((limite.getTime() - hoje.getTime()) / 86400000);
+    }
+
+    async function gerarHashRelato() {
+      state.incidentLog.hash = "";
+      state.incidentLog.hashErro = "";
+      try {
+        const texto = montarRelatoIncidente();
+        const bytes = new TextEncoder().encode(texto);
+        const digest = await crypto.subtle.digest("SHA-256", bytes);
+        state.incidentLog.hash = Array.from(new Uint8Array(digest))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      } catch {
+        state.incidentLog.hashErro = "Este navegador não permitiu gerar a impressão digital. O relato continua disponível para .txt e impressão.";
+      }
+      render();
+    }
+
+    function imprimirRelato() {
+      const alvo = document.getElementById("relato-print");
+      if (!alvo) return;
+      alvo.textContent = montarRelatoIncidente();
+      alvo.hidden = false;
+      document.body.classList.add("modo-impressao");
+      try {
+        window.print();
+      } catch {
+        // Se a impressão falhar, o usuário ainda pode baixar o .txt.
+      }
+      setTimeout(() => {
+        document.body.classList.remove("modo-impressao");
+        alvo.hidden = true;
+      }, 800);
+    }
+
+    function alternarMedEtapa(id) {
+      state.medChecklist = { ...state.medChecklist, [id]: !state.medChecklist[id] };
+      gravarLocal(CHAVES_LOCAIS.med, state.medChecklist);
+      render();
+    }
+
+    // ---------- Agenda da Vacina de 60 Segundos (Fase 5) ----------
+    function salvarAgendaVacina() {
+      const campo = document.getElementById("vacina-data");
+      const proxima = campo ? campo.value : "";
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(proxima)) {
+        state.vacinaFeedback = "Escolha uma data válida para o próximo treino.";
+        render();
+        return;
+      }
+      state.vacinaAgenda = { proxima, criadoEm: Date.now() };
+      gravarLocal(CHAVES_LOCAIS.vacinaAgenda, state.vacinaAgenda);
+      state.vacinaFeedback = `Treino anotado para ${formatarDataBr(proxima)}. O BREQUE mostra o aviso quando você abrir o app; não há promessa de notificação com o app fechado.`;
+      render();
+    }
+
+    function limparAgendaVacina() {
+      state.vacinaAgenda = { proxima: "", criadoEm: 0 };
+      gravarLocal(CHAVES_LOCAIS.vacinaAgenda, state.vacinaAgenda);
+      state.vacinaFeedback = "";
+      render();
+    }
+
+    function formatarDataBr(iso) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return "data não informada";
+      const [ano, mes, dia] = iso.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function diasAteVacina() {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(state.vacinaAgenda.proxima || "")) return null;
+      const alvo = new Date(state.vacinaAgenda.proxima + "T12:00:00");
+      if (Number.isNaN(alvo.getTime())) return null;
+      const hoje = new Date();
+      hoje.setHours(12, 0, 0, 0);
+      return Math.ceil((alvo.getTime() - hoje.getTime()) / 86400000);
+    }
+
+    function sugestaoDataVacina() {
+      return new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
     }
 
     function selectFictionalExample(key) {
@@ -1862,6 +2289,9 @@
     }
 
     function openIncidentLog() {
+      if (!state.incidentLog.data) {
+        state.incidentLog.data = new Date().toISOString().slice(0, 10);
+      }
       if (!state.incidentLog.time) {
         state.incidentLog.time = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
       }
@@ -1971,6 +2401,39 @@
       }
 
       if (state.screen === "home") {
+        const meuBanco = obterBancoFavorito();
+        const telPrincipal = meuBanco && meuBanco.telefones && meuBanco.telefones[0] ? meuBanco.telefones[0] : null;
+        const numeroPrincipal = telPrincipal ? numeroDiscavel(telPrincipal.numero, telPrincipal.dddInterurbano) : "";
+        const atalhoBancoHtml = meuBanco
+          ? (meuBanco.semTelefonePublico || !numeroPrincipal
+              ? `<div class="card card-amber stack" style="padding:14px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <span class="pill pill-amber">Meu banco • 1 toque</span>
+                    <button class="btn-ghost" style="font-size:0.78rem; padding:4px 6px;" onclick="navigate('discagem_segura')">Trocar banco</button>
+                  </div>
+                  <button class="btn btn-primary btn-center" onclick="state.discagemBusca='${escapeHtml(meuBanco.nome)}'; navigate('discagem_segura')">
+                    Falar com meu banco agora (${escapeHtml(meuBanco.nome)}) →
+                  </button>
+                  <p style="font-size:0.8rem; color:var(--text); margin:0;">${escapeHtml(meuBanco.avisoEspecial || "Use apenas o canal oficial verificado.")}</p>
+                </div>`
+              : `<div class="card stack" style="padding:14px; border:2px solid var(--brand);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                    <span class="pill pill-brand">Meu banco • Discagem em 1 toque</span>
+                    <button class="btn-ghost" style="font-size:0.78rem; padding:4px 6px;" onclick="navigate('discagem_segura')">Trocar banco</button>
+                  </div>
+                  <a class="btn btn-primary btn-center" style="text-decoration:none;" href="tel:${escapeHtml(numeroPrincipal)}">
+                    Falar com meu banco agora (${escapeHtml(meuBanco.nome)} • ${escapeHtml(telPrincipal.numero)})
+                  </a>
+                  <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">${escapeHtml(telPrincipal.rotulo)} • Verificado em ${escapeHtml(formatarDataBr(telPrincipal.verificadoEm || meuBanco.verificadoEm))}</p>
+                </div>`)
+          : `<button class="action-card primary-tone" onclick="navigate('discagem_segura')">
+              <div class="icon-badge icon-brand">159</div>
+              <div>
+                <span class="action-title">Falar com meu banco agora</span>
+                <span class="action-sub">Escolha seu banco 1 vez para discar o canal oficial em 1 toque (100% offline)</span>
+              </div>
+            </button>`;
+
         app.innerHTML = `
           <div class="status-glass">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -1996,6 +2459,8 @@
                   <div class="arc-sub">Pausa imediata →</div>
                 </div>
               </button>
+
+              ${atalhoBancoHtml}
 
               <div class="glass-trio">
                 <button class="glass-card amber-glass" onclick="navigate('pressure_pause')">
@@ -2038,7 +2503,7 @@
                     <div style="font-size:0.78rem; color:var(--text-muted);">Canais oficiais verificados (banco, 190, BO)</div>
                   </div>
                 </div>
-                <span class="summary-tag">4 canais</span>
+                <span class="summary-tag">${canaisOficiais().length} canais</span>
               </button>
 
               <button class="summary-row" onclick="navigate('trusted')">
@@ -2191,6 +2656,28 @@
             </button>
           </div>
 
+          <div class="card card-soft stack">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+              <div>
+                <strong>Pausa Programada</strong>
+                <p style="font-size:0.84rem; margin:4px 0 0;">30 minutos a 24 horas de espera voluntária, com frase pronta e saída a qualquer momento.</p>
+              </div>
+              <button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem; white-space:nowrap;" onclick="navigate('pausa_programada')">${state.pausa.ativo ? "Em andamento" : "Abrir"}</button>
+            </div>
+          </div>
+
+          ${state.vacinaAgenda.proxima ? `
+            <div class="card ${diasAteVacina() !== null && diasAteVacina() <= 0 ? "card-amber" : "card-neutral"} stack">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                <div>
+                  <strong>Próximo treino da Vacina: ${formatarDataBr(state.vacinaAgenda.proxima)}</strong>
+                  <p style="font-size:0.84rem; margin:4px 0 0;">${diasAteVacina() !== null && diasAteVacina() <= 0 ? "A data chegou. Vale repetir o treino com a família." : `Faltam ${diasAteVacina()} dia(s).`}</p>
+                </div>
+                <button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem; white-space:nowrap;" onclick="resetVacina()">Treinar</button>
+              </div>
+            </div>
+          ` : ""}
+
           <div class="section-label">Mais recursos</div>
           <div class="grid-2">
             <button class="tile-btn" onclick="navigate('trusted')">
@@ -2208,6 +2695,10 @@
             <button class="tile-btn" onclick="navigate('cofre')">
               <span class="tile-title">Cofre de destinos</span>
               <span class="tile-sub">${state.cofre.length} cadastrado(s)</span>
+            </button>
+            <button class="tile-btn" onclick="navigate('pausa_programada')">
+              <span class="tile-title">Pausa Programada</span>
+              <span class="tile-sub">${state.pausa.ativo ? "Em andamento" : "Esperar antes de decidir"}</span>
             </button>
             <button class="tile-btn" onclick="navigate('simulado_familiar')">
               <span class="tile-title">Simulado em família</span>
@@ -2247,6 +2738,13 @@
               <p>O mais importante não é acertar tudo de primeira — é lembrar de <strong>pausar e confirmar por outro canal</strong> quando a pressa aparecer.</p>
             </div>
             <button class="btn btn-primary btn-center" onclick="resetVacina()">Refazer treino</button>
+            <div class="card card-soft stack">
+              <h3>Agendar o próximo treino de 60 segundos</h3>
+              <p style="font-size:0.86rem; color:var(--text);">Escolha uma data para lembrar a família. O app mostra o aviso quando você abrir; não há promessa de notificação com o app fechado.</p>
+              <input id="vacina-data" type="date" value="${escapeHtml(state.vacinaAgenda.proxima || sugestaoDataVacina())}" />
+              <button class="btn btn-secondary btn-center" onclick="salvarAgendaVacina()">Anotar no aparelho</button>
+              ${state.vacinaFeedback ? `<div class="quote-box">${escapeHtml(state.vacinaFeedback)}</div>` : ""}
+            </div>
             <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
           `;
           return;
@@ -2279,6 +2777,9 @@
       if (state.screen === "raio_x") {
         const resultado = state.raioX.resultado;
         const comparacao = state.raioX.comparacao;
+        const noCofre = resultado && resultado.tipo === "PIX" && resultado.nomeRecebedor
+          ? destinoEstaNoCofre(resultado.nomeRecebedor)
+          : null;
         const classeComparacao = comparacao
           ? comparacao.nivel === "DIVERGENTE"
             ? "card-risk"
@@ -2319,6 +2820,7 @@
                 ${resultado.tipo === "PIX" ? `
                   <li><strong>Nome do recebedor:</strong> ${escapeHtml(resultado.nomeRecebedor || "não informado")}</li>
                   <li><strong>Chave Pix:</strong> ${escapeHtml(resultado.chave || "não informada")}</li>
+                  <li><strong>Tipo de chave:</strong> ${escapeHtml(rotuloTipoChave(resultado.chave))}</li>
                   <li><strong>Cidade:</strong> ${escapeHtml(resultado.cidade || "não informada")}</li>
                   <li><strong>Valor no código:</strong> ${resultado.valor === null ? "em aberto (você digita no banco)" : window.BRECODE.formatarBRL(resultado.valor)}</li>
                   <li><strong>CRC:</strong> ${resultado.crcValido ? "confere" : "não confere"}</li>
@@ -2336,6 +2838,19 @@
               </div>
               <button class="btn btn-secondary btn-center" onclick="compararRaioX()">Comparar com o que eu esperava →</button>
               ${resultado.nomeRecebedor ? `<button class="btn btn-secondary btn-center" onclick="adicionarResultadoAoCofre()">Adicionar recebedor ao Cofre</button>` : ""}
+            </div>
+          ` : ""}
+
+          ${resultado && resultado.tipo === "PIX" ? `
+            <div class="card ${noCofre ? "card-soft" : "card-amber"} stack">
+              <span class="pill ${noCofre ? "pill-neutral" : "pill-amber"}">${noCofre ? "Nome no Cofre" : "Destino novo"}</span>
+              <h2>${noCofre ? "O nome consta no seu Cofre — confira o resto" : "Este destino não está no seu Cofre"}</h2>
+              <p style="color:var(--text);">${noCofre
+                ? "O Cofre guarda só o nome que você cadastrou, não a chave nem a conta. Nome igual não prova que o código é da mesma pessoa."
+                : state.cofre.length
+                  ? "Pausa de atrito: confirme o recebedor por outro canal (ligação, mensagem em número antigo ou app oficial) antes de pagar. O app não bloqueia a transferência."
+                  : "Cadastre no Cofre quem você paga sempre. Ainda assim, o Cofre não confirma chave, conta nem titularidade."}</p>
+              <p style="font-size:0.8rem; color:var(--text-muted);">O tipo de chave é só um rótulo de formato: não consulta o DICT e não confirma o dono da chave.</p>
             </div>
           ` : ""}
 
@@ -2432,6 +2947,7 @@
                   <option value="familiar" ${sim.cenario === "familiar" ? "selected" : ""}>Falso parente com número novo</option>
                   <option value="banco" ${sim.cenario === "banco" ? "selected" : ""}>Falsa central do banco</option>
                   <option value="entrega" ${sim.cenario === "entrega" ? "selected" : ""}>Taxa falsa de entrega</option>
+                  <option value="banpara" ${sim.cenario === "banpara" ? "selected" : ""}>Falsa central do Banpará (cenário ilustrativo)</option>
                 </select>
               </div>
               <div>
@@ -2480,9 +2996,9 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
-            <span class="pill pill-brand">Registro aberto • Canais oficiais</span>
+            <span class="pill pill-brand">Catálogo local • Domínios conferidos</span>
             <h1>Confira um domínio antes de digitar dados</h1>
-            <p style="margin-top:6px;">Lista comunitária de domínios conhecidos. Ela não é assinada por bancos e não substitui o app oficial. A ausência de um domínio não prova golpe; a presença também não garante que a página está correta.</p>
+            <p style="margin-top:6px;">Catálogo de apoio com domínios conferidos nas páginas oficiais. Ele não é assinado pelos bancos e não substitui o app oficial. A ausência de um domínio não prova golpe; a presença também não garante que a página está correta.</p>
           </div>
 
           <div class="card stack">
@@ -2499,14 +3015,14 @@
             ` : ""}
           </div>
 
-          <div class="section-label">Domínios na lista local</div>
+          <div class="section-label">Catálogo local de canais</div>
           <div class="stack">
-            ${CANAIS_OFICIAIS.map(c => `
+            ${canaisOficiais().map(c => `
               <div class="card card-soft" style="padding:14px;">
                 <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
                   <div>
                     <div style="font-weight:700; font-size:0.92rem;">${escapeHtml(c.nome)}</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted);">${c.dominios.map(d => escapeHtml(d)).join(", ")}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">${(c.dominios || []).map(d => escapeHtml(d)).join(", ") || "sem domínio"}</div>
                   </div>
                   <span class="pill pill-neutral" style="white-space:nowrap;">${escapeHtml(c.tipo)}</span>
                 </div>
@@ -2516,8 +3032,8 @@
 
           <div class="card card-neutral stack">
             <h3>Como propor um canal</h3>
-            <p style="font-size:0.86rem;">A proposta é que cada instituição publique e assine seus domínios oficiais em um arquivo aberto. Até lá, esta lista é um apoio comunitário — não um selo de confiança.</p>
-            <button class="btn btn-secondary btn-center" onclick="exportarRegistroCanais()">Baixar lista aberta em JSON</button>
+            <p style="font-size:0.86rem;">A proposta é que cada instituição publique e assine seus domínios e telefones oficiais em um arquivo aberto. Até lá, este catálogo é apoio comunitário — não um selo de confiança.</p>
+            <button class="btn btn-secondary btn-center" onclick="exportarRegistroCanais()">Baixar catálogo em JSON</button>
             <button class="btn btn-secondary btn-center" onclick="navigate('discagem_segura')">Ver canais para ligar com segurança →</button>
           </div>
         `;
@@ -2788,6 +3304,93 @@
         return;
       }
 
+      if (state.screen === "pausa_programada") {
+        const ativo = state.pausa.ativo && restantePausaSegundos() > 0;
+        if (ativo && !state.pausaInterval) iniciarTickPausa();
+        const restante = restantePausaSegundos();
+        const total = (state.pausa.duracaoMin || 60) * 60;
+        const progresso = ativo ? Math.min(100, Math.round(((total - restante) / total) * 100)) : 0;
+        const motivos = [
+          { id: "banco", label: "Contato do banco / falsa central" },
+          { id: "familiar", label: "Familiar pedindo dinheiro" },
+          { id: "investimento", label: "Promessa de investimento" },
+          { id: "entrega", label: "Taxa de entrega / boleto" },
+          { id: "outro", label: "Outra situação" }
+        ];
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">Pausa Programada • Decisão sua</span>
+            <h1>${ativo ? "Você escolheu esperar. Nada foi bloqueado." : "Dê um tempo antes de decidir"}</h1>
+            <p style="margin-top:6px;">${ativo ? "O BREQUE só conta o tempo. Você pode encerrar a pausa, ligar ou pedir ajuda a qualquer momento." : "A pressão pede pressa. Uma pausa de 30 minutos a 4 horas esfria a conversa. O app nunca bloqueia pagamento, ligação ou acesso."}</p>
+          </div>
+
+          ${ativo ? `
+            <div class="card card-amber stack">
+              <span class="pill pill-amber">Pausa em andamento</span>
+              <div class="timer-box">
+                <div>
+                  <strong>Faltam ${formatarContagem(restante)}</strong>
+                  <p style="font-size:0.84rem;">Duração escolhida: ${state.pausa.duracaoMin} minutos.</p>
+                </div>
+                <div class="timer-count">${formatarContagem(restante)}</div>
+              </div>
+              <div style="height:10px; border-radius:999px; background:var(--neutral-bg); overflow:hidden;">
+                <div style="height:100%; width:${progresso}%; background:var(--brand);"></div>
+              </div>
+              <p style="font-size:0.82rem; color:var(--text-muted);">O contador é recalculado pelo horário do aparelho. Não há promessa de aviso com o app fechado.</p>
+              <button class="btn btn-primary btn-center" onclick="encerrarPausaProgramada()">Já me acalmei, encerrar pausa</button>
+            </div>
+
+            <div class="card stack">
+              <h3>Frase pronta para ganhar tempo</h3>
+              <div class="quote-box">“Obrigado(a), mas não vou decidir agora. Vou conferir com calma por outro canal e retorno depois.”</div>
+              <button class="btn btn-secondary btn-center" onclick="copiarDesculpaPausa()">Copiar frase</button>
+              ${state.pausaAviso ? `<div class="quote-box">${escapeHtml(state.pausaAviso)}</div>` : ""}
+            </div>
+          ` : `
+            <div class="card stack">
+              <div>
+                <label class="field-label" for="pausa-motivo">O que está pressionando?</label>
+                <select id="pausa-motivo" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface-soft); color:var(--text);" onchange="state.pausa.motivo=this.value;">
+                  ${motivos.map((m) => `<option value="${m.id}" ${state.pausa.motivo === m.id ? "selected" : ""}>${m.label}</option>`).join("")}
+                </select>
+              </div>
+              <p style="font-size:0.86rem;">Escolha a duração. Você continua livre para encerrar antes.</p>
+              <div class="grid-2">
+                <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(30)">30 minutos</button>
+                <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(60)">1 hora</button>
+                <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(240)">4 horas</button>
+                <button class="btn btn-secondary" onclick="iniciarPausaComMotivo(1440)">Até 24 horas</button>
+              </div>
+              <div>
+                <label class="field-label" for="pausa-custom">Outra duração em horas (1 a 24)</label>
+                <div style="display:flex; gap:8px;">
+                  <input id="pausa-custom" type="number" min="1" max="24" step="1" value="2" style="flex:1;" />
+                  <button class="btn btn-secondary" style="width:auto; padding:10px 14px;" onclick="iniciarPausaComMotivo(Number(document.getElementById('pausa-custom').value) * 60)">Começar</button>
+                </div>
+              </div>
+              <p style="font-size:0.8rem; color:var(--text-muted);">A notificação é opcional e só funciona se você autorizar. Sem app aberto, o tempo é calculado quando você voltar.</p>
+            </div>
+            ${state.pausaAviso ? `<div class="quote-box">${escapeHtml(state.pausaAviso)}</div>` : ""}
+          `}
+
+          <div class="card card-soft stack">
+            <h3>Enquanto espera, faça uma coisa útil</h3>
+            <ul class="list-clean" style="color:var(--text);">
+              <li>Ligue para o número do verso do cartão, não para o número da mensagem.</li>
+              <li>Confirme com a pessoa por um número antigo ou pela Pergunta Secreta da Família.</li>
+              <li>Escreva o que foi pedido e qual é a pressa. Reler esfria a decisão.</li>
+            </ul>
+            <button class="btn btn-secondary btn-center" onclick="navigate('discagem_segura')">Abrir canais oficiais para ligar</button>
+            <button class="btn btn-secondary btn-center" onclick="openHelpPreview('pausa programada')">Avisar uma pessoa de confiança</button>
+          </div>
+
+          <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>
+        `;
+        return;
+      }
+
       if (state.screen === "pressure_pause") {
         const pauseHtml = state.pauseSeconds > 0
           ? `<div class="timer-box"><div><strong>Respire fundo</strong><p style="font-size:0.84rem;">Nenhuma decisão séria precisa ser tomada em segundos.</p></div><div class="timer-count">${state.pauseSeconds}s</div></div>`
@@ -2821,6 +3424,7 @@
             <p style="font-size: 0.82rem;">Se for familiar em número novo, faça a <strong>Pergunta Secreta da Família</strong> antes de fazer qualquer transferência.</p>
           </div>
 
+          <button class="btn btn-secondary btn-center" onclick="navigate('pausa_programada')">Programar uma pausa maior (30 min a 24 h)</button>
           <button class="btn btn-primary btn-center" onclick="navigate('pressure_topic')">Continuar com calma →</button>
         `;
         return;
@@ -2928,12 +3532,21 @@
       }
 
       if (state.screen === "incident_log") {
+        const limiteMed = dataLimiteMed();
+        const diasMed = diasRestantesMed();
+        const etapasMed = [
+          { id: "contestar", label: "Contestei no app oficial do banco (Pix → comprovante → contestar)" },
+          { id: "anexar", label: "Anexei este relato e o comprovante da transação" },
+          { id: "bloqueio", label: "Pedi o bloqueio da conta de destino / rastreamento" },
+          { id: "bo", label: "Avaliei registrar Boletim de Ocorrência no canal oficial" },
+          { id: "protocolo", label: "Guardei o número de protocolo e os comprovantes" }
+        ];
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
             <span class="pill pill-brand">Protocolo MED • Registro local</span>
             <h1>Registro do Incidente</h1>
-            <p style="margin-top: 6px;">Organize o que o banco vai pedir na contestação: horário, valor, chave de destino, ID da transação e tempo até perceber. <strong>Não é prova jurídica garantida.</strong></p>
+            <p style="margin-top: 6px;">Organize o que o banco vai pedir na contestação: data, horário, valor, chave de destino, ID da transação e tempo até perceber. <strong>Não é prova jurídica garantida.</strong></p>
           </div>
 
           <div class="card card-amber">
@@ -2942,6 +3555,7 @@
           </div>
 
           <div class="card stack">
+            <div><label class="field-label" for="log-data">Data do Pix ou pagamento</label><input id="log-data" type="date" value="${escapeHtml(state.incidentLog.data)}" onchange="state.incidentLog.data=this.value; state.incidentLog.hash=''; render();" /></div>
             <div><label class="field-label" for="log-time">Horário exato (aproximado)</label><input id="log-time" type="text" maxlength="40" placeholder="Ex.: 14:32 de hoje" value="${escapeHtml(state.incidentLog.time)}" oninput="state.incidentLog.time=this.value" /></div>
             <div><label class="field-label" for="log-valor">Valor enviado</label><input id="log-valor" type="text" maxlength="30" placeholder="Ex.: R$ 890,00" value="${escapeHtml(state.incidentLog.valor)}" oninput="state.incidentLog.valor=this.value" /></div>
             <div><label class="field-label" for="log-chave">Chave Pix de destino (se souber)</label><input id="log-chave" type="text" maxlength="120" placeholder="Cole a chave que apareceu no comprovante" value="${escapeHtml(state.incidentLog.chave)}" oninput="state.incidentLog.chave=this.value" /></div>
@@ -2952,10 +3566,39 @@
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button class="btn btn-primary" style="flex:1; min-width:180px;" onclick="copiarRelatoIncidente()">Copiar relato pronto</button>
               <button class="btn btn-secondary" style="flex:1; min-width:180px;" onclick="exportIncidentTxt()">Baixar .txt</button>
+              <button class="btn btn-secondary" style="flex:1; min-width:180px;" onclick="imprimirRelato()">Imprimir / salvar em PDF</button>
+              <button class="btn btn-secondary" style="flex:1; min-width:180px;" onclick="gerarHashRelato()">Gerar impressão digital (SHA-256)</button>
             </div>
+            ${state.incidentLog.hash ? `<div class="quote-box"><strong>Impressão digital do relato (SHA-256):</strong><br/><span style="word-break:break-all; font-family:monospace; font-size:0.78rem;">${escapeHtml(state.incidentLog.hash)}</span><br/><span style="font-size:0.78rem; color:var(--text-muted);">Serve para conferir se o texto do arquivo mudou. Não é assinatura digital, não prova autoria e não substitui orientação jurídica.</span></div>` : ""}
+            ${state.incidentLog.hashErro ? `<div class="quote-box" style="border-left-color:var(--accent); background:var(--accent-bg);">${escapeHtml(state.incidentLog.hashErro)}</div>` : ""}
             ${state.incidentLog.copiado ? `<div class="quote-box"><strong>Relato copiado.</strong> Cole no campo de contestação do app do banco. Nenhum dado saiu do aparelho.</div>` : ""}
             ${state.incidentLog.copiaErro ? `<div class="quote-box" style="border-left-color:var(--risk); background:var(--risk-bg);">Não foi possível copiar automaticamente. Baixe o .txt ou selecione o texto manualmente.</div>` : ""}
             ${state.incidentLog.saved ? `<div class="quote-box"><strong>Arquivo relato-breque.txt gerado localmente!</strong><br/>Nenhum dado foi enviado para servidores.</div>` : ""}
+          </div>
+
+          <div class="card ${limiteMed && diasMed !== null && diasMed < 7 ? "card-risk" : "card-amber"} stack">
+            <span class="pill ${limiteMed && diasMed !== null && diasMed < 7 ? "pill-risk" : "pill-amber"}">Prazos do MED • Fonte: Banco Central</span>
+            <h2>${limiteMed ? `Você pode pedir o MED até ${limiteMed.toLocaleDateString("pt-BR")}` : "Informe a data do Pix para calcular o prazo"}</h2>
+            ${limiteMed ? `<p style="color:var(--text);">${diasMed !== null && diasMed >= 0 ? `Faltam <strong>${diasMed} dia(s)</strong> dentro da janela de 80 dias corridos.` : "A janela de 80 dias pode ter passado; procure o banco mesmo assim e explique a situação."} O prazo existe para pedir a devolução, não é garantia de reembolso.</p>` : `<p style="color:var(--text);">O pedido de devolução por fraude pode ser aberto em até 80 dias corridos contados da transação original. Preencha a data acima para ver a conta.</p>`}
+            <ul class="list-clean" style="color:var(--text);">
+              <li><strong>Até 80 dias</strong> após o Pix: pedido de devolução pela sua instituição.</li>
+              <li><strong>Até 7 dias corridos:</strong> análise das notificações pelas instituições envolvidas.</li>
+              <li><strong>Até 72 horas</strong> após a análise: o banco pagador inicia a devolução.</li>
+              <li><strong>Até 6 horas por recebedor:</strong> devolução efetiva; em cadeia, pode chegar a 24 horas.</li>
+              <li><strong>Até 96 horas</strong> após a confirmação de fraude: dinheiro devolvido, se houver saldo.</li>
+            </ul>
+            <p style="font-size:0.78rem; color:var(--text-muted);">Prazos das etapas do banco, não do usuário. Fonte: Guia de implementação do MED, Banco Central do Brasil (versão 4.4, 2026).</p>
+          </div>
+
+          <div class="card card-soft stack">
+            <h3>Checklist da contestação (fica só no aparelho)</h3>
+            ${etapasMed.map((etapa) => `
+              <label style="display:flex; gap:10px; align-items:flex-start; font-size:0.9rem;">
+                <input type="checkbox" style="width:auto; margin-top:3px;" ${state.medChecklist[etapa.id] ? "checked" : ""} onchange="alternarMedEtapa('${etapa.id}')" />
+                <span>${escapeHtml(etapa.label)}</span>
+              </label>
+            `).join("")}
+            <p style="font-size:0.78rem; color:var(--text-muted);">O app guarda apenas “feito/não feito” e a data do Pix. Não guarda valor, chave, texto nem comprovante.</p>
           </div>
 
           <div class="card card-soft stack">
@@ -2970,6 +3613,7 @@
             <p style="font-size:0.8rem; color:var(--text-muted);">O MED acompanha o dinheiro por até cinco camadas de contas e exige contestação pelo app do banco. O BREQUE só ajuda a organizar o relato.</p>
           </div>
 
+          <pre id="relato-print" hidden></pre>
           <button class="btn btn-secondary btn-center" onclick="navigate('discagem_segura')">Ver canais oficiais para ligar →</button>
           <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>
         `;
@@ -2977,19 +3621,49 @@
       }
 
       if (state.screen === "discagem_segura") {
+        const termo = state.discagemBusca;
+        const lista = canaisFiltrados(termo);
+        const versaoCat = (window.BREQUE_CANAIS && window.BREQUE_CANAIS.versao) || "1.0.0";
+        const verificadoCat = formatarDataBr((window.BREQUE_CANAIS && window.BREQUE_CANAIS.verificadoEm) || "2026-11-26");
+        const reverificarCat = formatarDataBr((window.BREQUE_CANAIS && window.BREQUE_CANAIS.reverificarApos) || "2027-02-26");
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
-            <span class="pill pill-brand">Discagem Segura • Canais oficiais</span>
-            <h1>Fale com canais oficiais por conta própria</h1>
-            <p style="margin-top: 6px;">Nunca retorne para o número suspeito nem use o telefone enviado na mensagem recebida.</p>
+
+          <div class="card card-amber stack" style="position:sticky; top:56px; z-index:15;">
+            <span class="pill pill-amber">Discagem Segura • 100% offline</span>
+            <h1 style="font-size:1.2rem;">Desligou da ligação suspeita? Agora ligue você. Use só os contatos daqui.</h1>
+            <p style="font-size:0.86rem; color:var(--text);">Nunca retorne para o número da chamada nem ligue para telefones enviados por mensagem.</p>
           </div>
-          <div class="card stack"><h3>Seu banco (contestação e MED)</h3><p>Abra o aplicativo oficial já instalado ou ligue para o telefone impresso no verso do cartão.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> Banco Central do Brasil (MED) • <strong>Verificado em:</strong> 2026-11-21</p></div>
-          <div class="card stack"><h3>Emergência policial (190)</h3><p>Disque 190 diretamente no discador do celular em caso de risco físico ou ameaça imediata.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> Serviço público de emergência policial • <strong>Verificado em:</strong> 2026-11-21</p></div>
-          <div class="card stack"><h3>Delegacia Virtual / Polícia Civil</h3><p>Digite manualmente o portal oficial do seu estado (domínio .gov.br) ou procure delegacia presencial.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> MJSP / Polícias Civis estaduais • <strong>Verificado em:</strong> 2026-11-21</p></div>
-          <div class="card stack"><h3>Registrato (Banco Central)</h3><p>Acesse manualmente bcb.gov.br com sua conta Gov.br para conferir contas, chaves Pix e empréstimos no seu CPF.</p><p style="font-size:0.8rem;"><strong>Fonte:</strong> Banco Central do Brasil • <strong>Verificado em:</strong> 2026-11-21</p></div>
-          <button class="btn btn-primary btn-center" onclick="navigate('registro_canais')">Conferir um domínio na lista aberta →</button>
-          <button class="btn btn-secondary btn-center" onclick="openIncidentLog()">Registrar incidente e contestar no app do banco</button>
+
+          <div class="card card-soft stack">
+            <div>
+              <label class="field-label" for="busca-canal">Buscar seu banco, cooperativa ou Banco Central</label>
+              <input id="busca-canal" type="search" autocomplete="off" maxlength="60" placeholder="Digite ex.: brad, banpa, caixa, nubank, 145..." value="${escapeHtml(termo)}" oninput="atualizarBuscaCanais(this.value)" />
+            </div>
+            <p id="contador-canais-oficiais" style="font-size:0.8rem; color:var(--text-muted); margin:0;">${lista.length} instituição(ões) no catálogo offline • verificado pela equipe em ${escapeHtml(verificadoCat)}.</p>
+            <p style="font-size:0.76rem; color:var(--text-muted); margin:0;">Catálogo v${escapeHtml(versaoCat)} • Próxima revisão programada: ${escapeHtml(reverificarCat)}. O catálogo não é um selo de confiança.</p>
+            <details style="margin-top:4px;">
+              <summary style="font-size:0.84rem; font-weight:700; color:var(--brand); cursor:pointer;">Configuração avançada: código da operadora (opcional)</summary>
+              <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+                <label class="field-label" for="operadora-codigo">Código da operadora para chamadas interurbanas (2 dígitos)</label>
+                <input id="operadora-codigo" type="text" inputmode="numeric" maxlength="2" placeholder="Ex.: 15, 21, 31 (deixe vazio para discagem direta)" value="${escapeHtml(state.operadoraCodigo)}" oninput="atualizarOperadora(this.value)" />
+                <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Aplicado só em números com DDD (como Banrifone ou Banpará de fora de Belém). Nunca altera 0800, 4004, 145 ou 190.</p>
+              </div>
+            </details>
+          </div>
+
+          <div id="lista-canais-oficiais" class="stack">
+            ${renderListaCanais(termo)}
+          </div>
+
+          <div class="card card-neutral stack">
+            <h3>Se o seu banco não estiver na lista</h3>
+            <p style="font-size:0.88rem; color:var(--text);">Ligue para o número impresso no verso do cartão ou abra o app oficial já instalado. Para reclamar de banco ou tirar dúvida sobre MED, ligue no <strong>145</strong> (Banco Central).</p>
+            <button class="btn btn-primary btn-center" onclick="navigate('registro_canais')">Conferir um domínio recebido →</button>
+            <button class="btn btn-secondary btn-center" onclick="openIncidentLog()">Registrar incidente e contestar no app do banco</button>
+          </div>
+
+          <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>
         `;
         return;
       }
@@ -3207,6 +3881,9 @@
     }
 
     render();
+    window.addEventListener("breque:modulos-prontos", () => {
+      render();
+    });
   </script>
 </body>
 </html>
