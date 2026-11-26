@@ -1140,6 +1140,14 @@
         reporteUf: "",
         feedback: ""
       },
+      sentinela: {
+        optIn: false,
+        uf: "",
+        relatos: [],
+        feedback: "",
+        filtroUf: "",
+        confirmarEnvio: false
+      },
       raioX: { entrada: "", nomeEsperado: "", valorEsperado: "", resultado: null, comparacao: null, erro: "" },
       simulado: { consentiu: false, cenario: "familiar", nome: "", ativo: false, inicio: 0, mensagem: "", resultado: null, segundos: 0 },
       simuladoInterval: null,
@@ -1159,6 +1167,7 @@
       cofre: "breca.cofre.v1",
       favorecidos: "breca.favorecidos.v1",
       denuncias: "breca.denuncias.v1",
+      sentinela: "breca.sentinela.v1",
       simulado: "breca.simulado.v1",
       metricas: "breca.metricas.v1",
       pausa: "breca.pausa.v1",
@@ -1190,6 +1199,12 @@
     state.cofre = lerLocal(CHAVES_LOCAIS.cofre, []);
     state.favorecidos = lerLocal(CHAVES_LOCAIS.favorecidos, []);
     state.denunciasLocais = lerLocal(CHAVES_LOCAIS.denuncias, []);
+    const sentinelaSalva = lerLocal(CHAVES_LOCAIS.sentinela, null);
+    if (sentinelaSalva && typeof sentinelaSalva === "object") {
+      state.sentinela.optIn = !!sentinelaSalva.optIn;
+      state.sentinela.uf = String(sentinelaSalva.uf || "").slice(0, 2).toUpperCase();
+      state.sentinela.relatos = Array.isArray(sentinelaSalva.relatos) ? sentinelaSalva.relatos : [];
+    }
     state.metricas = { ...state.metricas, ...lerLocal(CHAVES_LOCAIS.metricas, {}) };
     state.compromisso = { ...state.compromisso, ...lerLocal(CHAVES_LOCAIS.compromisso, {}) };
     state.pausa = { ...state.pausa, ...lerLocal(CHAVES_LOCAIS.pausa, {}) };
@@ -1508,6 +1523,65 @@
       state.escudo.reporteAberto = false;
       state.escudo.reporteConfirmado = false;
       state.escudo.feedback = "";
+      render();
+    }
+
+    // ---------- Rede Sentinela (Fase 6 — 100% local v1 + filtros anti-PII) ----------
+    function salvarSentinela() {
+      gravarLocal(CHAVES_LOCAIS.sentinela, {
+        optIn: !!state.sentinela.optIn,
+        uf: state.sentinela.uf || "",
+        relatos: state.sentinela.relatos || []
+      });
+    }
+
+    function alternarSentinelaOptIn(ativo) {
+      state.sentinela.optIn = !!ativo;
+      state.sentinela.confirmarEnvio = false;
+      state.sentinela.feedback = state.sentinela.optIn
+        ? "Rede Sentinela ativada neste aparelho (modo local v1 — zero envio pela rede)."
+        : "Rede Sentinela desligada. Nenhum relato novo será registrado.";
+      salvarSentinela();
+      render();
+    }
+
+    function atualizarUfSentinela(uf) {
+      state.sentinela.uf = String(uf || "").trim().toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
+      salvarSentinela();
+    }
+
+    function confirmarReporteSentinela(textoFonte) {
+      if (!window.BREQUE_SENTINELA) return;
+      if (!state.sentinela.optIn) {
+        state.sentinela.feedback = "Ative primeiro o opt-in da Rede Sentinela para registrar no Radar local.";
+        render();
+        return;
+      }
+      const hojeIso = new Date().toISOString().slice(0, 10);
+      const relato = window.BREQUE_SENTINELA.criarRelatoSentinela({
+        texto: textoFonte,
+        uf: state.sentinela.uf || "BR",
+        dataIso: hojeIso,
+        optInAtivo: true
+      });
+      if (!relato) {
+        state.sentinela.feedback = "Não foi possível gerar relato sem dados pessoais. Confira o texto.";
+        render();
+        return;
+      }
+      state.sentinela.relatos = [relato, ...state.sentinela.relatos].slice(0, 100);
+      state.sentinela.confirmarEnvio = false;
+      state.sentinela.feedback = relato.dominio
+        ? `Registrado no Radar local: ${relato.rotuloPadrao} (${relato.dominio}). Dados pessoais removidos.`
+        : `Registrado no Radar local: ${relato.rotuloPadrao}. Dados pessoais removidos.`;
+      salvarSentinela();
+      render();
+    }
+
+    function limparRelatosSentinela() {
+      state.sentinela.relatos = [];
+      state.sentinela.feedback = "Todos os relatos locais do Radar foram apagados deste aparelho.";
+      salvarSentinela();
       render();
     }
 
@@ -2810,7 +2884,7 @@
         document.getElementById(id)?.classList.remove("active");
       });
       if (state.screen === "home") document.getElementById("nav-home")?.classList.add("active");
-      else if (state.screen.startsWith("verify") || ["escudo_pix", "raio_x", "cofre", "simulado_familiar", "eficacia"].includes(state.screen)) document.getElementById("nav-verify")?.classList.add("active");
+      else if (state.screen.startsWith("verify") || ["escudo_pix", "rede_sentinela", "raio_x", "cofre", "simulado_familiar", "eficacia"].includes(state.screen)) document.getElementById("nav-verify")?.classList.add("active");
       else if (["discagem_segura", "registro_canais"].includes(state.screen)) document.getElementById("nav-canais")?.classList.add("active");
       else if (state.screen === "privacy") document.getElementById("nav-privacy")?.classList.add("active");
     }
@@ -3025,6 +3099,17 @@
                   </div>
                 </div>
                 <span class="summary-tag">${canaisOficiais().length} canais</span>
+              </button>
+
+              <button class="summary-row" onclick="navigate('rede_sentinela')">
+                <div class="summary-left">
+                  <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 12l5-3"/><circle cx="12" cy="12" r="2"/></svg></div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.92rem;">Radar de Golpes (Rede Sentinela)</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Relatos anônimos sem dados pessoais (opt-in local)</div>
+                  </div>
+                </div>
+                <span class="summary-tag">${state.sentinela.optIn ? "Ativo" : "Opt-in"}</span>
               </button>
 
               <button class="summary-row" onclick="navigate('trusted')">
@@ -3941,8 +4026,77 @@
         return;
       }
 
+      if (state.screen === "rede_sentinela") {
+        const hojeIso = new Date().toISOString().slice(0, 10);
+        const grupos = window.BREQUE_SENTINELA && typeof window.BREQUE_SENTINELA.agruparRadarSemana === "function"
+          ? window.BREQUE_SENTINELA.agruparRadarSemana(state.sentinela.relatos, hojeIso, state.sentinela.filtroUf || "")
+          : [];
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <div>
+            <span class="pill pill-brand">Rede Sentinela • Opt-in • 100% local na v1</span>
+            <h1>Radar de Golpes da Semana</h1>
+            <p style="margin-top:6px;">Registre de forma voluntária apenas <strong>domínio de link suspeito + padrão do golpe</strong> para avisar você quando o mesmo domínio voltar a aparecer.</p>
+          </div>
+
+          <div class="card ${state.sentinela.optIn ? "card-soft" : "card-amber"} stack">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+              <div>
+                <strong>${state.sentinela.optIn ? "Rede Sentinela ATIVA neste aparelho" : "Rede Sentinela DESLIGADA (padrão)"}</strong>
+                <p style="font-size:0.82rem; margin-top:4px;">Você liga ou desliga quando quiser. Desligada, nada é registrado.</p>
+              </div>
+              <button class="btn ${state.sentinela.optIn ? "btn-secondary" : "btn-primary"}" style="width:auto; padding:9px 14px; font-size:0.84rem;" onclick="alternarSentinelaOptIn(${!state.sentinela.optIn})">
+                ${state.sentinela.optIn ? "Desligar" : "Ativar opt-in"}
+              </button>
+            </div>
+            <div class="rr-block">
+              <div class="rr-title">O que entra (e o que NUNCA entra)</div>
+              <ul class="list-clean" style="color:var(--text);">
+                <li><strong>Entra:</strong> apenas domínio suspeito (sem tokens), padrão do golpe, data e estado/UF opcional.</li>
+                <li><strong>NUNCA entra:</strong> nome, telefone, conversa completa, CPF/CNPJ, chave Pix em texto puro ou valores (removidos automaticamente por filtro anti-PII).</li>
+                <li><strong>Rede na v1:</strong> zero envio externo — os relatos ficam apenas no seu aparelho (sincronização futura exige nova autorização explícita).</li>
+              </ul>
+            </div>
+            <div>
+              <label class="field-label" for="sentinela-uf">Seu estado / UF (opcional, ex.: PA, SP, RS)</label>
+              <input id="sentinela-uf" type="text" maxlength="2" placeholder="Ex.: PA" value="${escapeHtml(state.sentinela.uf)}" oninput="atualizarUfSentinela(this.value)" />
+            </div>
+            ${state.sentinela.feedback ? `<div class="quote-box">${escapeHtml(state.sentinela.feedback)}</div>` : ""}
+          </div>
+
+          <div class="card stack">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+              <h2>Radar desta semana (${grupos.length} padrão(ões))</h2>
+              <input type="text" maxlength="2" style="width:82px; padding:6px 10px; font-size:0.82rem;" placeholder="UF" value="${escapeHtml(state.sentinela.filtroUf)}" oninput="state.sentinela.filtroUf=this.value.toUpperCase().replace(/[^A-Z]/g,'').slice(0,2); render();" aria-label="Filtrar radar por UF" />
+            </div>
+            ${grupos.length ? `
+              <ul class="list-clean" style="color:var(--text);">
+                ${grupos.map((g) => `<li><strong>${escapeHtml(g.fraseResumo)}</strong></li>`).join("")}
+              </ul>
+            ` : `<p style="font-size:0.86rem;">Nenhum relato registrado nesta semana${state.sentinela.filtroUf ? ` em ${escapeHtml(state.sentinela.filtroUf)}` : ""}. Quando analisar uma mensagem ou link suspeito em <strong>Verificar</strong>, você pode registrar aqui em 2 toques.</p>`}
+            ${state.sentinela.relatos.length ? `<button class="btn btn-ghost" style="font-size:0.82rem;" onclick="limparRelatosSentinela()">Apagar todos os relatos locais (${state.sentinela.relatos.length})</button>` : ""}
+          </div>
+
+          <div class="stack">
+            <button class="btn btn-primary btn-center" onclick="navigate('verify_start')">Verificar mensagem ou link (reporte em 2 toques) →</button>
+            <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>
+          </div>
+        `;
+        return;
+      }
+
       if (state.screen === "verify_start") {
         const localScan = state.verifyText.trim().length >= 4 ? analyzeLocalTextOrLink(state.verifyText) : null;
+        const hojeIso = new Date().toISOString().slice(0, 10);
+        const alertaRadar = localScan && window.BREQUE_SENTINELA && typeof window.BREQUE_SENTINELA.dominioNoRadar === "function"
+          ? window.BREQUE_SENTINELA.dominioNoRadar(state.verifyText, state.sentinela.relatos, hojeIso)
+          : { encontrado: false, aviso: "" };
+        const previaSanitizada = localScan && window.BREQUE_SENTINELA && typeof window.BREQUE_SENTINELA.sanitizarTrechoSemPii === "function"
+          ? window.BREQUE_SENTINELA.sanitizarTrechoSemPii(state.verifyText)
+          : "";
+        const dominioDetectado = localScan && window.BREQUE_SENTINELA && typeof window.BREQUE_SENTINELA.extrairDominioSuspeito === "function"
+          ? window.BREQUE_SENTINELA.extrairDominioSuspeito(state.verifyText)
+          : "";
         app.innerHTML = `
           <div style="position:relative; border-radius:20px; overflow:hidden; padding:18px 16px 20px; background:radial-gradient(circle at 50% 35%, rgba(16,185,129,0.28) 0%, rgba(14,165,233,0.2) 45%, rgba(6,16,24,0.95) 100%); border:1px solid rgba(125,211,252,0.2); text-align:center;">
             <button class="btn btn-ghost" style="position:absolute; left:12px; top:12px; color:#fff;" onclick="goBack()">←</button>
@@ -3972,12 +4126,28 @@
               <ul class="list-clean" style="color:var(--text);">
                 ${localScan.findings.map(f => `<li>${f}</li>`).join("")}
               </ul>
+              ${alertaRadar.encontrado ? `<div class="card card-risk" style="padding:12px; margin:0;"><strong>${escapeHtml(alertaRadar.aviso)}</strong></div>` : ""}
               <button class="btn btn-primary btn-center" onclick="state.activeStage=${localScan.stage}; navigate('stages_overview');">
                 Ver próximo passo seguro (Roteiro Reverso) →
               </button>
               <button class="btn btn-secondary btn-center" onclick="navigate('verify_q1')">
                 Refinar com 3 perguntas rápidas
               </button>
+              <div class="rr-block">
+                ${!state.sentinela.confirmarEnvio
+                  ? `<button class="btn btn-ghost" style="font-size:0.84rem; padding:6px 0;" onclick="state.sentinela.confirmarEnvio=true; render();">Reportar padrão ao Radar local (2 toques, sem dados pessoais) →</button>`
+                  : `<div class="stack" style="margin-top:6px;">
+                      <div class="rr-title">Confirmar reporte sem dados pessoais (Toque 2 de 2)</div>
+                      <p style="font-size:0.8rem; color:var(--text-muted); margin:0;"><strong>Domínio:</strong> ${escapeHtml(dominioDetectado || "nenhum link externo")} • <strong>Trecho filtrado:</strong> ${escapeHtml(previaSanitizada)}</p>
+                      ${!state.sentinela.optIn
+                        ? `<button class="btn btn-primary btn-center" onclick="alternarSentinelaOptIn(true); confirmarReporteSentinela(state.verifyText);">Ativar Rede Sentinela local e registrar</button>`
+                        : `<button class="btn btn-primary btn-center" onclick="confirmarReporteSentinela(state.verifyText);">Confirmar registro no Radar local</button>`
+                      }
+                      <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="state.sentinela.confirmarEnvio=false; render();">Cancelar</button>
+                    </div>`
+                }
+                ${state.sentinela.feedback ? `<div class="quote-box" style="margin-top:8px;">${escapeHtml(state.sentinela.feedback)}</div>` : ""}
+              </div>
             </div>
           ` : `
             <button class="btn btn-primary btn-center" onclick="navigate('verify_q1')">

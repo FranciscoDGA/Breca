@@ -26,6 +26,14 @@ import {
   limitarValorCompromisso,
 } from './agenda'
 import {
+  ROTULO_PADRAO_SENTINELA,
+  agruparRadarSemana,
+  criarRelatoSentinela,
+  dominioNoRadar,
+  extrairDominioSuspeito,
+  sanitizarTrechoSemPii,
+} from './sentinela'
+import {
   CATALOGO_VACINAS,
   INTERVALO_VACINA_PADRAO_DIAS,
   PERGUNTAS_CHECKUP,
@@ -106,6 +114,14 @@ declare global {
       perguntasCheckup: typeof PERGUNTAS_CHECKUP
       avaliarCheckup: typeof avaliarCheckup
     }
+    BREQUE_SENTINELA?: {
+      rotulos: typeof ROTULO_PADRAO_SENTINELA
+      extrairDominioSuspeito: typeof extrairDominioSuspeito
+      sanitizarTrechoSemPii: typeof sanitizarTrechoSemPii
+      criarRelatoSentinela: typeof criarRelatoSentinela
+      agruparRadarSemana: typeof agruparRadarSemana
+      dominioNoRadar: typeof dominioNoRadar
+    }
   }
 }
 
@@ -169,6 +185,15 @@ window.BREQUE_VACINAS = {
   avaliarStatusVacina,
   perguntasCheckup: PERGUNTAS_CHECKUP,
   avaliarCheckup,
+}
+
+window.BREQUE_SENTINELA = {
+  rotulos: ROTULO_PADRAO_SENTINELA,
+  extrairDominioSuspeito,
+  sanitizarTrechoSemPii,
+  criarRelatoSentinela,
+  agruparRadarSemana,
+  dominioNoRadar,
 }
 
 window.dispatchEvent(new CustomEvent('breque:modulos-prontos'))

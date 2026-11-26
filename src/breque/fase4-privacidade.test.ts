@@ -13,6 +13,7 @@ const ARQUIVOS_NUCLEO = [
   'agenda.ts',
   'dossie.ts',
   'vacinas.ts',
+  'sentinela.ts',
   'posIncidente.ts',
   'compartilhamento.ts',
 ]
