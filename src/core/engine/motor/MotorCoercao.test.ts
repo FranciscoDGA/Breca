@@ -24,96 +24,113 @@ const atomo = (a: Atomo, desloc = 0, confianca = 1): Sinal =>
 const contexto = (c: SinalContexto, desloc = 0, confianca = 1): Sinal =>
   sinalContexto(id(), c, T0 + desloc, confianca, 'teste')
 
-describe('MotorCoercao — política de decisão', () => {
-  it('scoreSomaPesosDosAtomos', () => {
+describe('MotorCoercao — gates G1–G6 e invariantes', () => {
+  it('g1EstreitamentoSemAncora', () => {
     const { motor } = criarMotor()
-    // 22 (sigilo) + 20 (autoridade) + 18 (urgência) = 60, sem canal aberto
     const { decisao } = motor.avaliar([
+      contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
       atomo(Atomo.SIGILO),
       atomo(Atomo.AUTORIDADE),
       atomo(Atomo.URGENCIA),
     ])
-    expect(decisao.score).toBe(60)
-  })
-
-  it('atomoRepetidoNaoInflacionaScore', () => {
-    const { motor } = criarMotor()
-    const { decisao } = motor.avaliar([
-      atomo(Atomo.URGENCIA, -50000),
-      atomo(Atomo.URGENCIA, -45000),
-      atomo(Atomo.URGENCIA, -40000),
-      atomo(Atomo.URGENCIA, -35000),
-      atomo(Atomo.URGENCIA, -30000),
-      contexto(SinalContexto.TELA_FINANCEIRA_ATIVA, -30000),
-    ])
-    // urgência conta uma vez (18) + tela (15); repetir não soma.
-    expect(decisao.score).toBe(33)
-    expect(decisao.achados).toHaveLength(1)
-  })
-
-  it('semAncoraNuncaPassaDePergunta', () => {
-    const { motor } = criarMotor()
-    const { decisao } = motor.avaliar([
-      atomo(Atomo.SIGILO),
-      atomo(Atomo.AUTORIDADE),
-      atomo(Atomo.URGENCIA),
-      atomo(Atomo.MEDO_PERDA),
-      atomo(Atomo.GANHO_INESPERADO),
-      atomo(Atomo.VINCULO_AFETIVO),
-    ])
-    expect(decisao.score).toBeGreaterThan(100 - 1) // score alto…
-    expect(decisao.nivel).toBe(NivelRisco.PERGUNTA) // …mas o teto segura
+    // 22×1.5 + 20×1.5 + 18×1.5 = 90 → cap 70 + 20 = 90, mas sem âncora vale 49.
     expect(decisao.ancoraPresente).toBe(false)
+    expect(decisao.score).toBe(49)
+    expect(decisao.nivel).toBe(NivelRisco.PERGUNTA)
+    expect(decisao.motivos).toContain('G1:sem-ancora')
   })
 
-  it('regraDuraControleRemotoDisparaForte', () => {
+  it('g2MenosDeDoisAtomosNaoPassaDePergunta', () => {
+    const { motor } = criarMotor()
+    const { decisao } = motor.avaliar([
+      contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
+      contexto(SinalContexto.PEDIDO_DE_DINHEIRO_EM_MENSAGEM),
+      contexto(SinalContexto.TELA_BANCO_GENERICA),
+      atomo(Atomo.SIGILO),
+    ])
+    // 33 + 20 + 14 + 6 = 73, mas um único átomo distinto trava em 49.
+    // Sem TELA_TRANSACAO a regra dura HR-03 não se aplica.
+    expect(decisao.score).toBe(49)
+    expect(decisao.nivel).toBe(NivelRisco.PERGUNTA)
+    expect(decisao.motivos).toContain('G2:coocorrencia')
+  })
+
+  it('g3Hr01SempreForte', () => {
     const { motor } = criarMotor()
     const { decisao, breque } = motor.avaliar([
       contexto(SinalContexto.CONTROLE_REMOTO_ATIVO),
-      contexto(SinalContexto.TELA_FINANCEIRA_ATIVA),
+      contexto(SinalContexto.TELA_TRANSACAO),
     ])
-    expect(decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
     expect(decisao.regraDisparada).toBe('HR-01')
+    expect(decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
+    expect(decisao.score).toBe(85)
     expect(breque?.esperaObrigatoriaMs).toBe(40_000)
   })
 
-  it('regraDuraCodigoEmChamadaDisparaPergunta', () => {
+  it('g3Hr02CopyDeCodigo', () => {
     const { motor } = criarMotor()
     const { decisao } = motor.avaliar([
       contexto(SinalContexto.CODIGO_EM_TRANSITO),
       contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
     ])
-    expect(decisao.nivel).toBe(NivelRisco.PERGUNTA)
     expect(decisao.regraDisparada).toBe('HR-02')
+    expect(decisao.nivel).toBe(NivelRisco.PERGUNTA)
     expect(decisao.motivoHumano).toBe('Você está em chamada. Nunca leia este código.')
   })
 
-  it('canalAbertoComTelaFinanceiraEntraEmIntervencao', () => {
+  it('g3Hr03ExigeAtomo', () => {
     const { motor } = criarMotor()
-    const { decisao } = motor.avaliar([
+    const semAtomo = motor.avaliar([
       contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
-      contexto(SinalContexto.TELA_FINANCEIRA_ATIVA),
+      contexto(SinalContexto.TELA_TRANSACAO),
     ])
-    expect(decisao.score).toBeGreaterThanOrEqual(55)
-    expect(decisao.nivel).toBe(NivelRisco.INTERVENCAO)
-    expect(decisao.regraDisparada).toBe('HR-03')
+    expect(semAtomo.decisao.regraDisparada).toBeNull()
+    expect(semAtomo.decisao.score).toBe(35)
+    expect(semAtomo.decisao.nivel).toBe(NivelRisco.PERGUNTA)
+
+    const { motor: outro } = criarMotor()
+    const comAtomo = outro.avaliar([
+      contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
+      contexto(SinalContexto.TELA_TRANSACAO),
+      atomo(Atomo.SIGILO, 0, 0.8),
+    ])
+    expect(comAtomo.decisao.regraDisparada).toBe('HR-03')
+    expect(comAtomo.decisao.score).toBe(61)
+    expect(comAtomo.decisao.nivel).toBe(NivelRisco.INTERVENCAO)
   })
 
-  it('histereseNaoRebaixaNivelNoMesmoEpisodio', () => {
+  it('g4TierBLimitaACemIntervencao', () => {
+    const { motor } = criarMotor()
+    motor.definirTier('B')
+    const { decisao } = motor.avaliar([
+      contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
+      contexto(SinalContexto.TELA_TRANSACAO),
+      atomo(Atomo.SIGILO),
+      atomo(Atomo.AUTORIDADE),
+      atomo(Atomo.URGENCIA),
+      atomo(Atomo.MEDO_PERDA),
+    ])
+    expect(decisao.score).toBe(69)
+    expect(decisao.nivel).toBe(NivelRisco.INTERVENCAO)
+    expect(decisao.motivos).toContain('G4:tier-B')
+  })
+
+  it('g5HistereseNaoRebaixa', () => {
     const { motor, relogio } = criarMotor()
     const primeiro = motor.avaliar([
       atomo(Atomo.AUTORIDADE, -1000),
       atomo(Atomo.URGENCIA, -1000),
-      contexto(SinalContexto.TELA_FINANCEIRA_ATIVA, -1000),
+      contexto(SinalContexto.TELA_TRANSACAO, -1000),
     ])
     expect(primeiro.decisao.nivel).toBe(NivelRisco.INTERVENCAO)
 
-    // 125 s depois, os átomos saíram da janela; só a tela continua (re-sinalizada).
+    // 125 s depois os átomos saíram da janela; só a tela continua (re-sinalizada).
     relogio.avancar(125_000)
     const segundo = motor.avaliar([
-      sinalContexto(id(), SinalContexto.TELA_FINANCEIRA_ATIVA, T0 + 125_000, 1, 'teste'),
+      sinalContexto(id(), SinalContexto.TELA_TRANSACAO, T0 + 125_000, 1, 'teste'),
     ])
-    expect(segundo.decisao.score).toBe(15)
+    // TELA_TRANSACAO sozinha soma 15; os átomos ainda contam na janela fria própria.
+    expect(segundo.decisao.score).toBe(42)
     expect(segundo.decisao.nivel).toBe(NivelRisco.INTERVENCAO) // não rebaixa
   })
 
@@ -122,10 +139,9 @@ describe('MotorCoercao — política de decisão', () => {
     motor.avaliar([
       atomo(Atomo.AUTORIDADE, -1000),
       atomo(Atomo.URGENCIA, -1000),
-      contexto(SinalContexto.TELA_FINANCEIRA_ATIVA, -1000),
+      contexto(SinalContexto.TELA_TRANSACAO, -1000),
     ])
 
-    // Âncora sai da janela em T0+120 s; episódio termina 60 s depois (T0+180 s).
     relogio.avancar(179_000)
     expect(motor.avaliar().decisao.nivel).toBe(NivelRisco.INTERVENCAO)
 
@@ -133,13 +149,12 @@ describe('MotorCoercao — política de decisão', () => {
     expect(motor.avaliar().decisao.nivel).toBe(NivelRisco.SILENCIO)
   })
 
-  it('cooldownPorTipoDeBreque', () => {
+  it('g6CooldownSuprimeSemMarcarSeguro', () => {
     const { motor, relogio } = criarMotor()
 
-    // FORTE pelo score (sem regra imediata): canal + tela + átomos pesados.
     const fortes = (desloc: number) => [
       sinalContexto(id(), SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO, T0 + desloc, 1, 'teste'),
-      sinalContexto(id(), SinalContexto.TELA_FINANCEIRA_ATIVA, T0 + desloc, 1, 'teste'),
+      sinalContexto(id(), SinalContexto.TELA_TRANSACAO, T0 + desloc, 1, 'teste'),
       sinalAtomo(id(), Atomo.SIGILO, T0 + desloc, 1, 'teste'),
       sinalAtomo(id(), Atomo.AUTORIDADE, T0 + desloc, 1, 'teste'),
       sinalAtomo(id(), Atomo.URGENCIA, T0 + desloc, 1, 'teste'),
@@ -152,10 +167,12 @@ describe('MotorCoercao — política de decisão', () => {
 
     // Novo episódio 200 s depois, ainda dentro do cooldown de 10 min.
     relogio.avancar(200_000)
-    motor.avaliar() // encerra o episódio anterior
+    motor.avaliar()
     const bloqueado = motor.avaliar(fortes(200_000))
     expect(bloqueado.decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
-    expect(bloqueado.breque).toBeNull() // suprimido pelo cooldown
+    expect(bloqueado.breque).toBeNull()
+    expect(bloqueado.motivoSupressao).toMatch(/cooldown/)
+    expect(JSON.stringify(bloqueado)).not.toMatch(/"seguro"|"verde"/i)
 
     // Passados 10 min da primeira emissão, pode interromper de novo.
     relogio.avancar(400_001)
@@ -164,39 +181,57 @@ describe('MotorCoercao — política de decisão', () => {
     expect(liberado.breque).not.toBeNull()
   })
 
-  it('sinaisForaDaJanelaSaoIgnorados', () => {
-    const { motor, relogio } = criarMotor()
-    motor.avaliar([
-      atomo(Atomo.AUTORIDADE, -200_000),
-      atomo(Atomo.URGENCIA, -190_000),
-      contexto(SinalContexto.TELA_FINANCEIRA_ATIVA, -180_000),
+  it('decaimentoNaJanelaFria', () => {
+    const { motor } = criarMotor()
+    const { decisao } = motor.avaliar([
+      contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
+      contexto(SinalContexto.TELA_TRANSACAO),
+      atomo(Atomo.SIGILO, -150_000, 0.8),
     ])
-    relogio.avancar(0)
-    const depois = motor.avaliar([
-      sinalContexto(id(), SinalContexto.HESITACAO_DIGITACAO, T0, 1, 'teste'),
-    ])
-    expect(depois.decisao.score).toBe(8)
-    expect(depois.decisao.nivel).toBe(NivelRisco.SILENCIO)
+    // 22×1.5×(0.8×0.7)=18.48→18, +35 = 53 → G2 (um átomo) → 49.
+    expect(decisao.achados[0].peso).toBe(18)
+    expect(decisao.score).toBe(49)
+    expect(decisao.nivel).toBe(NivelRisco.PERGUNTA)
   })
 
-  it('motorNuncaRetornaVereditoSeguro', () => {
+  it('invarianteUmAtomoNuncaIntervem', () => {
     const { motor } = criarMotor()
-    const atomos = Object.values(Atomo)
+    // Sem TELA_TRANSACAO para não acionar HR-03; um único átomo não passa de 49.
+    const { decisao } = motor.avaliar([
+      contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
+      contexto(SinalContexto.TELA_BANCO_GENERICA),
+      atomo(Atomo.SIGILO, 0, 1),
+    ])
+    expect(decisao.score).toBeLessThan(50)
+    expect(decisao.nivel).toBeLessThan(NivelRisco.INTERVENCAO)
+  })
+
+  it('invarianteSemAncoraNuncaIntervem', () => {
+    const { motor } = criarMotor()
+    const { decisao } = motor.avaliar([
+      contexto(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO),
+      ...Object.values(Atomo).map((a) => atomo(a)),
+    ])
+    expect(decisao.ancoraPresente).toBe(false)
+    expect(decisao.score).toBeLessThan(50)
+    expect(decisao.nivel).toBeLessThan(NivelRisco.INTERVENCAO)
+  })
+
+  it('statusFinalNuncaContemPalavraSeguro', () => {
+    const { motor } = criarMotor()
     const contextos = Object.values(SinalContexto)
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 100; i++) {
       const sinais: Sinal[] = []
-      for (const a of atomos) {
-        if (Math.random() < 0.4)
-          sinais.push(
-            sinalAtomo(id(), a, T0 - Math.floor(Math.random() * 60_000), Math.random(), 'teste'),
-          )
+      for (const a of Object.values(Atomo)) {
+        if (i % 2 === 0 || a.length % 2 === 0) {
+          sinais.push(sinalAtomo(id(), a, T0 - (i % 60_000), 0.9, 'teste'))
+        }
       }
       for (const c of contextos) {
-        if (Math.random() < 0.25)
-          sinais.push(
-            sinalContexto(id(), c, T0 - Math.floor(Math.random() * 60_000), Math.random(), 'teste'),
-          )
+        if (i % 3 === 0 || c.length % 2 === 0) {
+          sinais.push(sinalContexto(id(), c, T0 - (i % 60_000), 1, 'teste'))
+        }
       }
       const { decisao, breque } = motor.avaliar(sinais)
       const serializado = JSON.stringify({ decisao, breque })
@@ -213,11 +248,66 @@ describe('MotorCoercao — política de decisão', () => {
     }
   })
 
+  it('allowlistSuprimeVinculoECanal', () => {
+    const { motor } = criarMotor()
+    motor.definirAllowlist(['contato-confiavel'])
+
+    const { decisao } = motor.avaliar([
+      sinalContexto(
+        id(),
+        SinalContexto.PEDIDO_DE_DINHEIRO_EM_MENSAGEM,
+        T0,
+        1,
+        'teste',
+        { remetenteHash: 'contato-confiavel' },
+      ),
+      sinalContexto(
+        id(),
+        SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO,
+        T0,
+        1,
+        'teste',
+        { remetenteHash: 'contato-confiavel' },
+      ),
+      sinalAtomo(id(), Atomo.VINCULO_AFETIVO, T0, 1, 'teste', {
+        remetenteHash: 'contato-confiavel',
+      }),
+    ])
+
+    expect(decisao.sinaisDeContexto.has(SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO)).toBe(false)
+    expect(decisao.achados).toHaveLength(0)
+    expect(decisao.score).toBe(14)
+    expect(decisao.nivel).toBe(NivelRisco.SILENCIO)
+  })
+
+  it('confirmacaoConscienteSuprimeMasNaoMarcaSeguro', () => {
+    const { motor } = criarMotor()
+    const primeiro = motor.avaliar([
+      atomo(Atomo.AUTORIDADE, -1000),
+      atomo(Atomo.URGENCIA, -1000),
+      contexto(SinalContexto.TELA_TRANSACAO, -1000),
+    ])
+    expect(primeiro.breque).not.toBeNull()
+    expect(primeiro.decisao.nivel).toBe(NivelRisco.INTERVENCAO)
+
+    motor.confirmarSeguirAdiante()
+
+    const depois = motor.avaliar([
+      sinalAtomo(id(), Atomo.SIGILO, T0, 1, 'teste'),
+      sinalContexto(id(), SinalContexto.TELA_TRANSACAO, T0, 1, 'teste'),
+    ])
+
+    expect(depois.breque).toBeNull() // interrupção suprimida
+    expect(depois.decisao.nivel).toBeGreaterThanOrEqual(NivelRisco.INTERVENCAO)
+    expect(depois.motivoSupressao).toBe('confirmacao-consciente')
+    expect(JSON.stringify(depois)).not.toMatch(/seguro|verde/i)
+  })
+
   it('determinismoComClockFixo', () => {
     const sequencia: Sinal[] = [
       sinalAtomo('a1', Atomo.AUTORIDADE, T0 - 3000, 0.9, 'teste'),
       sinalContexto('c1', SinalContexto.CANAL_ABERTO_DURANTE_OPERACAO, T0 - 2000, 1, 'teste'),
-      sinalContexto('c2', SinalContexto.TELA_FINANCEIRA_ATIVA, T0 - 1000, 1, 'teste'),
+      sinalContexto('c2', SinalContexto.TELA_TRANSACAO, T0 - 1000, 1, 'teste'),
       sinalContexto('c3', SinalContexto.CODIGO_EM_TRANSITO, T0, 1, 'teste'),
     ]
 
@@ -228,27 +318,5 @@ describe('MotorCoercao — política de decisão', () => {
 
     expect(JSON.stringify(ra.decisao)).toBe(JSON.stringify(rb.decisao))
     expect(JSON.stringify(ra.breque)).toBe(JSON.stringify(rb.breque))
-  })
-
-  it('confirmacaoConscienteSuprimeMasNaoMarcaSeguro', () => {
-    const { motor } = criarMotor()
-    const primeiro = motor.avaliar([
-      atomo(Atomo.AUTORIDADE, -1000),
-      atomo(Atomo.URGENCIA, -1000),
-      contexto(SinalContexto.TELA_FINANCEIRA_ATIVA, -1000),
-    ])
-    expect(primeiro.breque).not.toBeNull()
-    expect(primeiro.decisao.nivel).toBe(NivelRisco.INTERVENCAO)
-
-    motor.confirmarSeguirAdiante()
-
-    const depois = motor.avaliar([
-      sinalAtomo(id(), Atomo.SIGILO, T0, 1, 'teste'),
-      sinalContexto(id(), SinalContexto.TELA_FINANCEIRA_ATIVA, T0, 1, 'teste'),
-    ])
-
-    expect(depois.breque).toBeNull() // interrupção suprimida
-    expect(depois.decisao.nivel).toBeGreaterThanOrEqual(NivelRisco.INTERVENCAO) // risco continua honesto
-    expect(JSON.stringify(depois)).not.toMatch(/seguro|verde/i)
   })
 })

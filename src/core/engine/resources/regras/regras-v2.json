@@ -1,0 +1,106 @@
+{
+  "versao": "2.0.0",
+  "atomos": {
+    "SIGILO": {
+      "base": 22,
+      "multiplicadorComCanal": 1.5,
+      "janelaQuenteMs": 90000,
+      "janelaFriaMs": 600000
+    },
+    "AUTORIDADE": {
+      "base": 20,
+      "multiplicadorComCanal": 1.5,
+      "janelaQuenteMs": 90000,
+      "janelaFriaMs": 300000
+    },
+    "URGENCIA": {
+      "base": 18,
+      "multiplicadorComCanal": 1.5,
+      "janelaQuenteMs": 60000,
+      "janelaFriaMs": 240000
+    },
+    "VINCULO_AFETIVO": {
+      "base": 18,
+      "multiplicadorComCanal": 1.2,
+      "janelaQuenteMs": 120000,
+      "janelaFriaMs": 900000
+    },
+    "MEDO_PERDA": {
+      "base": 16,
+      "multiplicadorComCanal": 1.3,
+      "janelaQuenteMs": 90000,
+      "janelaFriaMs": 300000
+    },
+    "GANHO_INESPERADO": {
+      "base": 14,
+      "multiplicadorComCanal": 1.2,
+      "janelaQuenteMs": 60000,
+      "janelaFriaMs": 600000
+    }
+  },
+  "contexto": {
+    "TELA_TRANSACAO": 15,
+    "TELA_BANCO_GENERICA": 6,
+    "CANAL_ABERTO_DURANTE_OPERACAO": 20,
+    "CODIGO_EM_TRANSITO": 10,
+    "CONTROLE_REMOTO_ATIVO": 26,
+    "PEDIDO_DE_DINHEIRO_EM_MENSAGEM": 14,
+    "CHAVE_DESTINO_NOVA": 10,
+    "VALOR_ATIPICO": 12,
+    "HORARIO_ATIPICO": 6,
+    "HESITACAO_DIGITACAO": 8
+  },
+  "ancoras": [
+    "TELA_TRANSACAO",
+    "TELA_BANCO_GENERICA",
+    "CONTROLE_REMOTO_ATIVO",
+    "CODIGO_EM_TRANSITO",
+    "PEDIDO_DE_DINHEIRO_EM_MENSAGEM"
+  ],
+  "bandas": [
+    { "ate": 29, "nivel": "SILENCIO" },
+    { "ate": 49, "nivel": "PERGUNTA" },
+    { "ate": 69, "nivel": "INTERVENCAO" },
+    { "ate": 100, "nivel": "INTERVENCAO_FORTE" }
+  ],
+  "limites": {
+    "somaAtomos": 70,
+    "coocorrenciaMinima": 2,
+    "tetoSemAncora": 49,
+    "tetoTierB": 69,
+    "atomoConfianca": 0.6
+  },
+  "regrasDuras": [
+    {
+      "id": "HR-01",
+      "requer": ["CONTROLE_REMOTO_ATIVO", "TELA_TRANSACAO"],
+      "nivelMinimo": "INTERVENCAO_FORTE",
+      "scoreBase": 85,
+      "exentaDeCooldown": true,
+      "motivo": "Há acesso remoto no aparelho com uma transferência na tela ao mesmo tempo."
+    },
+    {
+      "id": "HR-02",
+      "requer": ["CODIGO_EM_TRANSITO", "CANAL_ABERTO_DURANTE_OPERACAO"],
+      "nivelMinimo": "PERGUNTA",
+      "scoreBaseSeContexto": { "contexto": "TELA_TRANSACAO", "valor": 60 },
+      "frase": "Você está em chamada. Nunca leia este código.",
+      "motivo": "Um código de verificação chegou enquanto uma ligação está aberta."
+    },
+    {
+      "id": "HR-03",
+      "requer": ["CANAL_ABERTO_DURANTE_OPERACAO", "TELA_TRANSACAO"],
+      "scoreBase": 55,
+      "exigeAtomoConfianca": 0.6,
+      "motivo": "Operação sob influência de terceiro: há um canal aberto enquanto você usa a tela de transferência."
+    }
+  ],
+  "politica": {
+    "janelaMs": 120000,
+    "retencaoMaximaMs": 900000,
+    "episodioSemAncoraMs": 60000,
+    "cooldownForteMs": 600000,
+    "cooldownPerguntaMs": 180000,
+    "esperaForteMs": 40000
+  }
+}

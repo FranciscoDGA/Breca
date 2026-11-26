@@ -1,0 +1,233 @@
+{
+  "versao": "2.0.0",
+  "cenarios": [
+    {
+      "id": "P1",
+      "nome": "Falsa central completa",
+      "descricao": "Chamada aberta, código chegando, tela de transação e quatro átomos.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-02", "score": 100, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -25000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CODIGO_EM_TRANSITO", "deslocamentoMs": -5000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "AUTORIDADE", "deslocamentoMs": -25000, "confianca": 0.9, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "SIGILO", "deslocamentoMs": -20000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -20000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "MEDO_PERDA", "deslocamentoMs": -25000, "confianca": 0.7, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P2",
+      "nome": "Falso parente no WhatsApp",
+      "descricao": "Pedido de dinheiro, chave nova e valor atípico, com vínculo e urgência.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO", "regra": null, "score": 65, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "PEDIDO_DE_DINHEIRO_EM_MENSAGEM", "deslocamentoMs": -45000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CHAVE_DESTINO_NOVA", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "VALOR_ATIPICO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "VINCULO_AFETIVO", "deslocamentoMs": -50000, "confianca": 0.9, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -40000, "confianca": 0.7, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P3",
+      "nome": "Mão fantasma",
+      "descricao": "Acesso remoto ativo com tela de transação aberta. HR-01.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-01", "score": 85, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CONTROLE_REMOTO_ATIVO", "deslocamentoMs": -40000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -35000, "confianca": 1, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P4",
+      "nome": "Pix induzido",
+      "descricao": "Canal aberto + tela de transação + urgência e autoridade. HR-03.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-03", "score": 94, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -40000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -35000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CHAVE_DESTINO_NOVA", "deslocamentoMs": -20000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "VALOR_ATIPICO", "deslocamentoMs": -15000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -20000, "confianca": 0.7, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "AUTORIDADE", "deslocamentoMs": -20000, "confianca": 0.6, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P5",
+      "nome": "Pix normal para chave conhecida",
+      "descricao": "Só a tela de transação. Controle negativo.",
+      "tier": "A",
+      "esperado": { "nivel": "SILENCIO", "regra": null, "score": 15, "breque": false },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P6",
+      "nome": "Login 2FA com código",
+      "descricao": "Código chegando e app do banco aberto, sem chamada. Não é falso positivo.",
+      "tier": "A",
+      "esperado": { "nivel": "SILENCIO", "regra": null, "score": 16, "breque": false },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CODIGO_EM_TRANSITO", "deslocamentoMs": -10000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_BANCO_GENERICA", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P7",
+      "nome": "Código lido ao telefone",
+      "descricao": "Chamada + código + tela de transação + urgência e sigilo. HR-02 com F1.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-02", "score": 90, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -40000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CODIGO_EM_TRANSITO", "deslocamentoMs": -10000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -35000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -20000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "SIGILO", "deslocamentoMs": -20000, "confianca": 0.7, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P8",
+      "nome": "Falso advogado de precatório",
+      "descricao": "Autoridade, ganho inesperado e urgência, com pedido e tela de transação.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": null, "score": 79, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "PEDIDO_DE_DINHEIRO_EM_MENSAGEM", "deslocamentoMs": -45000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CHAVE_DESTINO_NOVA", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "AUTORIDADE", "deslocamentoMs": -50000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "GANHO_INESPERADO", "deslocamentoMs": -40000, "confianca": 0.9, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -30000, "confianca": 0.6, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P9a",
+      "nome": "Falso funcionário, só voz",
+      "descricao": "Chamada com autoridade, sigilo e urgência, sem tela financeira. G1 segura em 49.",
+      "tier": "A",
+      "esperado": { "nivel": "PERGUNTA", "regra": null, "score": 49, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -40000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "AUTORIDADE", "deslocamentoMs": -50000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "SIGILO", "deslocamentoMs": -40000, "confianca": 0.6, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -30000, "confianca": 0.7, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P9b",
+      "nome": "Falso funcionário com banco aberto",
+      "descricao": "O mesmo caso, mas o usuário abre a tela de transação. HR-03.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-03", "score": 98, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -40000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "AUTORIDADE", "deslocamentoMs": -50000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "SIGILO", "deslocamentoMs": -40000, "confianca": 0.6, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -30000, "confianca": 0.7, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "P10",
+      "nome": "Deepfake de voz do filho",
+      "descricao": "Vínculo afetivo, urgência e medo, com canal, tela e chave nova.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-03", "score": 95, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -40000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -35000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CHAVE_DESTINO_NOVA", "deslocamentoMs": -20000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "VINCULO_AFETIVO", "deslocamentoMs": -50000, "confianca": 0.9, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -30000, "confianca": 0.7, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "MEDO_PERDA", "deslocamentoMs": -40000, "confianca": 0.6, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "N1",
+      "nome": "Ligação de trabalho com home do banco",
+      "descricao": "Canal aberto e home do banco, sem átomos. G2 impede intervenção.",
+      "tier": "A",
+      "esperado": { "nivel": "SILENCIO", "regra": null, "score": 26, "breque": false },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_BANCO_GENERICA", "deslocamentoMs": -25000, "confianca": 1, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "N2",
+      "nome": "Contato na allowlist pede dinheiro",
+      "descricao": "Pedido de dinheiro de contato confiável; canal e vínculo suprimidos pela allowlist.",
+      "tier": "A",
+      "esperado": { "nivel": "SILENCIO", "regra": null, "score": 14, "breque": false },
+      "allowlist": ["contato-confiavel"],
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "PEDIDO_DE_DINHEIRO_EM_MENSAGEM", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -25000, "confianca": 1, "origem": "simulador", "remetenteHash": "contato-confiavel" },
+        { "tipo": "ATOMO", "atomo": "VINCULO_AFETIVO", "deslocamentoMs": -20000, "confianca": 1, "origem": "simulador", "remetenteHash": "contato-confiavel" }
+      ]
+    },
+    {
+      "id": "N3",
+      "nome": "Link de entrega enviado para checagem",
+      "descricao": "Share-to-check responde FICHA, nunca BREQUE.",
+      "tier": "C",
+      "canal": "FICHA",
+      "esperado": { "nivel": "SILENCIO", "regra": null, "score": 0, "breque": false },
+      "sinais": []
+    },
+    {
+      "id": "B1",
+      "nome": "Anti-inflação: URGENCIA repetida",
+      "descricao": "Cinco sinais de urgência contam uma vez; G2 segura em 49.",
+      "tier": "A",
+      "esperado": { "nivel": "PERGUNTA", "regra": null, "score": 49, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "PEDIDO_DE_DINHEIRO_EM_MENSAGEM", "deslocamentoMs": -28000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_BANCO_GENERICA", "deslocamentoMs": -25000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -50000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -45000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -40000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -35000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -30000, "confianca": 0.8, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "B2",
+      "nome": "Cooldown",
+      "descricao": "P1 repetido 40 s depois: o segundo breque é suprimido e logado.",
+      "tier": "A",
+      "esperado": { "nivel": "INTERVENCAO_FORTE", "regra": "HR-02", "score": 100, "breque": false },
+      "deslocamentoRepeticaoMs": 40000,
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_TRANSACAO", "deslocamentoMs": -25000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "CODIGO_EM_TRANSITO", "deslocamentoMs": -5000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "AUTORIDADE", "deslocamentoMs": -25000, "confianca": 0.9, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "SIGILO", "deslocamentoMs": -20000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "URGENCIA", "deslocamentoMs": -20000, "confianca": 0.8, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "MEDO_PERDA", "deslocamentoMs": -25000, "confianca": 0.7, "origem": "simulador" }
+      ]
+    },
+    {
+      "id": "B3",
+      "nome": "Decaimento na janela fria",
+      "descricao": "SIGILO de 150 s decai para 0.7 e, com um único átomo, G2 segura em 49.",
+      "tier": "A",
+      "esperado": { "nivel": "PERGUNTA", "regra": null, "score": 49, "breque": true },
+      "sinais": [
+        { "tipo": "CONTEXTO", "contexto": "CANAL_ABERTO_DURANTE_OPERACAO", "deslocamentoMs": -30000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "PEDIDO_DE_DINHEIRO_EM_MENSAGEM", "deslocamentoMs": -28000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "CONTEXTO", "contexto": "TELA_BANCO_GENERICA", "deslocamentoMs": -25000, "confianca": 1, "origem": "simulador" },
+        { "tipo": "ATOMO", "atomo": "SIGILO", "deslocamentoMs": -150000, "confianca": 0.8, "origem": "simulador" }
+      ]
+    }
+  ]
+}

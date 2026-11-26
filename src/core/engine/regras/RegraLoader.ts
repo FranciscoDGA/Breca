@@ -1,7 +1,14 @@
 import { Atomo } from '../modelo/Atomo'
 import { nivelDeNome, NivelRisco } from '../modelo/NivelRisco'
 import { SinalContexto } from '../modelo/SinalContexto'
-import type { Banda, ConfigRegras, PesoAtomo, PoliticaConfig, RegraDura } from './Regra'
+import type {
+  Banda,
+  ConfigRegras,
+  Limites,
+  PesoAtomo,
+  PoliticaConfig,
+  RegraDura,
+} from './Regra'
 
 /** Hash determinístico (FNV-1a 64 bits) — fingerprint auditável das regras. */
 export function hashRegras(conteudo: string): string {
@@ -24,7 +31,7 @@ function chavesDeEnum<T extends string>(enumObj: Record<string, T>): Set<string>
 }
 
 /**
- * Carrega e valida regras-v1.json. Falha alto e cedo se o arquivo mentir:
+ * Carrega e valida regras-v2.json. Falha alto e cedo se o arquivo mentir:
  * uma regra malformada nunca deve silenciosamente virar "sem proteção".
  */
 export function carregarRegras(bruto: unknown): ConfigRegras {
@@ -34,10 +41,7 @@ export function carregarRegras(bruto: unknown): ConfigRegras {
   exigir(typeof obj.versao === 'string' && obj.versao.length > 0, 'versao ausente')
   const versao = obj.versao as string
 
-  const atomosBrutos = obj.atomos as Record<
-    string,
-    { base?: unknown; multiplicadorComCanal?: unknown }
-  >
+  const atomosBrutos = obj.atomos as Record<string, Record<string, unknown>>
   exigir(typeof atomosBrutos === 'object' && atomosBrutos !== null, 'atomos ausentes')
   const pesosAtomos = {} as Record<Atomo, PesoAtomo>
   for (const atomo of Object.values(Atomo)) {
@@ -48,20 +52,46 @@ export function carregarRegras(bruto: unknown): ConfigRegras {
       typeof entrada.multiplicadorComCanal === 'number' && entrada.multiplicadorComCanal >= 1,
       `multiplicador inválido em ${atomo}`,
     )
+    exigir(
+      typeof entrada.janelaQuenteMs === 'number' && entrada.janelaQuenteMs > 0,
+      `janelaQuenteMs inválida em ${atomo}`,
+    )
+    exigir(
+      typeof entrada.janelaFriaMs === 'number' &&
+        entrada.janelaFriaMs >= (entrada.janelaQuenteMs as number),
+      `janelaFriaMs inválida em ${atomo}`,
+    )
     pesosAtomos[atomo] = {
       base: entrada.base,
       multiplicadorComCanal: entrada.multiplicadorComCanal,
+      janelaQuenteMs: entrada.janelaQuenteMs,
+      janelaFriaMs: entrada.janelaFriaMs,
     }
   }
 
   const contextosBrutos = obj.contexto as Record<string, unknown>
   exigir(typeof contextosBrutos === 'object' && contextosBrutos !== null, 'contexto ausente')
+  const contextosValidos = chavesDeEnum(SinalContexto as unknown as Record<string, string>)
   const pesosContexto = {} as Record<SinalContexto, number>
   for (const contexto of Object.values(SinalContexto)) {
     const peso = contextosBrutos[contexto]
     exigir(typeof peso === 'number' && peso >= 0, `peso do contexto ${contexto} inválido`)
     pesosContexto[contexto] = peso
   }
+  for (const chave of Object.keys(contextosBrutos)) {
+    exigir(contextosValidos.has(chave), `contexto desconhecido no JSON: ${chave}`)
+  }
+
+  exigir(Array.isArray(obj.ancoras), 'ancoras ausentes')
+  const ancoras = new Set<SinalContexto>()
+  for (const c of obj.ancoras as unknown[]) {
+    exigir(
+      typeof c === 'string' && contextosValidos.has(c),
+      `âncora desconhecida: ${String(c)}`,
+    )
+    ancoras.add(c as SinalContexto)
+  }
+  exigir(ancoras.size > 0, 'nenhuma âncora declarada')
 
   exigir(Array.isArray(obj.bandas) && obj.bandas.length > 0, 'bandas ausentes')
   const bandas: Banda[] = (obj.bandas as unknown[]).map((b, i) => {
@@ -72,7 +102,28 @@ export function carregarRegras(bruto: unknown): ConfigRegras {
   })
 
   const niveisValidos = chavesDeEnum(NivelRisco as unknown as Record<string, string>)
-  const contextosValidos = chavesDeEnum(SinalContexto as unknown as Record<string, string>)
+
+  const limitesBrutos = obj.limites as Record<string, unknown>
+  exigir(typeof limitesBrutos === 'object' && limitesBrutos !== null, 'limites ausentes')
+  for (const chave of [
+    'somaAtomos',
+    'coocorrenciaMinima',
+    'tetoSemAncora',
+    'tetoTierB',
+    'atomoConfianca',
+  ]) {
+    exigir(
+      typeof limitesBrutos[chave] === 'number' && (limitesBrutos[chave] as number) >= 0,
+      `limite ${chave} inválido`,
+    )
+  }
+  const limites: Limites = {
+    somaAtomos: limitesBrutos.somaAtomos as number,
+    coocorrenciaMinima: limitesBrutos.coocorrenciaMinima as number,
+    tetoSemAncora: limitesBrutos.tetoSemAncora as number,
+    tetoTierB: limitesBrutos.tetoTierB as number,
+    atomoConfianca: limitesBrutos.atomoConfianca as number,
+  }
 
   exigir(Array.isArray(obj.regrasDuras), 'regrasDuras ausentes')
   const regrasDuras: RegraDura[] = (obj.regrasDuras as unknown[]).map((r, i) => {
@@ -85,10 +136,10 @@ export function carregarRegras(bruto: unknown): ConfigRegras {
         `${regra.id} exige contexto desconhecido: ${String(c)}`,
       )
     }
-    if (regra.nivel !== undefined) {
+    if (regra.nivelMinimo !== undefined) {
       exigir(
-        typeof regra.nivel === 'string' && niveisValidos.has(regra.nivel),
-        `${regra.id} tem nível inválido`,
+        typeof regra.nivelMinimo === 'string' && niveisValidos.has(regra.nivelMinimo),
+        `${regra.id} tem nível mínimo inválido`,
       )
     }
     if (regra.scoreBase !== undefined) {
@@ -97,50 +148,78 @@ export function carregarRegras(bruto: unknown): ConfigRegras {
         `${regra.id} tem scoreBase inválido`,
       )
     }
+    let scoreBaseSeContexto: RegraDura['scoreBaseSeContexto']
+    if (regra.scoreBaseSeContexto !== undefined) {
+      const condicional = regra.scoreBaseSeContexto as Record<string, unknown>
+      exigir(
+        typeof condicional.contexto === 'string' && contextosValidos.has(condicional.contexto),
+        `${regra.id} tem scoreBaseSeContexto inválido`,
+      )
+      exigir(
+        typeof condicional.valor === 'number' && condicional.valor >= 0 && condicional.valor <= 100,
+        `${regra.id} tem valor condicional inválido`,
+      )
+      scoreBaseSeContexto = {
+        contexto: condicional.contexto as SinalContexto,
+        valor: condicional.valor,
+      }
+    }
+    if (regra.exigeAtomoConfianca !== undefined) {
+      exigir(
+        typeof regra.exigeAtomoConfianca === 'number' &&
+          regra.exigeAtomoConfianca >= 0 &&
+          regra.exigeAtomoConfianca <= 1,
+        `${regra.id} tem exigeAtomoConfianca inválido`,
+      )
+    }
     return {
       id: regra.id,
       requer: regra.requer as SinalContexto[],
-      nivel: regra.nivel === undefined ? undefined : nivelDeNome(regra.nivel as string),
+      nivelMinimo:
+        regra.nivelMinimo === undefined ? undefined : nivelDeNome(regra.nivelMinimo as string),
       scoreBase: regra.scoreBase as number | undefined,
+      scoreBaseSeContexto,
+      exigeAtomoConfianca: regra.exigeAtomoConfianca as number | undefined,
       frase: regra.frase as string | undefined,
       motivo: regra.motivo as string | undefined,
-      imediata: regra.imediata === true,
+      exentaDeCooldown: regra.exentaDeCooldown === true,
     }
   })
 
   const p = obj.politica as Record<string, unknown>
   exigir(typeof p === 'object' && p !== null, 'politica ausente')
-  exigir(typeof p.janelaMs === 'number' && p.janelaMs > 0, 'janelaMs inválida')
-  exigir(
-    typeof p.episodioSemAncoraMs === 'number' && p.episodioSemAncoraMs >= 0,
-    'episodioSemAncoraMs inválido',
-  )
-  exigir(
-    typeof p.cooldownForteMs === 'number' && p.cooldownForteMs >= 0,
-    'cooldownForteMs inválido',
-  )
-  exigir(
-    typeof p.cooldownPerguntaMs === 'number' && p.cooldownPerguntaMs >= 0,
-    'cooldownPerguntaMs inválido',
-  )
-  exigir(
-    typeof p.tetoSemAncora === 'string' && p.tetoSemAncora === 'PERGUNTA',
-    'tetoSemAncora inválido',
-  )
-  const politica: PoliticaConfig = {
-    janelaMs: p.janelaMs,
-    episodioSemAncoraMs: p.episodioSemAncoraMs,
-    cooldownForteMs: p.cooldownForteMs,
-    cooldownPerguntaMs: p.cooldownPerguntaMs,
-    tetoSemAncora: NivelRisco.PERGUNTA,
+  for (const chave of [
+    'janelaMs',
+    'retencaoMaximaMs',
+    'episodioSemAncoraMs',
+    'cooldownForteMs',
+    'cooldownPerguntaMs',
+    'esperaForteMs',
+  ]) {
+    exigir(typeof p[chave] === 'number' && (p[chave] as number) >= 0, `${chave} inválido`)
   }
+  const politica: PoliticaConfig = {
+    janelaMs: p.janelaMs as number,
+    retencaoMaximaMs: p.retencaoMaximaMs as number,
+    episodioSemAncoraMs: p.episodioSemAncoraMs as number,
+    cooldownForteMs: p.cooldownForteMs as number,
+    cooldownPerguntaMs: p.cooldownPerguntaMs as number,
+    esperaForteMs: p.esperaForteMs as number,
+  }
+  const maiorJanelaFria = Math.max(...Object.values(pesosAtomos).map((a) => a.janelaFriaMs))
+  exigir(
+    politica.retencaoMaximaMs >= maiorJanelaFria,
+    'retencaoMaximaMs menor que a maior janela fria',
+  )
 
   return {
     versao,
     hash: hashRegras(JSON.stringify(bruto)),
     pesosAtomos,
     pesosContexto,
+    ancoras,
     bandas,
+    limites,
     regrasDuras,
     politica,
   }

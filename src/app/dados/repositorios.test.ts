@@ -12,12 +12,15 @@ function decisaoExemplo(): Decisao {
   return {
     nivel: NivelRisco.INTERVENCAO,
     score: 57,
+    scoreBruto: 57,
     achados: [],
-    sinaisDeContexto: new Set([SinalContexto.TELA_FINANCEIRA_ATIVA]),
+    sinaisDeContexto: new Set([SinalContexto.TELA_TRANSACAO]),
     ancoraPresente: true,
     regraDisparada: 'HR-03',
     perguntas: [],
     motivoHumano: 'Esta operação tem uma transferência na tela agora.',
+    motivos: [],
+    tier: 'A',
     versaoRegras: '1.0.0',
   }
 }

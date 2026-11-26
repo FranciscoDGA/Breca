@@ -22,6 +22,13 @@ export interface Sinal {
   readonly confianca: number
   /** Ex.: "simulador", "acessibilidade", "sms". Sem PII. */
   readonly origem: string
+  /**
+   * Hash local do remetente (nunca o número/nome). Permite allowlist e
+   * supressão de VINCULO/CANAL sem guardar PII.
+   */
+  readonly remetenteHash?: string | null
+  /** Ids dos padrões do léxico que dispararam (sem citar o texto). */
+  readonly gatilhosHash?: readonly string[]
 }
 
 export function sinalAtomo(
@@ -30,8 +37,19 @@ export function sinalAtomo(
   instanteMs: number,
   confianca: number,
   origem: string,
+  extras: { remetenteHash?: string | null; gatilhosHash?: readonly string[] } = {},
 ): Sinal {
-  return { id, tipo: TipoSinal.ATOMO, atomo, contexto: null, instanteMs, confianca, origem }
+  return {
+    id,
+    tipo: TipoSinal.ATOMO,
+    atomo,
+    contexto: null,
+    instanteMs,
+    confianca,
+    origem,
+    remetenteHash: extras.remetenteHash ?? null,
+    gatilhosHash: extras.gatilhosHash ?? [],
+  }
 }
 
 export function sinalContexto(
@@ -40,6 +58,17 @@ export function sinalContexto(
   instanteMs: number,
   confianca: number,
   origem: string,
+  extras: { remetenteHash?: string | null; gatilhosHash?: readonly string[] } = {},
 ): Sinal {
-  return { id, tipo: TipoSinal.CONTEXTO, atomo: null, contexto, instanteMs, confianca, origem }
+  return {
+    id,
+    tipo: TipoSinal.CONTEXTO,
+    atomo: null,
+    contexto,
+    instanteMs,
+    confianca,
+    origem,
+    remetenteHash: extras.remetenteHash ?? null,
+    gatilhosHash: extras.gatilhosHash ?? [],
+  }
 }

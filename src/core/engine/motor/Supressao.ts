@@ -4,23 +4,21 @@ import type { ConfigRegras, RegraDura } from '../regras/Regra'
 interface ResultadoSupressao {
   readonly nivel: NivelRisco
   readonly emitir: boolean
+  /** Preenchido quando o breque existiria mas foi suprimido. */
+  readonly motivoSupressao: string | null
 }
 
 type TipoBreque = 'PERGUNTA' | 'INTERVENCAO' | 'FORTE'
 
 /**
- * §7.5 — histerese, episódio, cooldown e confirmação consciente.
+ * G5/G6 — episódio, histerese, cooldown e confirmação consciente.
  *
- * Decisões de leitura (registradas em RELATORIO-CAMADA-1.md):
- * 1. O nível reportado é honesto (histerese); a supressão governa só a EMISSÃO
- *    do breque. Nunca existe veredito "seguro" — apenas silêncio de interrupção.
- * 2. Episódio termina quando a âncora sai da janela por 60 s contínuos
- *    (fim = última âncora observada + janela + 60 s), independente da frequência
- *    de avaliação — condição de determinismo.
- * 3. Cooldown de PERGUNTA (3 min) é estendido a INTERVENCAO: a spec cita só dois
- *    tipos, e interromper mais forte que PERGUNTA sem cooldown contradiz o
- *    princípio de "menos intrusivo".
- * 4. Só regra dura imediata (HR-01/HR-02) fura cooldown, histerese e confirmação.
+ * Leitura registrada em docs/adr/0005 e 0010:
+ * 1. O nível reportado é honesto; a supressão governa só a EMISSÃO do breque.
+ *    Nunca existe veredito "seguro".
+ * 2. Episódio termina em `última âncora + 120 s + 60 s`, por tempo.
+ * 3. Cooldown de 3 min vale para PERGUNTA e INTERVENCAO; 10 min para FORTE.
+ * 4. Só HR-01 (`exentaDeCooldown`) fura cooldown, histerese e confirmação.
  */
 export class Supressao {
   private ultimaAncoraMs: number | null = null
@@ -60,7 +58,8 @@ export class Supressao {
       this.nivelMaxEpisodio = nivel
     }
 
-    return { nivel, emitir: this.deveEmitir(nivel, regra, instanteMs, cfg, episodioAtivo) }
+    const emissao = this.deveEmitir(nivel, regra, instanteMs, cfg, episodioAtivo)
+    return { nivel, emitir: emissao.emitir, motivoSupressao: emissao.motivo ?? null }
   }
 
   private deveEmitir(
@@ -69,22 +68,27 @@ export class Supressao {
     instanteMs: number,
     cfg: ConfigRegras,
     episodioAtivo: boolean,
-  ): boolean {
-    if (nivel < NivelRisco.PERGUNTA) return false
-    if (regra?.imediata === true) return true
+  ): { emitir: boolean; motivo: string | null } {
+    if (nivel < NivelRisco.PERGUNTA) return { emitir: false, motivo: 'abaixo-de-pergunta' }
+    if (regra?.exentaDeCooldown === true) return { emitir: true, motivo: null }
 
-    if (this.confirmacaoConsciente) return false
-    // Mesmo nível não re-interrompe DENTRO do episódio (§7.5).
+    if (this.confirmacaoConsciente) {
+      return { emitir: false, motivo: 'confirmacao-consciente' }
+    }
     if (episodioAtivo && this.ultimoNivelEmitido !== null && nivel <= this.ultimoNivelEmitido) {
-      return false
+      return { emitir: false, motivo: 'dedup-episodio' }
     }
 
     const tipo = this.tipoDe(nivel)
     const ultima = this.ultimaEmissao[tipo]
-    if (ultima === null) return true
-    const cooldown =
-      tipo === 'FORTE' ? cfg.politica.cooldownForteMs : cfg.politica.cooldownPerguntaMs
-    return instanteMs - ultima >= cooldown
+    if (ultima !== null) {
+      const cooldown =
+        tipo === 'FORTE' ? cfg.politica.cooldownForteMs : cfg.politica.cooldownPerguntaMs
+      if (instanteMs - ultima < cooldown) {
+        return { emitir: false, motivo: `cooldown-${tipo.toLowerCase()}` }
+      }
+    }
+    return { emitir: true, motivo: null }
   }
 
   /** Registra que um breque foi de fato exibido. */
@@ -128,5 +132,10 @@ export class Supressao {
   redefinir(): void {
     this.reiniciarEpisodio()
     this.ultimaEmissao = { PERGUNTA: null, INTERVENCAO: null, FORTE: null }
+  }
+
+  /** Identificador do episódio atual (para persistência/diagnóstico). */
+  get episodioAtivo(): boolean {
+    return this.ultimaAncoraMs !== null
   }
 }

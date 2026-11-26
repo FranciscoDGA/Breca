@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { NivelRisco, nomeDeNivel } from '../engine/modelo/NivelRisco'
 import { CENARIOS, executarTodosOsCenarios } from './executarCenario'
 
-describe('simulador de cenários', () => {
-  it('simuladorExecutaOs12Cenarios', () => {
+describe('simulador de cenários v2', () => {
+  it('simuladorExecutaOs17CenariosConformeTabela', () => {
     const resultados = executarTodosOsCenarios()
 
-    expect(CENARIOS).toHaveLength(12)
-    expect(resultados).toHaveLength(12)
+    expect(CENARIOS).toHaveLength(17)
+    expect(resultados).toHaveLength(17)
 
     for (const resultado of resultados) {
       expect(
@@ -15,32 +15,62 @@ describe('simulador de cenários', () => {
           id: resultado.cenario.id,
           nivel: nomeDeNivel(resultado.decisao.nivel),
           regra: resultado.decisao.regraDisparada,
+          score: resultado.decisao.score,
         },
-        `cenário divergente: ${resultado.cenario.nome}`,
+        `cenário divergente: ${resultado.cenario.id} — ${resultado.cenario.nome}`,
       ).toEqual({
         id: resultado.cenario.id,
         nivel: resultado.cenario.esperado.nivel,
         regra: resultado.cenario.esperado.regra,
+        score: resultado.cenario.esperado.score,
       })
-      expect(resultado.confere).toBe(true)
+      expect(resultado.confere, `cenário ${resultado.cenario.id}`).toBe(true)
       expect(JSON.stringify(resultado)).not.toMatch(/"seguro"|"verde"/i)
     }
+  })
 
-    const porId = new Map(resultados.map((r) => [r.cenario.id, r]))
+  it('nenhumCenarioBenignoChegaA50', () => {
+    const porId = new Map(executarTodosOsCenarios().map((r) => [r.cenario.id, r]))
 
-    // Controles negativos obrigatórios (§11).
-    expect(porId.get('controle-pix-conhecido')?.decisao.nivel).toBe(NivelRisco.SILENCIO)
-    expect(porId.get('controle-sms-comum')?.decisao.nivel).toBe(NivelRisco.SILENCIO)
-    expect(porId.get('controle-contato-confianca')?.decisao.nivel).toBeLessThanOrEqual(
-      NivelRisco.PERGUNTA,
-    )
+    for (const id of ['P5', 'P6', 'N1', 'N2', 'N3']) {
+      const resultado = porId.get(id)
+      expect(resultado, `cenário ausente: ${id}`).toBeDefined()
+      expect(resultado?.decisao.score, `benigno ${id}`).toBeLessThan(50)
+      expect(resultado?.decisao.nivel).toBeLessThan(NivelRisco.INTERVENCAO)
+    }
 
-    // Casos que precisam acordar.
-    expect(porId.get('mao-fantasma')?.decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
-    expect(porId.get('falsa-central')?.decisao.regraDisparada).toBe('HR-02')
-    expect(porId.get('pix-induzido')?.decisao.regraDisparada).toBe('HR-03')
+    expect(porId.get('N3')?.canal).toBe('FICHA')
+    expect(porId.get('N3')?.breque).toBeNull()
+  })
 
-    // Repetição não infla: score do cenário é apenas urgência (18) + tela (15).
-    expect(porId.get('repeticao-atomos')?.decisao.score).toBe(33)
+  it('cenariosQuePrecisamAcordar', () => {
+    const porId = new Map(executarTodosOsCenarios().map((r) => [r.cenario.id, r]))
+
+    expect(porId.get('P1')?.decisao.regraDisparada).toBe('HR-02')
+    expect(porId.get('P2')?.decisao.nivel).toBe(NivelRisco.INTERVENCAO)
+    expect(porId.get('P3')?.decisao.regraDisparada).toBe('HR-01')
+    expect(porId.get('P4')?.decisao.regraDisparada).toBe('HR-03')
+    expect(porId.get('P7')?.decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
+    expect(porId.get('P8')?.decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
+    expect(porId.get('P9a')?.decisao.nivel).toBe(NivelRisco.PERGUNTA)
+    expect(porId.get('P9b')?.decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
+    expect(porId.get('P10')?.decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
+  })
+
+  it('fronteirasB1B2B3', () => {
+    const porId = new Map(executarTodosOsCenarios().map((r) => [r.cenario.id, r]))
+
+    // B1: repetição não infla; um único átomo trava em 49.
+    expect(porId.get('B1')?.decisao.score).toBe(49)
+    expect(porId.get('B1')?.decisao.achados).toHaveLength(1)
+
+    // B2: segundo breque suprimido, nível honesto preservado.
+    expect(porId.get('B2')?.decisao.nivel).toBe(NivelRisco.INTERVENCAO_FORTE)
+    expect(porId.get('B2')?.breque).toBeNull()
+    expect(porId.get('B2')?.motivoSupressao).toBe('dedup-episodio')
+
+    // B3: decaimento na janela fria e G2.
+    expect(porId.get('B3')?.decisao.achados[0].peso).toBe(18)
+    expect(porId.get('B3')?.decisao.score).toBe(49)
   })
 })
