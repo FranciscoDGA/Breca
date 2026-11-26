@@ -1441,6 +1441,15 @@
       navigate("verify_q1");
     }
 
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     function normalizeText(str) {
       return (str || "")
         .toLowerCase()
@@ -1909,7 +1918,7 @@
           <div class="card stack">
             <div>
               <label class="field-label" for="card-hint">Lembrete opcional no cartão (não escreva a resposta secreta!)</label>
-              <input id="card-hint" type="text" placeholder="Ex.: Pergunte o nome do nosso primeiro cachorro" value="${state.cardFamilyHint}" oninput="state.cardFamilyHint=this.value" />
+              <input id="card-hint" type="text" maxlength="120" placeholder="Ex.: Pergunte o nome do nosso primeiro cachorro" value="${escapeHtml(state.cardFamilyHint)}" oninput="state.cardFamilyHint=this.value" />
             </div>
             <button class="btn btn-primary btn-center" onclick="downloadFamilyCardPng()">
               Baixar imagem (cartao-familia-breque.png)
@@ -2022,7 +2031,7 @@
 
           <div class="card stack">
             <label class="field-label" for="verify-text">Cole aqui o link ou a mensagem recebida</label>
-            <textarea id="verify-text" rows="3" placeholder="Ex.: www.correios-taxa.xyz ou 'Oi mãe, troquei de número...'" oninput="state.verifyText = this.value;">${state.verifyText}</textarea>
+            <textarea id="verify-text" rows="3" maxlength="1000" placeholder="Ex.: www.correios-taxa.xyz ou 'Oi mãe, troquei de número...'" oninput="state.verifyText = this.value;">${escapeHtml(state.verifyText)}</textarea>
             <p style="font-size: 0.78rem;">Não cole senhas, códigos de SMS, CPF nem número de cartão.</p>
             <button class="btn btn-primary btn-center" onclick="render()">Analisar agora (100% local) →</button>
           </div>
@@ -2066,7 +2075,7 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar (relato mantido)</button>
           <div><span class="pill pill-brand">Pergunta 1 de 3</span><h1>Quem iniciou o contato?</h1></div>
-          ${state.verifyText ? `<div class="quote-box">${state.verifyText}</div>` : ""}
+          ${state.verifyText ? `<div class="quote-box">${escapeHtml(state.verifyText)}</div>` : ""}
           <div class="stack">
             <button class="btn ${state.q1Origin === 'banco' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='banco'; navigate('verify_q2')">Alguém dizendo ser banco, loja ou empresa <span>→</span></button>
             <button class="btn ${state.q1Origin === 'familiar_novo' ? 'btn-primary' : 'btn-secondary'}" onclick="state.q1Origin='familiar_novo'; navigate('verify_q2')">Familiar ou conhecido em um número novo <span>→</span></button>
@@ -2270,8 +2279,8 @@
             <p style="margin-top: 6px;">Ajuda a organizar horários, relato e ações tomadas para falar com o banco ou buscar apoio, mas <strong>não é prova jurídica garantida</strong>.</p>
           </div>
           <div class="card stack">
-            <div><label class="field-label" for="log-time">Horário aproximado</label><input id="log-time" type="text" value="${state.incidentLog.time}" oninput="state.incidentLog.time=this.value" /></div>
-            <div><label class="field-label" for="log-summary">Seu relato</label><textarea id="log-summary" rows="4" placeholder="Anote o que aconteceu e o que você já fez..." oninput="state.incidentLog.summary=this.value">${state.incidentLog.summary}</textarea></div>
+            <div><label class="field-label" for="log-time">Horário aproximado</label><input id="log-time" type="text" maxlength="40" value="${escapeHtml(state.incidentLog.time)}" oninput="state.incidentLog.time=this.value" /></div>
+            <div><label class="field-label" for="log-summary">Seu relato</label><textarea id="log-summary" rows="4" maxlength="2000" placeholder="Anote o que aconteceu e o que você já fez..." oninput="state.incidentLog.summary=this.value">${escapeHtml(state.incidentLog.summary)}</textarea></div>
             <button class="btn btn-primary btn-center" onclick="exportIncidentTxt()">Confirmar e baixar relato-breque.txt no aparelho</button>
             ${state.incidentLog.saved ? `<div class="quote-box"><strong>Arquivo relato-breque.txt gerado localmente!</strong><br/>Nenhum dado foi enviado para servidores. Ao fechar o app, os campos desta tela são limpos.</div>` : ""}
           </div>
@@ -2305,12 +2314,12 @@
             <p style="margin-top: 6px;">Você decide quando pedir ajuda e revisa exatamente o texto antes de confirmar. O BREQUE <strong>não</strong> monitora ninguém nem envia alertas silenciosos.</p>
           </div>
           <div class="stack">
-            ${state.trustedContacts.map(c => `<div class="card card-soft" style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.82rem; color:var(--text-muted);">${c.note}</div></div><button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" onclick="state.selectedContactId='${c.id}'; openHelpPreview('pedido de apoio');">Ver prévia</button></div>`).join("")}
+            ${state.trustedContacts.map(c => `<div class="card card-soft" style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><div><div style="font-weight:700;">${escapeHtml(c.name)}</div><div style="font-size:0.82rem; color:var(--text-muted);">${escapeHtml(c.note)}</div></div><button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" onclick="state.selectedContactId='${escapeHtml(c.id)}'; openHelpPreview('pedido de apoio');">Ver prévia</button></div>`).join("")}
           </div>
           <div class="card stack">
             <h3>Adicionar contato (demonstração)</h3>
-            <input type="text" placeholder="Nome (ex.: João - filho)" value="${state.newContactName}" oninput="state.newContactName=this.value" />
-            <input type="text" placeholder="Relação (opcional)" value="${state.newContactNote}" oninput="state.newContactNote=this.value" />
+            <input type="text" maxlength="60" placeholder="Nome (ex.: João - filho)" value="${escapeHtml(state.newContactName)}" oninput="state.newContactName=this.value" />
+            <input type="text" maxlength="80" placeholder="Relação (opcional)" value="${escapeHtml(state.newContactNote)}" oninput="state.newContactNote=this.value" />
             <button class="btn btn-primary btn-center" onclick="addTrustedContact()">Adicionar contato fictício</button>
           </div>
         `;
@@ -2323,12 +2332,12 @@
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
             <span class="pill pill-brand">Prévia antes de compartilhar</span>
-            <h1>Pedido de ajuda para ${contact.name}</h1>
+            <h1>Pedido de ajuda para ${escapeHtml(contact.name)}</h1>
             <p style="margin-top: 6px;">Revise o texto abaixo. O BREQUE não envia nada sozinho — ao confirmar, você abre o compartilhamento do seu celular ou copia o texto.</p>
           </div>
           <div class="card stack">
             <label class="field-label" for="help-msg">Conteúdo que será compartilhado</label>
-            <textarea id="help-msg" rows="4" oninput="state.helpPreviewText=this.value">${state.helpPreviewText}</textarea>
+            <textarea id="help-msg" rows="4" maxlength="1000" oninput="state.helpPreviewText=this.value">${escapeHtml(state.helpPreviewText)}</textarea>
             <button class="btn btn-primary btn-center" onclick="shareHelpRequest()">Confirmar e compartilhar / copiar texto</button>
             ${state.helpFeedback ? `<div class="quote-box">${state.helpFeedback}</div>` : ""}
           </div>
@@ -2421,7 +2430,7 @@
             </div>
             <div>
               <label class="field-label" for="plan-email">Seu e-mail</label>
-              <input id="plan-email" type="text" placeholder="voce@exemplo.com" value="${state.planEmail}" oninput="state.planEmail=this.value" />
+              <input id="plan-email" type="text" maxlength="254" placeholder="voce@exemplo.com" value="${escapeHtml(state.planEmail)}" oninput="state.planEmail=this.value" />
             </div>
             <button class="btn btn-primary btn-center" onclick="submitPlanInterest()">
               ${state.planStatus === 'enviando' ? 'Salvando...' : 'Confirmar interesse no plano'}
@@ -2503,7 +2512,8 @@
     const sharedText = [params.get("title"), params.get("text"), params.get("url")]
       .filter(Boolean)
       .join(" ")
-      .trim();
+      .trim()
+      .slice(0, 1000);
     if (sharedText) {
       state.verifyText = sharedText;
       state.screen = "verify_start";
