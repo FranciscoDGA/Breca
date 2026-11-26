@@ -80,8 +80,6 @@
       color: var(--muted);
     }
 
-    .nav-links a:hover { color: var(--brand); }
-
     .btn-primary {
       display: inline-flex;
       align-items: center;
@@ -94,10 +92,21 @@
       border-radius: 999px;
       font-size: 0.96rem;
       box-shadow: 0 6px 18px rgba(245, 158, 11, 0.28);
-      transition: transform 0.1s ease, background 0.15s ease;
+      transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease;
     }
 
-    .btn-primary:hover { background: #fbbf24; transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.97); }
+
+    @media (hover: hover) and (pointer: fine) {
+      .nav-links a:hover { color: var(--brand); }
+      .btn-primary:hover { background: #fbbf24; transform: translateY(-1px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .btn-primary { transition-duration: 0.01ms !important; }
+      .btn-primary:hover, .btn-primary:active { transform: none !important; }
+    }
 
     .btn-dark {
       display: inline-flex;
@@ -429,32 +438,31 @@
   <section class="hero">
     <div class="container hero-grid">
       <div>
-        <span class="hero-pill">Feito para pessoas comuns no Brasil • Análises locais no aparelho</span>
+        <span class="hero-pill">O BREQUE não substitui o antivírus, o banco, a polícia ou o seu gerente. Ele é o segundo antes do Pix.</span>
         <h1>Golpes não invadem seu celular. Eles apressam a sua decisão.</h1>
         <p>
-          O BREQUE é o copiloto gratuito que ajuda você e sua família a pausar na hora do susto, conferir mensagens e links com calma e saber exatamente o que fazer se algo já aconteceu.
+          O BREQUE ajuda você e sua família a pausar na hora do susto, verificar a chave Pix antes de pagar, ligar para o canal oficial do seu banco em 1 toque e agir com os prazos reais do MED se algo já aconteceu.
         </p>
         <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <a href="/app.html?install=1" class="btn-primary">Baixar o app no celular →</a>
-          <a href="#recursos" class="btn-outline-light">Ver o que ele faz</a>
+          <a href="/app.html" class="btn-primary">Testar o BREQUE grátis agora →</a>
         </div>
-        <div class="hero-note">Grátis • Sem criar conta • Sem pedir senhas • Processamento no aparelho</div>
+        <div class="hero-note">Grátis • Sem criar conta • Sem pedir senhas • 100% local no aparelho (LGPD)</div>
       </div>
 
       <div class="phone-mock" aria-label="Prévia do aplicativo BREQUE">
         <div class="mock-screen">
           <div class="mock-top">
             <span>BREQUE</span>
-            <span style="font-size:0.72rem; opacity:0.85;">100% local</span>
+            <span style="font-size:0.72rem; opacity:0.85;">100% offline</span>
           </div>
           <div class="mock-body">
             <div class="mock-amber">
-              <div style="font-size:0.72rem; font-weight:800; color:#b45309; text-transform:uppercase;">Sessão de Proteção</div>
-              <div style="font-weight:800; font-size:0.95rem; margin:4px 0;">Pause. Não informe códigos nem faça Pix agora.</div>
-              <div style="font-size:0.78rem; color:#4b5c6b;">Áudio-guia calmo + frases prontas para desligar sem constrangimento.</div>
+              <div style="font-size:0.72rem; font-weight:800; color:#b45309; text-transform:uppercase;">Escudo do Destinatário • Antes do Pix</div>
+              <div style="font-weight:800; font-size:0.95rem; margin:4px 0;">Chave nova? Pause e confira antes de apertar confirmar.</div>
+              <div style="font-size:0.78rem; color:#4b5c6b;">Verifica o formato no aparelho (só hash SHA-256), sem selo falso de "seguro".</div>
             </div>
-            <div class="mock-card"><strong>Verificar mensagem ou link</strong><br/><span style="color:#4b5c6b;">Identifica sinais de urgência, sigilo e links suspeitos no aparelho.</span></div>
-            <div class="mock-card"><strong>Já fiz Pix ou passei dados</strong><br/><span style="color:#4b5c6b;">Ordem prática de ações: banco/MED, BO e relato organizado.</span></div>
+            <div class="mock-card"><strong>Falar com meu banco agora (1 toque)</strong><br/><span style="color:#4b5c6b;">Catálogo offline com canais verificados em 26/11/2026 e fonte oficial.</span></div>
+            <div class="mock-card"><strong>Já fiz Pix ou passei dados (Mesa 2.0)</strong><br/><span style="color:#4b5c6b;">Prazos reais do MED: pedido até 80 dias, análise em 7, devolução em até 96h (fonte: Banco Central).</span></div>
           </div>
         </div>
       </div>
@@ -464,8 +472,8 @@
   <div class="trust-strip">
     <div class="container trust-grid">
       <div>Zero senhas ou dados bancários pedidos</div>
-      <div>Processamento local no aparelho (LGPD)</div>
-      <div>Instala em 2 toques no Android e iPhone</div>
+      <div>Processamento 100% local no aparelho (LGPD)</div>
+      <div>Nenhuma chave Pix guardada em texto puro</div>
     </div>
   </div>
 
@@ -480,23 +488,45 @@
         <div class="chat-bubble">
           <span class="chat-tag">WhatsApp • Número novo</span>
           <p class="chat-quote">“Oi mãe, meu celular quebrou. Preciso pagar um boleto urgente agora, depois te devolvo.”</p>
-          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> lembra você de pausar, usar a Pergunta Secreta da Família e ligar para o número antigo.</p>
+          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> lembra você de pausar, verificar a chave no Escudo do Destinatário e confirmar pela Pergunta Secreta da Família.</p>
         </div>
         <div class="chat-bubble">
           <span class="chat-tag">Ligação • Falsa central</span>
           <p class="chat-quote">“Detectamos uma compra suspeita. Não desligue a ligação e informe o código que chegou por SMS.”</p>
-          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> oferece áudio calmo e frase pronta para desligar e ligar para o número no verso do cartão.</p>
+          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> oferece áudio calmo, frase pronta para desligar e discagem em 1 toque para o número oficial do seu banco.</p>
         </div>
         <div class="chat-bubble">
-          <span class="chat-tag">SMS • Cobrança inesperada</span>
-          <p class="chat-quote">“Sua encomenda ficou retida. Regularize a taxa de R$ 27,90 em até 2 horas pelo link abaixo.”</p>
-          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> analisa o link localmente sem abrir a página perigosa e guia a conferência no app oficial.</p>
+          <span class="chat-tag">SMS ou WhatsApp • Link de susto</span>
+          <p class="chat-quote">“Fraude no Pix no seu banco” ou “Encomenda retida — pague a taxa em até 1 hora pelo link abaixo.”</p>
+          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> analisa o domínio localmente sem abrir o site e treina a família com casos reais na Vacina de 60 Segundos.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="como-funciona" class="section-soft">
+  <section id="antivirus" class="section-soft">
+    <div class="container">
+      <div class="family-banner" style="background:linear-gradient(135deg, #0f2f3d 0%, #17465a 100%);">
+        <div>
+          <span class="hero-pill" style="margin-bottom:12px;">Pergunta justa</span>
+          <h2 style="margin:0 0 12px; font-size:1.85rem;">Por que não uso só o antivírus?</h2>
+          <p style="margin:0; color:#e2eff5; font-size:1.05rem;">
+            <strong>O antivírus protege o aparelho. O BREQUE protege a sua decisão.</strong> São coisas diferentes — golpistas não invadem o celular: eles apressam você.
+          </p>
+        </div>
+        <div class="mock-card" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.22); color:#fff; padding:20px;">
+          <strong style="color:#fde68a; font-size:0.95rem;">Onde o BREQUE atua:</strong>
+          <ul style="margin:10px 0 0; padding-left:18px; color:#e2eff5; font-size:0.92rem;">
+            <li style="margin-bottom:6px;">Não compete com antivírus, banco, polícia ou gerente.</li>
+            <li style="margin-bottom:6px;">Entra no segundo antes do Pix, quando o susto acelera a mão.</li>
+            <li>Funciona 100% offline, sem pedir senha e sem ler seu WhatsApp.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona">
     <div class="container">
       <div class="section-head">
         <span class="section-eyebrow">Simples de verdade</span>
@@ -507,23 +537,23 @@
         <div class="step-card">
           <div class="step-num">1</div>
           <h3>Interrompa a pressão</h3>
-          <p>Toque em <strong>BREQUE</strong> para ouvir uma orientação calma em voz alta, respirar 10 segundos e usar uma frase pronta para encerrar a ligação.</p>
+          <p>Toque em <strong>BREQUE</strong> ou ative a <strong>Jornada de Espera</strong> para respirar 10 segundos e usar uma desculpa pronta oficial sem parecer desconfiado.</p>
         </div>
         <div class="step-card">
           <div class="step-num">2</div>
-          <h3>Verifique por outro canal</h3>
-          <p>Cole a mensagem ou o link para checar sinais de coerção localmente e use a <strong>Discagem Segura</strong> para encontrar canais oficiais verificados.</p>
+          <h3>Olhe a saída antes do Pix</h3>
+          <p>Cole a chave no <strong>Escudo do Destinatário</strong> e ligue você mesmo para o canal oficial na <strong>Discagem Segura</strong> (1 toque, 100% offline).</p>
         </div>
         <div class="step-card">
           <div class="step-num">3</div>
-          <h3>Aja rápido se já caiu</h3>
-          <p>Se já fez um Pix ou passou senha, a <strong>Mesa de Recuperação</strong> mostra a ordem mais útil de ações (banco/MED, troca de senha e relato organizado em .txt).</p>
+          <h3>Aja rápido com o MED</h3>
+          <p>Se já fez Pix ou passou dados, a <strong>Mesa de Recuperação 2.0</strong> guia o passo a passo com prazos reais do MED: pedido até 80 dias, análise em 7 dias e devolução em até 96h (fonte: Banco Central).</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="recursos">
+  <section id="recursos" class="section-soft">
     <div class="container">
       <div class="section-head">
         <span class="section-eyebrow">O que torna o BREQUE diferente</span>
@@ -533,45 +563,90 @@
       <div class="grid-3">
         <div class="step-card">
           <div class="step-num">1</div>
-          <h3>Raio-X do Pix e do boleto</h3>
-          <p>Cole o Pix copia-e-cola ou o código de barras. O app lê o nome do recebedor, a chave e o valor no próprio aparelho e compara com <strong>quem você acha que vai receber</strong>. Se não bater, ele te faz parar.</p>
+          <h3>Escudo do Destinatário</h3>
+          <p>Antes de apertar confirmar, verifique a chave Pix. <strong>Os apps antivírus analisam a mensagem. O BREQUE olha a saída: para quem você vai pagar.</strong> Favorecidos salvos apenas como hash SHA-256 — nenhuma chave em texto puro.</p>
         </div>
         <div class="step-card">
           <div class="step-num">2</div>
-          <h3>Cofre de destinos confiáveis</h3>
-          <p>Cadastre quem você paga sempre: filho, mercado, aluguel. Destino novo gera uma pausa e a opção de confirmar com sua <strong>Pessoa de Confiança</strong> antes de pagar.</p>
+          <h3>Jornada de 24h (Espera)</h3>
+          <p>Configure seu compromisso (ex.: Pix novo acima de R$ 200 → esperar 1 hora). <strong>Quando o golpista pressiona, você ganha uma desculpa oficial: “meu app de segurança aplicou um período de espera obrigatório”.</strong></p>
         </div>
         <div class="step-card">
           <div class="step-num">3</div>
-          <h3>Simulado de golpe em família</h3>
-          <p>Com um pacto prévio, o app dispara uma mensagem falsa para medir quanto tempo a pessoa leva para verificar por outro canal. O resultado fica só com a família — e vira prova de que o treino funciona.</p>
+          <h3>Mesa de Recuperação 2.0 (MED)</h3>
+          <p>Já fez Pix ou passou dados? Assistente em 5 passos com prazos verificados do <strong>Banco Central</strong> (pedido em até 80 dias, análise em 7 dias, devolução em até 96h, com bloqueios sucessivos) e relato em .txt/.json/PDF com hash SHA-256.</p>
         </div>
         <div class="step-card">
           <div class="step-num">4</div>
-          <h3>Protocolo de Incidente MED</h3>
-          <p>Se o dinheiro já saiu, o app organiza horário, valor, chave de destino e ID da transação, e mostra o caminho do botão de contestação dentro do app do banco. Tempo é o que decide a recuperação.</p>
+          <h3>Discagem Segura (o “159 do app”)</h3>
+          <p>Memorize seu banco 1 vez e ligue para o canal oficial em 1 toque, mesmo sem internet. Cada telefone mostra quando usar, fonte oficial e data de verificação.</p>
         </div>
         <div class="step-card">
           <div class="step-num">5</div>
-          <h3>Registro de canais oficiais</h3>
-          <p>Uma lista aberta de domínios oficiais de bancos e órgãos, que você pode baixar e conferir. O BREQUE lê essa lista — não inventa telefone nem selo de confiança.</p>
+          <h3>Vacina de 60 Segundos + Check-up</h3>
+          <p>Reforço periódico a cada 60 dias com golpes reais da safra (incluindo o caso real de portal de notícia falso no Pará / Banpará) + check-up rápido de 6 perguntas para gerar o Briefing Familiar.</p>
         </div>
         <div class="step-card">
           <div class="step-num">6</div>
-          <h3>Painel de eficácia local</h3>
-          <p>Treinos concluídos, tempo médio até verificar e simulados feitos, tudo no seu aparelho. Sem painel bonito que esconde número ruim: se o alarme falhar, você vê.</p>
+          <h3>Radar de Golpes (Opt-in Local)</h3>
+          <p>Reporte padrões e domínios suspeitos em 2 toques com filtro automático que remove CPF, telefone, e-mail, chave Pix e valores — 100% local e desligado por padrão.</p>
         </div>
       </div>
       <div style="text-align:center; margin-top:30px;">
-        <a href="/app.html?install=1" class="btn-primary">Abrir e instalar no celular →</a>
+        <a href="/app.html" class="btn-primary">Testar o BREQUE grátis agora →</a>
       </div>
+    </div>
+  </section>
+
+  <section id="canais-verificados">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Transparência verificável • Catálogo offline v1.0.0</span>
+        <h2>Nossos canais oficiais, verificados</h2>
+        <p>Nenhum número entra sem fonte oficial e data de conferência. Última revisão da equipe: <strong>26/11/2026</strong> (próxima revisão trimestral: <strong>26/02/2027</strong>).</p>
+      </div>
+      <div class="grid-3">
+        <div class="step-card">
+          <span class="chat-tag">Regulador • Verificado em 26/11/2026</span>
+          <h3 style="margin-top:8px;">Banco Central do Brasil</h3>
+          <p><strong>145</strong> e Fale Conosco em <code>bcb.gov.br/meubc/faleconosco</code>. Reclamar de banco e tirar dúvidas sobre o MED.</p>
+        </div>
+        <div class="step-card">
+          <span class="chat-tag">Banco local do Pará • Verificado em 26/11/2026</span>
+          <h3 style="margin-top:8px;">Banpará</h3>
+          <p><strong>3004 4444</strong> (Belém e RM) / <strong>0800 285 8080</strong> (demais localidades, fixo). Fonte: <code>banpara.b.br</code>.</p>
+        </div>
+        <div class="step-card">
+          <span class="chat-tag">Sem telefone público • Verificado em 26/11/2026</span>
+          <h3 style="margin-top:8px;">Nubank</h3>
+          <p>Atendimento <strong>somente pelo chat dentro do app 24h</strong>. Se alguém ligar se passando pelo Nubank, desligue.</p>
+        </div>
+        <div class="step-card">
+          <span class="chat-tag">Bancos nacionais • Verificado em 26/11/2026</span>
+          <h3 style="margin-top:8px;">BB, Caixa, Itaú, Bradesco e Santander</h3>
+          <p>BB (4004 0001 / 0800 729 0001) • Caixa (4004 0104 / 0800 104 0104) • Itaú (4004 4828 / 0800 970 4828) • Bradesco (4002 0022 / 0800 570 0022) • Santander (4004 3535 / 0800 702 3535).</p>
+        </div>
+        <div class="step-card">
+          <span class="chat-tag">Digitais e Regionais • Verificado em 26/11/2026</span>
+          <h3 style="margin-top:8px;">Inter e Banrisul</h3>
+          <p>Inter SAC 24h (<strong>0800 940 9999</strong>) • Banrisul SAC (<strong>0800 646 1515</strong>) e Banrifone (<strong>(51) 3210 0122</strong> / <strong>0800 541 8855</strong>).</p>
+        </div>
+        <div class="step-card">
+          <span class="chat-tag">Cooperativas • Verificado em 26/11/2026</span>
+          <h3 style="margin-top:8px;">Sicredi e Sicoob</h3>
+          <p>Sicredi (<strong>0800 724 4770</strong>) • Sicoob (<strong>4000 1111</strong> / <strong>0800 642 0000</strong>). Todos com fonte oficial clicável dentro do app.</p>
+        </div>
+      </div>
+      <p style="text-align:center; font-size:0.84rem; color:var(--muted); margin-top:18px;">
+        Catálogo 100% offline dentro do app. Em caso de dúvida, vale sempre o número impresso no verso do seu cartão.
+      </p>
     </div>
   </section>
 
   <section id="baixar" class="section-soft">
     <div class="container">
       <div class="section-head">
-        <span class="section-eyebrow">Baixe o app</span>
+        <span class="section-eyebrow">Sem fricção de loja</span>
         <h2>Primeiro a página. O app só se você quiser.</h2>
         <p>Sem loja, sem cadastro e sem cobrança para usar o essencial. O ícone fica na tela inicial do celular.</p>
       </div>
@@ -579,7 +654,7 @@
         <div class="step-card">
           <div class="step-num">1</div>
           <h3>Abra no celular</h3>
-          <p>Toque em <strong>Baixar o app</strong>. Ele abre no navegador e funciona offline depois do primeiro acesso.</p>
+          <p>Toque em <strong>Testar o BREQUE grátis agora</strong>. Ele abre direto no navegador e funciona offline depois do primeiro acesso.</p>
         </div>
         <div class="step-card">
           <div class="step-num">2</div>
@@ -588,13 +663,9 @@
         </div>
         <div class="step-card">
           <div class="step-num">3</div>
-          <h3>Configure com a família</h3>
-          <p>Combinem a Pergunta Secreta, cadastrem destinos no Cofre e façam o primeiro simulado. Leva menos de 5 minutos.</p>
+          <h3>Memorize o banco e a regra</h3>
+          <p>Escolha o banco na Discagem Segura, combine a Pergunta Secreta e faça a primeira Vacina de 60 Segundos.</p>
         </div>
-      </div>
-      <div style="text-align:center; margin-top:30px;">
-        <a href="/app.html?install=1" class="btn-primary">Baixar o BREQUE grátis →</a>
-        <p style="font-size:0.82rem; color:var(--muted); margin-top:10px;">Compatível com Android e iPhone via navegador. Nenhum dado sai do aparelho.</p>
       </div>
     </div>
   </section>
@@ -603,20 +674,20 @@
     <div class="container">
       <div class="family-banner">
         <div>
-          <span class="hero-pill" style="margin-bottom:12px;">Pacto Familiar de Autonomia</span>
-          <h2 style="margin:0 0 12px; font-size:1.85rem;">Proteja seus pais e avós sem espionar o celular deles.</h2>
+          <span class="hero-pill" style="margin-bottom:12px;">Pacto Familiar de Autonomia • Para filhos e cuidadores</span>
+          <h2 style="margin:0 0 12px; font-size:1.85rem;">Instale no celular dos seus pais em 2 minutos, de longe, por link.</h2>
           <p style="margin:0 0 20px; color:#d6e7ef;">
-            Apps invasivos geram constrangimento e são desinstalados. Com o BREQUE, vocês instalam o ícone juntos em 2 minutos, combinam a Pergunta Secreta da Família e geram um Cartão de Bolso para fixar no WhatsApp.
+            Apps invasivos geram constrangimento e são desinstalados. Envie o link do BREQUE no WhatsApp dos seus pais, deixem o banco deles memorizado em 1 toque, combinem a Pergunta Secreta da Família e gerem o Cartão de Bolso — apoio sem espionagem.
           </p>
-          <a href="/app.html?install=1" class="btn-primary">Configurar com minha família →</a>
+          <a href="/app.html?install=1" class="btn-primary">Instalar no celular dos meus pais →</a>
         </div>
         <div class="mock-card" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:#fff; padding:20px;">
           <strong style="color:#fde68a; font-size:0.95rem;">Incluso grátis no app:</strong>
           <ul style="margin:10px 0 0; padding-left:18px; color:#e2eff5; font-size:0.9rem;">
-            <li style="margin-bottom:6px;">Vacina de 60 Segundos (treino em 3 rodadas)</li>
-            <li style="margin-bottom:6px;">Cartão da Família em PNG para WhatsApp</li>
-            <li style="margin-bottom:6px;">Pessoa de Confiança com prévia antes de enviar</li>
-            <li>Fonte ajustável (A- / A+) para leitura confortável</li>
+            <li style="margin-bottom:6px;">Discagem Segura em 1 toque para o banco dos pais</li>
+            <li style="margin-bottom:6px;">Escudo do Destinatário (chave Pix antes de pagar)</li>
+            <li style="margin-bottom:6px;">Vacina de 60 Segundos a cada 60 dias + Cartão PNG</li>
+            <li>Fonte ajustável (A- / A+) e Áudio-Guia calmo</li>
           </ul>
         </div>
       </div>
@@ -636,10 +707,10 @@
             <h3>Básico</h3>
             <div class="price">Grátis</div>
             <ul>
-              <li>Sessão de Proteção + Áudio-Guia</li>
-              <li>Verificador local de mensagens e links</li>
-              <li>Roteiro Reverso (6 estágios) e Discagem Segura</li>
-              <li>Vacina 60s, Cartão da Família e Mesa de Recuperação</li>
+              <li>Discagem Segura offline (1 toque para seu banco)</li>
+              <li>Escudo do Destinatário (Pix) e Jornada de Espera</li>
+              <li>Mesa de Recuperação 2.0 (MED + dossiê SHA-256)</li>
+              <li>Vacina 60s periódica e Cartão da Família</li>
             </ul>
           </div>
           <a href="/app.html" class="btn-dark">Usar grátis agora</a>
@@ -654,8 +725,8 @@
             <ul>
               <li>Tudo do Básico para até 5 pessoas</li>
               <li>Até 5 Pessoas de Confiança cadastradas</li>
-              <li>Exportação completa do Dossiê 30 Min (.txt)</li>
-              <li>Plano de Proteção Pessoal (exclusivo assinantes)</li>
+              <li>Exportação completa do Dossiê MED (.txt / .json / PDF)</li>
+              <li>Compromisso pessoal e reforço familiar</li>
             </ul>
           </div>
           <a href="/app.html" class="btn-primary">Reservar plano Família</a>
@@ -688,11 +759,11 @@
       <div class="faq-list">
         <details open>
           <summary>Posso confiar? O BREQUE pede senha do banco ou lê meu WhatsApp?</summary>
-          <p>Não. O BREQUE nunca pede senha, código de SMS, CPF ou número de cartão, e não acessa seu WhatsApp nem seu banco. Tudo roda localmente no seu aparelho.</p>
+          <p>Não. O BREQUE nunca pede senha, código de SMS, CPF ou número de cartão, não acessa seu WhatsApp nem seu banco, e nunca salva chave Pix em texto puro. Tudo roda localmente no seu aparelho.</p>
         </details>
         <details>
           <summary>O BREQUE garante que nunca vou cair em golpe ou que vou recuperar meu dinheiro?</summary>
-          <p>Não — e desconfie de quem promete isso. O BREQUE é um apoio à decisão: ajuda você a pausar sob pressão, verificar por outro canal e organizar rapidamente os passos junto ao seu banco (como o MED), cuja análise depende do banco e das regras do Banco Central.</p>
+          <p>Não — e desconfie de quem promete isso. O BREQUE é um apoio à decisão: ajuda você a pausar sob pressão, verificar por outro canal e organizar rapidamente os passos junto ao seu banco (como o MED: pedido em até 80 dias, análise em 7 dias e devolução em até 96h, conforme o Banco Central), cuja análise depende do banco.</p>
         </details>
         <details>
           <summary>Preciso baixar na Google Play ou App Store?</summary>
@@ -706,19 +777,20 @@
     <div class="container">
       <h2 style="font-size:1.95rem; color:var(--brand); margin:0 0 12px;">Teste o BREQUE agora em menos de 1 minuto.</h2>
       <p style="color:var(--muted); max-width:560px; margin:0 auto 24px;">Sem cadastro, sem cartão e sem instalar nada pesado. Abra no celular e veja como funciona.</p>
-      <a href="/app.html?install=1" class="btn-primary">Baixar o BREQUE grátis →</a>
+      <a href="/app.html" class="btn-primary">Testar o BREQUE grátis agora →</a>
     </div>
   </section>
 
   <footer>
     <div class="container" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;">
       <div>
-        <strong style="color:#fff;">BREQUE — Copiloto contra golpes</strong>
-        <p style="margin:6px 0 0; max-width:540px;">Ferramenta de apoio à decisão. Não garante prevenção de golpes, não garante recuperação de valores e não substitui a confirmação oficial com o seu banco.</p>
+        <strong style="color:#fff;">BREQUE — O segundo antes do Pix</strong>
+        <p style="margin:6px 0 0; max-width:540px;">Ferramenta de apoio à decisão. Não substitui antivírus, banco, polícia ou gerente, não garante prevenção de golpes nem devolução de valores.</p>
       </div>
-      <div style="display:flex; gap:18px; align-items:center;">
-        <a href="/app.html" style="color:#fde68a; font-weight:700;">Abrir o App</a>
-        <a href="#duvidas" style="color:#c2d6e0;">Dúvidas e LGPD</a>
+      <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
+        <a href="/app.html" style="color:#fde68a; font-weight:700;">Testar o App</a>
+        <a href="#canais-verificados" style="color:#c2d6e0;">Canais verificados</a>
+        <a href="#duvidas" style="color:#c2d6e0;">Tirar dúvidas primeiro</a>
       </div>
     </div>
   </footer>

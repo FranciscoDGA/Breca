@@ -22,7 +22,7 @@ const PADROES = [
   { nome: 'indexedDB', regex: /\bindexedDB\b/ },
   { nome: 'Date.now', regex: /\bDate\.now\s*\(/ },
   { nome: 'new Date', regex: /\bnew\s+Date\s*\(/ },
-  { nome: 'Math.random', regex: /\Math\.random\s*\(/ },
+  { nome: 'Math.random', regex: /\bMath\.random\s*\(/ },
   { nome: 'navigator', regex: /\bnavigator\./ },
   { nome: 'console', regex: /\bconsole\.(log|info|warn|error|debug)\s*\(/ },
 ]

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'breque-pwa-v3'
+const CACHE_NAME = 'breque-pwa-v4'
 const CORE_ASSETS = ['/', '/index.html', '/app.html', '/manifest.webmanifest', '/icon.svg']
 
 self.addEventListener('install', (event) => {
