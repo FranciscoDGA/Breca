@@ -7,6 +7,9 @@ const ARQUIVOS_NUCLEO = [
   'roteiroReverso.ts',
   'avaliador.ts',
   'canaisOficiais.ts',
+  'canais.ts',
+  'brcode.ts',
+  'escudoPix.ts',
   'posIncidente.ts',
   'compartilhamento.ts',
 ]

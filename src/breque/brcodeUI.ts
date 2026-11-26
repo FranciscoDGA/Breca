@@ -17,6 +17,13 @@ import {
   formatarDiscagem,
   limparOperadora,
 } from './canais'
+import {
+  CATALOGO_DENUNCIAS,
+  LEMBRETE_FIXO_ESCUDO,
+  classificarChavePix,
+  diagnosticarChavePix,
+  hashChavePix,
+} from './escudoPix'
 
 declare global {
   interface Window {
@@ -41,6 +48,13 @@ declare global {
       discavel: typeof discavel
       formatarDiscagem: typeof formatarDiscagem
       limparOperadora: typeof limparOperadora
+    }
+    BREQUE_ESCUDO?: {
+      versaoDenuncias: string
+      lembreteFixo: typeof LEMBRETE_FIXO_ESCUDO
+      classificarChavePix: typeof classificarChavePix
+      hashChavePix: typeof hashChavePix
+      diagnosticarChavePix: typeof diagnosticarChavePix
     }
   }
 }
@@ -69,6 +83,14 @@ window.BREQUE_CANAIS = {
   discavel,
   formatarDiscagem,
   limparOperadora,
+}
+
+window.BREQUE_ESCUDO = {
+  versaoDenuncias: CATALOGO_DENUNCIAS.versao,
+  lembreteFixo: LEMBRETE_FIXO_ESCUDO,
+  classificarChavePix,
+  hashChavePix,
+  diagnosticarChavePix,
 }
 
 window.dispatchEvent(new CustomEvent('breque:modulos-prontos'))

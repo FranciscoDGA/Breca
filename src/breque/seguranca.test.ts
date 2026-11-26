@@ -38,6 +38,8 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).toContain('${escapeHtml(state.incidentLog.summary)}')
     expect(html).toContain('${escapeHtml(state.helpPreviewText)}')
     expect(html).toContain('${escapeHtml(state.raioX.entrada)}')
+    expect(html).toContain('${escapeHtml(state.escudo.chave)}')
+    expect(html).toContain('${escapeHtml(fav.apelido)}')
     expect(html).toContain('${escapeHtml(c.name)}')
   })
 
