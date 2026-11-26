@@ -45,6 +45,7 @@
       --radius-sm: 13px;
       --shadow-sm: 0 2px 10px rgba(15, 27, 36, 0.05);
       --shadow-md: 0 8px 24px rgba(15, 47, 61, 0.12);
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
       --font-scale: 1;
     }
 
@@ -129,10 +130,17 @@
       font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
+      transition: transform 150ms var(--ease-out), background-color 150ms ease;
     }
 
-    .top-pill:hover {
-      background: rgba(255, 255, 255, 0.26);
+    .top-pill:active {
+      transform: scale(0.96);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .top-pill:hover {
+        background: rgba(255, 255, 255, 0.26);
+      }
     }
 
     .content {
@@ -258,11 +266,11 @@
       text-align: left;
       cursor: pointer;
       box-shadow: var(--shadow-sm);
-      transition: transform 0.08s ease, border-color 0.15s ease;
+      transition: transform 150ms var(--ease-out), border-color 150ms ease;
     }
 
     .action-card:active {
-      transform: scale(0.985);
+      transform: scale(0.975);
     }
 
     .action-card.primary-tone {
@@ -356,14 +364,17 @@
       gap: 5px;
       text-align: left;
       cursor: pointer;
+      transition: transform 150ms var(--ease-out), border-color 150ms ease;
     }
 
-    .tile-btn:hover {
-      border-color: #bfd6e0;
+    @media (hover: hover) and (pointer: fine) {
+      .tile-btn:hover {
+        border-color: #bfd6e0;
+      }
     }
 
     .tile-btn:active {
-      transform: scale(0.985);
+      transform: scale(0.975);
     }
 
     .tile-title {
@@ -698,12 +709,14 @@
       justify-content: center;
       cursor: pointer;
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
-      transition: transform 0.14s ease, background 0.14s ease;
+      transition: transform 160ms var(--ease-out), background-color 150ms ease;
     }
 
-    .welcome-go:hover {
-      background: #0d2536;
-      transform: scale(1.05);
+    @media (hover: hover) and (pointer: fine) {
+      .welcome-go:hover {
+        background: #0d2536;
+        transform: scale(1.04);
+      }
     }
 
     .welcome-go:active {
@@ -741,10 +754,11 @@
       text-align: center;
       width: 100%;
       box-shadow: var(--shadow-md);
+      transition: transform 150ms var(--ease-out);
     }
 
     .arc-hero:active {
-      transform: scale(0.99);
+      transform: scale(0.98);
     }
 
     .arc-wrap {
@@ -805,6 +819,11 @@
       min-height: 112px;
       color: var(--text);
       box-shadow: var(--shadow-sm);
+      transition: transform 150ms var(--ease-out), border-color 150ms ease;
+    }
+
+    .glass-card:active {
+      transform: scale(0.97);
     }
 
     .glass-card.amber-glass {
@@ -872,11 +891,43 @@
       cursor: pointer;
       text-align: left;
       color: var(--text);
+      transition: transform 150ms var(--ease-out), background-color 150ms ease, border-color 150ms ease;
     }
 
-    .summary-row:hover {
-      background: var(--brand-soft);
-      border-color: #bfd6e0;
+    .summary-row:active {
+      transform: scale(0.98);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .summary-row:hover {
+        background: var(--brand-soft);
+        border-color: #bfd6e0;
+      }
+    }
+
+    .btn {
+      transition: transform 150ms var(--ease-out), background-color 150ms ease, border-color 150ms ease;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--brand);
+      transform-origin: left center;
+      transition: transform 250ms var(--ease-out);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn, .action-card, .glass-card, .arc-hero, .tile-btn, .summary-row, .top-pill, .welcome-go, .progress-bar-fill {
+        transition-duration: 0.01ms !important;
+      }
+      .btn:active, .action-card:active, .glass-card:active, .arc-hero:active, .tile-btn:active, .summary-row:active, .top-pill:active, .welcome-go:active {
+        transform: none !important;
+      }
     }
 
     .summary-left {
@@ -1028,7 +1079,33 @@
       pauseInterval: null,
       postEvent: null,
       postChecked: new Set(),
-      incidentLog: { data: "", time: "", summary: "", saved: false, valor: "", chave: "", transacaoId: "", canal: "", tempo: "", copiado: false, copiaErro: false, contabilizado: false, hash: "", hashErro: "" },
+      incidentLog: {
+        tipoIncidente: "pix_golpe",
+        data: "",
+        dataContestacao: "",
+        quandoRecebeu: "",
+        quandoPagou: "",
+        quandoContestou: "",
+        time: "",
+        summary: "",
+        saved: false,
+        savedJson: false,
+        valor: "",
+        chave: "",
+        telefoneSuspeito: "",
+        linkSuspeito: "",
+        nomeUsado: "",
+        transacaoId: "",
+        protocoloBanco: "",
+        protocoloBo: "",
+        canal: "",
+        tempo: "",
+        copiado: false,
+        copiaErro: false,
+        contabilizado: false,
+        hash: "",
+        hashErro: ""
+      },
       trustedContacts: [
         { id: "c1", name: "Pessoa de confiança", note: "Edite ou adicione um familiar abaixo" }
       ],
@@ -1085,6 +1162,7 @@
       compromisso: "breca.compromisso.v1",
       vacinaAgenda: "breca.vacinaAgenda.v1",
       med: "breca.med.v1",
+      medDatas: "breca.medDatas.v1",
       bancoFavorito: "breca.bancoFavorito.v1",
       operadora: "breca.operadora.v1"
     };
@@ -1114,6 +1192,11 @@
     state.pausa = { ...state.pausa, ...lerLocal(CHAVES_LOCAIS.pausa, {}) };
     state.vacinaAgenda = { ...state.vacinaAgenda, ...lerLocal(CHAVES_LOCAIS.vacinaAgenda, {}) };
     state.medChecklist = lerLocal(CHAVES_LOCAIS.med, {});
+    const medDatasSalvas = lerLocal(CHAVES_LOCAIS.medDatas, {});
+    if (medDatasSalvas && typeof medDatasSalvas === "object") {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(medDatasSalvas.dataPix || "")) state.incidentLog.data = medDatasSalvas.dataPix;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(medDatasSalvas.dataContestacao || "")) state.incidentLog.dataContestacao = medDatasSalvas.dataContestacao;
+    }
     state.bancoFavoritoId = String(lerLocal(CHAVES_LOCAIS.bancoFavorito, "") || "");
     state.operadoraCodigo = String(lerLocal(CHAVES_LOCAIS.operadora, "") || "");
 
@@ -1776,32 +1859,64 @@
       render();
     }
 
-    function montarRelatoIncidente() {
-      const log = state.incidentLog;
+    function etapasMedLista() {
       return [
-        "RELATO PARA CONTESTAÇÃO / MED (USO PESSOAL)",
-        "-------------------------------------------",
-        `Horário aproximado: ${log.time || "Não informado"}`,
+        { id: "contestar", label: "1. Contestar no app do banco AGORA (Pix → comprovante → Contestar / MED)" },
+        { id: "senhas", label: "2. Trocar senhas (banco, e-mail, Gov.br e ativar 2 fatores)" },
+        { id: "bo", label: "3. Registrar Boletim de Ocorrência (Delegacia Virtual .gov.br ou presencial)" },
+        { id: "relato", label: "4. Organizar relato completo (.txt / .json / PDF com SHA-256) e guardar protocolos" }
+      ];
+    }
+
+    function salvarDatasMedLocal() {
+      // Guarda apenas datas ISO para o contador de 80d e 7d — nunca valor, chave, nome ou texto.
+      gravarLocal(CHAVES_LOCAIS.medDatas, {
+        dataPix: state.incidentLog.data || "",
+        dataContestacao: state.incidentLog.dataContestacao || ""
+      });
+    }
+
+    function gerarDossieAtual() {
+      const log = state.incidentLog;
+      const acoesMarcadas = etapasMedLista()
+        .filter((e) => state.medChecklist[e.id])
+        .map((e) => e.label);
+
+      if (window.BREQUE_DOSSIE && typeof window.BREQUE_DOSSIE.gerarDossieMed === "function") {
+        return window.BREQUE_DOSSIE.gerarDossieMed({
+          tipoIncidente: log.tipoIncidente || "pix_golpe",
+          dataPix: log.data || "",
+          quandoRecebeu: log.quandoRecebeu || log.canal || "",
+          quandoPagou: log.quandoPagou || log.time || "",
+          quandoContestou: log.quandoContestou || "",
+          dataContestacao: log.dataContestacao || "",
+          valor: log.valor || "",
+          chaveDestino: log.chave || "",
+          telefoneSuspeito: log.telefoneSuspeito || "",
+          linkSuspeito: log.linkSuspeito || "",
+          nomeUsado: log.nomeUsado || "",
+          transacaoId: log.transacaoId || "",
+          protocoloBanco: log.protocoloBanco || "",
+          protocoloBo: log.protocoloBo || "",
+          relato: log.summary || "",
+          acoesMarcadas
+        });
+      }
+
+      const fallbackTxt = [
+        "DOSSIÊ DE CONTESTAÇÃO / MED — BREQUE (USO PESSOAL)",
+        `Data do Pix: ${log.data || "Não informada"}`,
         `Valor: ${log.valor || "Não informado"}`,
-        `Chave Pix de destino: ${log.chave || "Não informado"}`,
-        `ID da transação: ${log.transacaoId || "Não informado"}`,
-        `Como começou: ${log.canal || "Não informado"}`,
-        `Tempo até perceber: ${log.tempo || "Não informado"}`,
-        "",
-        "O que aconteceu:",
-        log.summary || "Não informado",
-        "",
-        `Ações marcadas na Mesa de Recuperação: ${state.postChecked.size}`,
-        "",
-        "PEDIDO AO BANCO:",
-        "1. Registrar contestação pelo botão oficial do app do banco (MED).",
-        "2. Solicitar bloqueio da conta de destino e rastreamento da transação.",
-        "3. Informar que o relato foi organizado no mesmo dia do ocorrido.",
-        "",
-        "AVISO IMPORTANTE:",
-        "Gerado localmente no seu aparelho. O BREQUE não envia nem armazena este relato.",
-        "Este documento ajuda a organizar informações, mas não é prova jurídica garantida."
+        `Chave de destino: ${log.chave || "Não informada"}`,
+        `Relato: ${log.summary || "Não informado"}`
       ].join("\n");
+      return { textoTxt: fallbackTxt, hashSha256: "", jsonEstruturado: JSON.stringify({ relato: log.summary || "" }, null, 2) };
+    }
+
+    function montarRelatoIncidente() {
+      const dossie = gerarDossieAtual();
+      if (dossie.hashSha256) state.incidentLog.hash = dossie.hashSha256;
+      return dossie.textoTxt;
     }
 
     function contabilizarIncidente() {
@@ -1812,8 +1927,9 @@
     }
 
     function exportIncidentTxt() {
-      const texto = montarRelatoIncidente();
-      const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+      const dossie = gerarDossieAtual();
+      state.incidentLog.hash = dossie.hashSha256 || state.incidentLog.hash;
+      const blob = new Blob([dossie.textoTxt], { type: "text/plain;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -1823,6 +1939,23 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       state.incidentLog.saved = true;
+      contabilizarIncidente();
+      render();
+    }
+
+    function exportIncidentJson() {
+      const dossie = gerarDossieAtual();
+      state.incidentLog.hash = dossie.hashSha256 || state.incidentLog.hash;
+      const blob = new Blob([dossie.jsonEstruturado], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "dossie-med-breque.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      state.incidentLog.savedJson = true;
       contabilizarIncidente();
       render();
     }
@@ -3772,7 +3905,7 @@
                 <div class="timer-count">${escapeHtml(formatarContagem(restante))}</div>
               </div>
               <div style="height:10px; border-radius:999px; background:var(--neutral-bg); overflow:hidden;">
-                <div style="height:100%; width:${progresso}%; background:var(--brand);"></div>
+                <div class="progress-bar-fill" style="transform:scaleX(${(progresso / 100).toFixed(3)});"></div>
               </div>
               ${breathHtml}
               ${audioJornadaBtn}
@@ -3935,17 +4068,19 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div class="card card-soft">
-            <span class="pill pill-risk">Mesa de Recuperação</span>
-            <h1>Sem julgamento. Vamos cuidar de um passo por vez.</h1>
-            <p style="margin-top: 6px;">O que chegou a acontecer?</p>
+            <span class="pill pill-risk">Mesa de Recuperação 2.0 • Passo 1 de 5</span>
+            <h1>Sem julgamento. O que chegou a acontecer?</h1>
+            <p style="margin-top: 6px;">Velocidade e processo bem feito são o que mais pesam na recuperação. Escolha o que aconteceu:</p>
           </div>
           <div class="stack">
-            <button class="btn btn-risk" onclick="state.postEvent='pix'; state.postChecked=new Set(); navigate('post_plan')">Fiz Pix ou pagamento <span>→</span></button>
-            <button class="btn btn-risk" onclick="state.postEvent='credencial'; state.postChecked=new Set(); navigate('post_plan')">Compartilhei código ou senha <span>→</span></button>
-            <button class="btn btn-risk" onclick="state.postEvent='app'; state.postChecked=new Set(); navigate('post_plan')">Instalei aplicativo ou dei acesso ao aparelho <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.postEvent='documento'; state.postChecked=new Set(); navigate('post_plan')">Enviei documento ou foto <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.postEvent='outro'; state.postChecked=new Set(); navigate('post_plan')">Outra situação / quero organizar o relato <span>→</span></button>
+            <button class="btn btn-risk" onclick="state.postEvent='pix'; state.incidentLog.tipoIncidente='pix_golpe'; navigate('incident_log')">Fiz Pix por golpe (abrir assistente MED agora) <span>→</span></button>
+            <button class="btn btn-risk" onclick="state.postEvent='credencial'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Passei código, senha ou dados pessoais <span>→</span></button>
+            <button class="btn btn-risk" onclick="state.postEvent='cartao'; state.incidentLog.tipoIncidente='cartao_clonado'; navigate('incident_log')">Cartão clonado ou compra não reconhecida <span>→</span></button>
+            <button class="btn btn-risk" onclick="state.postEvent='app'; state.incidentLog.tipoIncidente='app_remoto'; state.postChecked=new Set(); navigate('post_plan')">Instalei aplicativo ou dei acesso ao aparelho <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.postEvent='documento'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Enviei documento ou foto <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.postEvent='outro'; state.incidentLog.tipoIncidente='outro'; navigate('incident_log')">Outra situação / organizar relato direto <span>→</span></button>
           </div>
+          <button class="btn btn-primary btn-center" onclick="navigate('discagem_segura')">Ligar para meu banco agora (Discagem Segura) →</button>
         `;
         return;
       }
@@ -3999,89 +4134,131 @@
       }
 
       if (state.screen === "incident_log") {
-        const limiteMed = dataLimiteMed();
-        const diasMed = diasRestantesMed();
-        const etapasMed = [
-          { id: "contestar", label: "Contestei no app oficial do banco (Pix → comprovante → contestar)" },
-          { id: "anexar", label: "Anexei este relato e o comprovante da transação" },
-          { id: "bloqueio", label: "Pedi o bloqueio da conta de destino / rastreamento" },
-          { id: "bo", label: "Avaliei registrar Boletim de Ocorrência no canal oficial" },
-          { id: "protocolo", label: "Guardei o número de protocolo e os comprovantes" }
-        ];
+        const hojeIso = new Date().toISOString().slice(0, 10);
+        const prazoMed = window.BREQUE_DOSSIE && window.BREQUE_DOSSIE.resumirPrazosMed
+          ? window.BREQUE_DOSSIE.resumirPrazosMed(state.incidentLog.data, hojeIso)
+          : { limiteIso: null, diasRestantes: null, vencido: false };
+        const marcosPos = window.BREQUE_DOSSIE && window.BREQUE_DOSSIE.calcularMarcosPosContestacao
+          ? window.BREQUE_DOSSIE.calcularMarcosPosContestacao(state.incidentLog.dataContestacao, hojeIso)
+          : null;
+        const fonteMed = (window.BREQUE_DOSSIE && window.BREQUE_DOSSIE.fonteOficial) || "Banco Central do Brasil (bcb.gov.br) — verificado em 26/11/2026";
+        const regrasMed = (window.BREQUE_DOSSIE && window.BREQUE_DOSSIE.regrasResumo) || [];
+        const naoCobreMed = (window.BREQUE_DOSSIE && window.BREQUE_DOSSIE.naoCobre) || [];
+        const etapasMed = etapasMedLista();
+        const meuBanco = obterBancoFavorito();
+        const bcbCanal = canaisOficiais().find((c) => c.id === "banco-central");
+
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
-            <span class="pill pill-brand">Protocolo MED • Registro local</span>
-            <h1>Registro do Incidente</h1>
-            <p style="margin-top: 6px;">Organize o que o banco vai pedir na contestação: data, horário, valor, chave de destino, ID da transação e tempo até perceber. <strong>Não é prova jurídica garantida.</strong></p>
+            <span class="pill pill-risk">Mesa de Recuperação 2.0 • Assistente MED em 5 passos</span>
+            <h1>Agir rápido e com processo organizado</h1>
+            <p style="margin-top: 6px;">Siga a ordem abaixo. O checklist e as datas ficam só no seu aparelho; valores, chaves e textos ficam apenas na memória desta sessão. <strong>Não é prova jurídica garantida.</strong></p>
           </div>
 
-          <div class="card card-amber">
-            <strong>O tempo decide a recuperação.</strong>
-            <p style="font-size:0.88rem; color:var(--text);">Abra o app oficial do seu banco agora e procure o botão de contestação, “Não fui eu”, “MED” ou “Bloquear transação”. Registre o relato primeiro; depois ligue se precisar.</p>
+          <div class="card card-amber stack">
+            <span class="pill pill-amber">Passo 2 de 5 • Checklist na ordem certa</span>
+            <h3>Marque conforme for fazendo (fica salvo no aparelho)</h3>
+            ${etapasMed.map((etapa) => `
+              <label style="display:flex; gap:10px; align-items:flex-start; font-size:0.92rem; cursor:pointer;">
+                <input type="checkbox" style="width:auto; margin-top:3px;" ${state.medChecklist[etapa.id] ? "checked" : ""} onchange="alternarMedEtapa('${etapa.id}')" />
+                <span style="${state.medChecklist[etapa.id] ? "text-decoration:line-through; opacity:0.72;" : ""}">${escapeHtml(etapa.label)}</span>
+              </label>
+            `).join("")}
+            ${meuBanco && meuBanco.orientacaoMed ? `<div class="quote-box" style="margin:0;"><strong>No seu banco (${escapeHtml(meuBanco.nome)}):</strong> ${escapeHtml(meuBanco.orientacaoMed)}</div>` : ""}
+            <button class="btn btn-primary btn-center" onclick="navigate('discagem_segura')">Abrir Discagem Segura (contestar no meu banco agora) →</button>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">O app guarda apenas “feito/não feito” e as datas do Pix/contestação. Nunca guarda valor, chave Pix, telefone nem relato.</p>
+          </div>
+
+          <div class="card ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "card-risk" : "card-amber"} stack">
+            <span class="pill ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "pill-risk" : "pill-amber"}">Passo 4 de 5 • Prazos reais do MED</span>
+            <h2>${prazoMed.limiteIso ? (prazoMed.vencido ? `A janela de 80 dias venceu em ${formatarDataBr(prazoMed.limiteIso)}` : `Faltam ${prazoMed.diasRestantes} dia(s) dos 80 dias do MED (até ${formatarDataBr(prazoMed.limiteIso)})`) : "Informe a data do Pix abaixo para calcular os 80 dias do MED"}</h2>
+            <ul class="list-clean" style="color:var(--text);">
+              ${regrasMed.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}
+            </ul>
+            <div class="rr-block">
+              <div class="rr-title">O que o MED NÃO cobre</div>
+              <ul class="list-clean" style="color:var(--text);">
+                ${naoCobreMed.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}
+              </ul>
+            </div>
+            <p style="font-size:0.76rem; color:var(--text-muted); margin:0;"><strong>Fonte oficial:</strong> ${escapeHtml(fonteMed)}. O prazo garante o direito de pedir análise, não devolução garantida.</p>
           </div>
 
           <div class="card stack">
-            <div><label class="field-label" for="log-data">Data do Pix ou pagamento</label><input id="log-data" type="date" value="${escapeHtml(state.incidentLog.data)}" onchange="state.incidentLog.data=this.value; state.incidentLog.hash=''; render();" /></div>
-            <div><label class="field-label" for="log-time">Horário exato (aproximado)</label><input id="log-time" type="text" maxlength="40" placeholder="Ex.: 14:32 de hoje" value="${escapeHtml(state.incidentLog.time)}" oninput="state.incidentLog.time=this.value" /></div>
-            <div><label class="field-label" for="log-valor">Valor enviado</label><input id="log-valor" type="text" maxlength="30" placeholder="Ex.: R$ 890,00" value="${escapeHtml(state.incidentLog.valor)}" oninput="state.incidentLog.valor=this.value" /></div>
-            <div><label class="field-label" for="log-chave">Chave Pix de destino (se souber)</label><input id="log-chave" type="text" maxlength="120" placeholder="Cole a chave que apareceu no comprovante" value="${escapeHtml(state.incidentLog.chave)}" oninput="state.incidentLog.chave=this.value" /></div>
-            <div><label class="field-label" for="log-transacao">ID da transação / comprovante</label><input id="log-transacao" type="text" maxlength="80" placeholder="Ex.: E123456789..." value="${escapeHtml(state.incidentLog.transacaoId)}" oninput="state.incidentLog.transacaoId=this.value" /></div>
-            <div><label class="field-label" for="log-canal">Como o golpe começou?</label><input id="log-canal" type="text" maxlength="120" placeholder="Ex.: mensagem de número novo no WhatsApp" value="${escapeHtml(state.incidentLog.canal)}" oninput="state.incidentLog.canal=this.value" /></div>
-            <div><label class="field-label" for="log-tempo">Quanto tempo passou até perceber?</label><input id="log-tempo" type="text" maxlength="40" placeholder="Ex.: 15 minutos" value="${escapeHtml(state.incidentLog.tempo)}" oninput="state.incidentLog.tempo=this.value" /></div>
-            <div><label class="field-label" for="log-summary">Seu relato</label><textarea id="log-summary" rows="4" maxlength="2000" placeholder="Anote o que aconteceu e o que você já fez..." oninput="state.incidentLog.summary=this.value">${escapeHtml(state.incidentLog.summary)}</textarea></div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn btn-primary" style="flex:1; min-width:180px;" onclick="copiarRelatoIncidente()">Copiar relato pronto</button>
-              <button class="btn btn-secondary" style="flex:1; min-width:180px;" onclick="exportIncidentTxt()">Baixar .txt</button>
-              <button class="btn btn-secondary" style="flex:1; min-width:180px;" onclick="imprimirRelato()">Imprimir / salvar em PDF</button>
-              <button class="btn btn-secondary" style="flex:1; min-width:180px;" onclick="gerarHashRelato()">Gerar impressão digital (SHA-256)</button>
+            <span class="pill pill-brand">Passo 3 de 5 • Relato organizado com linha do tempo e SHA-256</span>
+            <div>
+              <label class="field-label" for="log-tipo">Tipo de incidente</label>
+              <select id="log-tipo" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface-soft); color:var(--text);" onchange="state.incidentLog.tipoIncidente=this.value;">
+                <option value="pix_golpe" ${state.incidentLog.tipoIncidente === "pix_golpe" ? "selected" : ""}>Pix passado por golpe</option>
+                <option value="dados_passados" ${state.incidentLog.tipoIncidente === "dados_passados" ? "selected" : ""}>Dados, código ou senha passados</option>
+                <option value="cartao_clonado" ${state.incidentLog.tipoIncidente === "cartao_clonado" ? "selected" : ""}>Cartão clonado / compra não reconhecida</option>
+                <option value="app_remoto" ${state.incidentLog.tipoIncidente === "app_remoto" ? "selected" : ""}>Aplicativo de acesso remoto</option>
+                <option value="outro" ${state.incidentLog.tipoIncidente === "outro" ? "selected" : ""}>Outra situação</option>
+              </select>
             </div>
-            ${state.incidentLog.hash ? `<div class="quote-box"><strong>Impressão digital do relato (SHA-256):</strong><br/><span style="word-break:break-all; font-family:monospace; font-size:0.78rem;">${escapeHtml(state.incidentLog.hash)}</span><br/><span style="font-size:0.78rem; color:var(--text-muted);">Serve para conferir se o texto do arquivo mudou. Não é assinatura digital, não prova autoria e não substitui orientação jurídica.</span></div>` : ""}
-            ${state.incidentLog.hashErro ? `<div class="quote-box" style="border-left-color:var(--accent); background:var(--accent-bg);">${escapeHtml(state.incidentLog.hashErro)}</div>` : ""}
-            ${state.incidentLog.copiado ? `<div class="quote-box"><strong>Relato copiado.</strong> Cole no campo de contestação do app do banco. Nenhum dado saiu do aparelho.</div>` : ""}
-            ${state.incidentLog.copiaErro ? `<div class="quote-box" style="border-left-color:var(--risk); background:var(--risk-bg);">Não foi possível copiar automaticamente. Baixe o .txt ou selecione o texto manualmente.</div>` : ""}
-            ${state.incidentLog.saved ? `<div class="quote-box"><strong>Arquivo relato-breque.txt gerado localmente!</strong><br/>Nenhum dado foi enviado para servidores.</div>` : ""}
-          </div>
-
-          <div class="card ${limiteMed && diasMed !== null && diasMed < 7 ? "card-risk" : "card-amber"} stack">
-            <span class="pill ${limiteMed && diasMed !== null && diasMed < 7 ? "pill-risk" : "pill-amber"}">Prazos do MED • Fonte: Banco Central</span>
-            <h2>${limiteMed ? `Você pode pedir o MED até ${limiteMed.toLocaleDateString("pt-BR")}` : "Informe a data do Pix para calcular o prazo"}</h2>
-            ${limiteMed ? `<p style="color:var(--text);">${diasMed !== null && diasMed >= 0 ? `Faltam <strong>${diasMed} dia(s)</strong> dentro da janela de 80 dias corridos.` : "A janela de 80 dias pode ter passado; procure o banco mesmo assim e explique a situação."} O prazo existe para pedir a devolução, não é garantia de reembolso.</p>` : `<p style="color:var(--text);">O pedido de devolução por fraude pode ser aberto em até 80 dias corridos contados da transação original. Preencha a data acima para ver a conta.</p>`}
-            <ul class="list-clean" style="color:var(--text);">
-              <li><strong>Até 80 dias</strong> após o Pix: pedido de devolução pela sua instituição.</li>
-              <li><strong>Até 7 dias corridos:</strong> análise das notificações pelas instituições envolvidas.</li>
-              <li><strong>Até 72 horas</strong> após a análise: o banco pagador inicia a devolução.</li>
-              <li><strong>Até 6 horas por recebedor:</strong> devolução efetiva; em cadeia, pode chegar a 24 horas.</li>
-              <li><strong>Até 96 horas</strong> após a confirmação de fraude: dinheiro devolvido, se houver saldo.</li>
-            </ul>
-            <p style="font-size:0.78rem; color:var(--text-muted);">Prazos das etapas do banco, não do usuário. Fonte: Guia de implementação do MED, Banco Central do Brasil (versão 4.4, 2026).</p>
+            <div class="grid-2">
+              <div>
+                <label class="field-label" for="log-data">Data do Pix</label>
+                <input id="log-data" type="date" value="${escapeHtml(state.incidentLog.data)}" onchange="state.incidentLog.data=this.value; state.incidentLog.hash=''; salvarDatasMedLocal(); render();" />
+              </div>
+              <div>
+                <label class="field-label" for="log-data-cont">Data da contestação (opcional)</label>
+                <input id="log-data-cont" type="date" value="${escapeHtml(state.incidentLog.dataContestacao)}" onchange="state.incidentLog.dataContestacao=this.value; state.incidentLog.hash=''; salvarDatasMedLocal(); render();" />
+              </div>
+            </div>
+            <div><label class="field-label" for="log-recebeu">1. Quando recebeu o contato suspeito?</label><input id="log-recebeu" type="text" maxlength="100" placeholder="Ex.: 26/11 às 14:10 pelo WhatsApp" value="${escapeHtml(state.incidentLog.quandoRecebeu)}" oninput="state.incidentLog.quandoRecebeu=this.value" /></div>
+            <div><label class="field-label" for="log-pagou">2. Quando fez o pagamento ou passou os dados?</label><input id="log-pagou" type="text" maxlength="100" placeholder="Ex.: 26/11 às 14:25" value="${escapeHtml(state.incidentLog.quandoPagou)}" oninput="state.incidentLog.quandoPagou=this.value" /></div>
+            <div><label class="field-label" for="log-contestou">3. Quando contestou no banco?</label><input id="log-contestou" type="text" maxlength="100" placeholder="Ex.: 26/11 às 14:40 no app do BB" value="${escapeHtml(state.incidentLog.quandoContestou)}" oninput="state.incidentLog.quandoContestou=this.value" /></div>
+            <div class="grid-2">
+              <div><label class="field-label" for="log-valor">Valor enviado</label><input id="log-valor" type="text" maxlength="30" placeholder="Ex.: R$ 890,00" value="${escapeHtml(state.incidentLog.valor)}" oninput="state.incidentLog.valor=this.value" /></div>
+              <div><label class="field-label" for="log-transacao">ID da transação (E2E)</label><input id="log-transacao" type="text" maxlength="80" placeholder="Ex.: E123456789..." value="${escapeHtml(state.incidentLog.transacaoId)}" oninput="state.incidentLog.transacaoId=this.value" /></div>
+            </div>
+            <div><label class="field-label" for="log-chave">Chave Pix / conta de destino (fica só na sessão)</label><input id="log-chave" type="text" maxlength="120" placeholder="Cole a chave que apareceu no comprovante" value="${escapeHtml(state.incidentLog.chave)}" oninput="state.incidentLog.chave=this.value" /></div>
+            <div class="grid-2">
+              <div><label class="field-label" for="log-tel">Telefone usado pelo golpista</label><input id="log-tel" type="text" maxlength="40" placeholder="Ex.: (91) 9..." value="${escapeHtml(state.incidentLog.telefoneSuspeito)}" oninput="state.incidentLog.telefoneSuspeito=this.value" /></div>
+              <div><label class="field-label" for="log-nome">Nome / empresa usada</label><input id="log-nome" type="text" maxlength="80" placeholder="Ex.: Falsa central / nome" value="${escapeHtml(state.incidentLog.nomeUsado)}" oninput="state.incidentLog.nomeUsado=this.value" /></div>
+            </div>
+            <div><label class="field-label" for="log-link">Link ou site enviado (se houve)</label><input id="log-link" type="text" maxlength="160" placeholder="Ex.: site-suspeito.com.br" value="${escapeHtml(state.incidentLog.linkSuspeito)}" oninput="state.incidentLog.linkSuspeito=this.value" /></div>
+            <div class="grid-2">
+              <div><label class="field-label" for="log-prot-banco">Protocolo do banco</label><input id="log-prot-banco" type="text" maxlength="60" placeholder="Nº do protocolo MED" value="${escapeHtml(state.incidentLog.protocoloBanco)}" oninput="state.incidentLog.protocoloBanco=this.value" /></div>
+              <div><label class="field-label" for="log-prot-bo">Protocolo do BO</label><input id="log-prot-bo" type="text" maxlength="60" placeholder="Nº do Boletim" value="${escapeHtml(state.incidentLog.protocoloBo)}" oninput="state.incidentLog.protocoloBo=this.value" /></div>
+            </div>
+            <div><label class="field-label" for="log-summary">Seu relato dos fatos</label><textarea id="log-summary" rows="4" maxlength="2000" placeholder="Descreva em ordem o que aconteceu e o que você já fez..." oninput="state.incidentLog.summary=this.value">${escapeHtml(state.incidentLog.summary)}</textarea></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-primary" style="flex:1; min-width:170px;" onclick="exportIncidentTxt()">Baixar relato .txt (com SHA-256)</button>
+              <button class="btn btn-secondary" style="flex:1; min-width:170px;" onclick="imprimirRelato()">Imprimir / salvar em PDF</button>
+              <button class="btn btn-secondary" style="flex:1; min-width:170px;" onclick="exportIncidentJson()">Baixar dossiê .json</button>
+              <button class="btn btn-secondary" style="flex:1; min-width:170px;" onclick="copiarRelatoIncidente()">Copiar relato pronto</button>
+            </div>
+            ${state.incidentLog.hash ? `<div class="quote-box"><strong>Impressão digital no rodapé do relato (SHA-256):</strong><br/><span style="word-break:break-all; font-family:monospace; font-size:0.78rem;">${escapeHtml(state.incidentLog.hash)}</span><br/><span style="font-size:0.76rem; color:var(--text-muted);">Confere se o texto foi alterado depois de gerado. Não substitui assinatura digital nem decisão judicial.</span></div>` : ""}
+            ${state.incidentLog.copiado ? `<div class="quote-box"><strong>Relato copiado (com hash SHA-256 no rodapé).</strong> Cole no campo de contestação do banco.</div>` : ""}
+            ${state.incidentLog.copiaErro ? `<div class="quote-box" style="border-left-color:var(--risk); background:var(--risk-bg);">Não foi possível copiar automaticamente. Use o botão Baixar .txt.</div>` : ""}
+            ${state.incidentLog.saved ? `<div class="quote-box"><strong>relato-breque.txt gerado localmente com SHA-256 no rodapé!</strong> Nenhum dado saiu do aparelho.</div>` : ""}
+            ${state.incidentLog.savedJson ? `<div class="quote-box"><strong>dossie-med-breque.json gerado localmente!</strong> Nenhum dado saiu do aparelho.</div>` : ""}
           </div>
 
           <div class="card card-soft stack">
-            <h3>Checklist da contestação (fica só no aparelho)</h3>
-            ${etapasMed.map((etapa) => `
-              <label style="display:flex; gap:10px; align-items:flex-start; font-size:0.9rem;">
-                <input type="checkbox" style="width:auto; margin-top:3px;" ${state.medChecklist[etapa.id] ? "checked" : ""} onchange="alternarMedEtapa('${etapa.id}')" />
-                <span>${escapeHtml(etapa.label)}</span>
-              </label>
-            `).join("")}
-            <p style="font-size:0.78rem; color:var(--text-muted);">O app guarda apenas “feito/não feito” e a data do Pix. Não guarda valor, chave, texto nem comprovante.</p>
-          </div>
-
-          <div class="card card-soft stack">
-            <h3>Caminho da contestação (MED 2.0)</h3>
-            <ol class="list-clean" style="color:var(--text);">
-              <li>No app oficial do banco, procure <strong>Pix → comprovante → contestar</strong> ou <strong>“Não reconheço esta transação”</strong>.</li>
-              <li>Anexe o relato e informe valor, chave, ID e horário.</li>
-              <li>Peça o <strong>bloqueio da conta de destino</strong> e o rastreamento da transação.</li>
-              <li>Se houver ameaça ou fraude, registre Boletim de Ocorrência no canal oficial da Polícia Civil.</li>
-              <li>Guarde comprovantes e conversas. Não pague ninguém que prometa “recuperação garantida”.</li>
-            </ol>
-            <p style="font-size:0.8rem; color:var(--text-muted);">O MED acompanha o dinheiro por até cinco camadas de contas e exige contestação pelo app do banco. O BREQUE só ajuda a organizar o relato.</p>
+            <span class="pill pill-brand">Passo 5 de 5 • Lembretes pós-contestação</span>
+            ${marcosPos ? `
+              <h3>Acompanhamento a partir de ${escapeHtml(formatarDataBr(marcosPos.dataContestacao))}</h3>
+              <ul class="list-clean" style="color:var(--text);">
+                <li><strong>Decisão do banco do recebedor (até 7 dias):</strong> ${escapeHtml(formatarDataBr(marcosPos.limiteAnaliseBanco))} ${marcosPos.prazoAnaliseVencido ? "(prazo vencido — cobre a Ouvidoria e o BC!)" : `(faltam ${marcosPos.diasAteAnalise} dia(s))`}</li>
+                <li><strong>Devolução após confirmação (até 96h):</strong> previsão até ${escapeHtml(formatarDataBr(marcosPos.limiteDevolucaoAposConfirmacao))} (pode ser parcial com bloqueios sucessivos).</li>
+              </ul>
+              <p style="font-size:0.86rem; color:var(--text);">${escapeHtml(marcosPos.orientacaoEscalonamento)}</p>
+            ` : `
+              <h3>Já abriu a contestação no banco?</h3>
+              <p style="font-size:0.86rem; color:var(--text);">Preencha a <strong>Data da contestação</strong> acima para ver seus marcos de <strong>7 dias (análise)</strong> e <strong>96 horas (devolução)</strong>.</p>
+            `}
+            <div class="stack">
+              <button class="btn btn-secondary btn-center" onclick="state.discagemBusca=''; navigate('discagem_segura')">Ouvidoria / Central do meu banco (Discagem Segura) →</button>
+              ${bcbCanal && bcbCanal.telefones[0] ? `<a class="btn btn-secondary btn-center" style="text-decoration:none;" href="tel:145">Ligar para o Banco Central (145 — Fale Conosco)</a>` : ""}
+              ${bcbCanal && bcbCanal.links[0] ? `<a class="btn btn-ghost btn-center" style="text-decoration:none;" href="${escapeHtml(bcbCanal.links[0].url)}" target="_blank" rel="noopener noreferrer">Abrir Fale Conosco do Banco Central na internet →</a>` : ""}
+            </div>
           </div>
 
           <pre id="relato-print" hidden></pre>
-          <button class="btn btn-secondary btn-center" onclick="navigate('discagem_segura')">Ver canais oficiais para ligar →</button>
           <button class="btn btn-ghost btn-center" onclick="goHome()">Voltar ao início</button>
         `;
         return;

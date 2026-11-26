@@ -26,6 +26,14 @@ import {
   limitarValorCompromisso,
 } from './agenda'
 import {
+  MED_FONTE_OFICIAL,
+  MED_NAO_COBRE,
+  MED_REGRAS_RESUMO,
+  calcularMarcosPosContestacao,
+  gerarDossieMed,
+  resumirPrazosMed,
+} from './dossie'
+import {
   CATALOGO_DENUNCIAS,
   LEMBRETE_FIXO_ESCUDO,
   classificarChavePix,
@@ -72,6 +80,14 @@ declare global {
       limitarValorCompromisso: typeof limitarValorCompromisso
       avaliarEstadoJornada: typeof avaliarEstadoJornada
     }
+    BREQUE_DOSSIE?: {
+      fonteOficial: string
+      regrasResumo: typeof MED_REGRAS_RESUMO
+      naoCobre: typeof MED_NAO_COBRE
+      calcularMarcosPosContestacao: typeof calcularMarcosPosContestacao
+      resumirPrazosMed: typeof resumirPrazosMed
+      gerarDossieMed: typeof gerarDossieMed
+    }
   }
 }
 
@@ -116,6 +132,15 @@ window.BREQUE_AGENDA = {
   limitarDuracaoPausaMin,
   limitarValorCompromisso,
   avaliarEstadoJornada,
+}
+
+window.BREQUE_DOSSIE = {
+  fonteOficial: MED_FONTE_OFICIAL,
+  regrasResumo: MED_REGRAS_RESUMO,
+  naoCobre: MED_NAO_COBRE,
+  calcularMarcosPosContestacao,
+  resumirPrazosMed,
+  gerarDossieMed,
 }
 
 window.dispatchEvent(new CustomEvent('breque:modulos-prontos'))
