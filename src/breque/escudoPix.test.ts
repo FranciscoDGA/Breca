@@ -4,6 +4,7 @@ import {
   classificarChavePix,
   diagnosticarChavePix,
   hashChavePix,
+  hashChavePixLocal,
   validarCnpj,
   validarCpf,
 } from './escudoPix'
@@ -38,6 +39,25 @@ describe('Escudo do Destinatário — classificação e hash SHA-256', () => {
     expect(hashChavePix(CNPJ_VALIDO)).toBe(hashChavePix(CNPJ_FORMATADO))
     expect(hashChavePix('Fulano@Exemplo.com')).toBe(hashChavePix('fulano@exemplo.com'))
     expect(hashChavePix(CPF_VALIDO)).toMatch(/^[0-9a-f]{64}$/)
+  })
+
+  it('usa salt local nos hashes persistidos e ainda aceita entradas legadas', () => {
+    const local = hashChavePixLocal(CPF_VALIDO, 'salt-do-aparelho')
+    expect(local).toMatch(/^[0-9a-f]{64}$/)
+    expect(local).not.toBe(hashChavePixLocal(CPF_VALIDO, 'outro-salt'))
+    expect(local).not.toBe(hashChavePix(CPF_VALIDO))
+
+    const comSalt = diagnosticarChavePix(CPF_FORMATADO, {
+      favorecidos: [{ apelido: 'Contato', tipo: 'CPF', hash: local }],
+      saltLocal: 'salt-do-aparelho',
+    })
+    expect(comSalt.ehFavorecidoVerificado).toBe(true)
+
+    const legado = diagnosticarChavePix(CPF_FORMATADO, {
+      favorecidos: [{ apelido: 'Contato', tipo: 'CPF', hash: hashChavePix(CPF_VALIDO) }],
+      saltLocal: 'salt-do-aparelho',
+    })
+    expect(legado.ehFavorecidoVerificado).toBe(true)
   })
 
   it('diferencia celular 11 dígitos (DDD + 9) quando não é CPF válido', () => {

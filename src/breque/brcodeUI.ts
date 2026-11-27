@@ -5,6 +5,7 @@ import {
   compararIntencao,
   destinoConhecido,
   formatarBRL,
+  hashDestinoCofre,
   tipoDeChave,
 } from './brcode'
 import {
@@ -56,6 +57,7 @@ import {
   classificarChavePix,
   diagnosticarChavePix,
   hashChavePix,
+  hashChavePixLocal,
 } from './escudoPix'
 
 declare global {
@@ -87,6 +89,7 @@ declare global {
       lembreteFixo: typeof LEMBRETE_FIXO_ESCUDO
       classificarChavePix: typeof classificarChavePix
       hashChavePix: typeof hashChavePix
+      hashChavePixLocal: typeof hashChavePixLocal
       diagnosticarChavePix: typeof diagnosticarChavePix
     }
     BREQUE_AGENDA?: {
@@ -134,6 +137,7 @@ window.BRECODE = {
   compararIntencao,
   destinoConhecido,
   formatarBRL,
+  hashDestinoCofre,
   tipoDeChave,
 }
 
@@ -156,6 +160,7 @@ window.BREQUE_ESCUDO = {
   lembreteFixo: LEMBRETE_FIXO_ESCUDO,
   classificarChavePix,
   hashChavePix,
+  hashChavePixLocal,
   diagnosticarChavePix,
 }
 

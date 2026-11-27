@@ -1128,13 +1128,12 @@
       cardDownloaded: false,
       cofre: [],
       cofreNome: "",
-      cofreNota: "",
       favorecidos: [],
       denunciasLocais: [],
+      isSpeaking: false,
       escudo: {
         chave: "",
         resultado: null,
-        apelidoNovo: "",
         reporteAberto: false,
         reporteConfirmado: false,
         reporteUf: "",
@@ -1176,7 +1175,8 @@
       med: "breca.med.v1",
       medDatas: "breca.medDatas.v1",
       bancoFavorito: "breca.bancoFavorito.v1",
-      operadora: "breca.operadora.v1"
+      operadora: "breca.operadora.v1",
+      saltLocal: "breca.saltLocal.v1"
     };
 
     function lerLocal(chave, padrao) {
@@ -1195,6 +1195,25 @@
         // Sem localStorage (modo privado): o app continua funcionando na sessão.
       }
     }
+
+    // Salt local: impede que hashes salvos no aparelho sejam descobertos por
+    // dicionário (CPF e telefone são previsíveis). Nada é enviado à rede.
+    function obterSaltLocal() {
+      try {
+        const atual = localStorage.getItem(CHAVES_LOCAIS.saltLocal);
+        if (atual && /^[a-f0-9]{32}$/.test(atual)) return atual;
+        const bytes = new Uint8Array(16);
+        if (window.crypto && typeof window.crypto.getRandomValues === "function") {
+          window.crypto.getRandomValues(bytes);
+        }
+        const novo = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+        localStorage.setItem(CHAVES_LOCAIS.saltLocal, novo);
+        return novo;
+      } catch {
+        return "00000000000000000000000000000000";
+      }
+    }
+    const SALT_LOCAL = obterSaltLocal();
 
     state.cofre = lerLocal(CHAVES_LOCAIS.cofre, []);
     state.favorecidos = lerLocal(CHAVES_LOCAIS.favorecidos, []);
@@ -1402,16 +1421,29 @@
 
     function adicionarCofre() {
       const nome = state.cofreNome.trim();
-      if (!nome) return;
-      state.cofre.push({
-        nome,
-        nota: state.cofreNota.trim() || "Destino recorrente",
-        criadoEm: Date.now()
-      });
+      if (!nome || !window.BRECODE || typeof window.BRECODE.hashDestinoCofre !== "function") return;
+      const hash = window.BRECODE.hashDestinoCofre(nome, SALT_LOCAL);
+      if (!hash || state.cofre.some((entrada) => entrada.hash === hash)) return;
+      // Nome e nota não são gravados: só o identificador com salt do aparelho.
+      state.cofre.push({ hash, criadoEm: Date.now() });
       state.cofreNome = "";
-      state.cofreNota = "";
       salvarCofre();
       render();
+    }
+
+    function migrarCofreLegado() {
+      if (!window.BRECODE || typeof window.BRECODE.hashDestinoCofre !== "function") return;
+      let alterou = false;
+      state.cofre = state.cofre
+        .map((entrada) => {
+          if (entrada.hash) return { hash: entrada.hash, criadoEm: entrada.criadoEm || 0 };
+          const hash = window.BRECODE.hashDestinoCofre(entrada.nome || "", SALT_LOCAL);
+          if (!hash) return null;
+          alterou = true;
+          return { hash, criadoEm: entrada.criadoEm || 0 };
+        })
+        .filter(Boolean);
+      if (alterou) salvarCofre();
     }
 
     function removerCofre(idx) {
@@ -1420,7 +1452,7 @@
       render();
     }
 
-    // ---------- Escudo do Destinatário (Fase 2 — apenas hash SHA-256, nunca chave em texto puro) ----------
+    // ---------- Escudo do Destinatário (hash com salt no aparelho; nunca chave em texto puro) ----------
     function executarEscudoPix() {
       state.escudo.feedback = "";
       state.escudo.reporteAberto = false;
@@ -1439,6 +1471,7 @@
       }
       state.escudo.resultado = window.BREQUE_ESCUDO.diagnosticarChavePix(entrada, {
         favorecidos: state.favorecidos,
+        saltLocal: SALT_LOCAL,
         denunciasLocais: state.denunciasLocais
       });
       render();
@@ -1446,24 +1479,18 @@
 
     function salvarFavorecidoVerificado() {
       const res = state.escudo.resultado;
-      if (!res || !res.formatoValido || !res.hash) return;
-      const apelido = state.escudo.apelidoNovo.trim() || `Favorecido (${res.rotuloTipo})`;
-      const jaExiste = state.favorecidos.some((f) => f.hash === res.hash);
-      if (jaExiste) {
+      if (!res || !res.formatoValido || !window.BREQUE_ESCUDO) return;
+      const chave = state.escudo.chave.trim();
+      const hash = window.BREQUE_ESCUDO.hashChavePixLocal(chave, SALT_LOCAL);
+      if (!hash || state.favorecidos.some((f) => f.hash === hash)) {
         state.escudo.feedback = "Este hash já está nos seus Favorecidos Verificados.";
         render();
         return;
       }
-      // Nunca guarda a chave Pix em texto puro: apenas apelido, tipo e hash SHA-256.
-      state.favorecidos.push({
-        apelido: apelido.slice(0, 60),
-        tipo: res.tipo,
-        hash: res.hash,
-        criadoEm: Date.now()
-      });
+      // Sem chave em claro e sem apelido/nome: só hash com salt, tipo e data.
+      state.favorecidos.push({ tipo: res.tipo, hash, criadoEm: Date.now() });
       gravarLocal(CHAVES_LOCAIS.favorecidos, state.favorecidos);
-      state.escudo.apelidoNovo = "";
-      state.escudo.feedback = `Salvo em Favorecidos Verificados como "${apelido}" (apenas o hash SHA-256 foi guardado; a chave não fica salva em texto puro).`;
+      state.escudo.feedback = "Salvo como identificador com salt neste aparelho. Nenhuma chave ou apelido foi gravado.";
       executarEscudoPix();
     }
 
@@ -1473,6 +1500,7 @@
       if (state.escudo.chave.trim() && window.BREQUE_ESCUDO) {
         state.escudo.resultado = window.BREQUE_ESCUDO.diagnosticarChavePix(state.escudo.chave, {
           favorecidos: state.favorecidos,
+        saltLocal: SALT_LOCAL,
           denunciasLocais: state.denunciasLocais
         });
       }
@@ -1481,7 +1509,9 @@
 
     function registrarDenunciaLocalPix() {
       const res = state.escudo.resultado;
-      if (!res || !res.formatoValido || !res.hash) return;
+      if (!res || !res.formatoValido || !window.BREQUE_ESCUDO) return;
+      const hash = window.BREQUE_ESCUDO.hashChavePixLocal(state.escudo.chave.trim(), SALT_LOCAL);
+      if (!hash) return;
       if (!state.escudo.reporteConfirmado) {
         state.escudo.feedback = "Marque a confirmação ética antes de registrar o hash da chave.";
         render();
@@ -1489,16 +1519,17 @@
       }
       const uf = String(state.escudo.reporteUf || "").trim().toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
       const hoje = new Date().toISOString().slice(0, 10);
-      if (!state.denunciasLocais.some((d) => d.hash === res.hash)) {
-        state.denunciasLocais.push({ hash: res.hash, data: hoje, uf: uf || undefined });
+      if (!state.denunciasLocais.some((d) => d.hash === hash)) {
+        state.denunciasLocais.push({ hash, data: hoje, uf: uf || undefined });
         gravarLocal(CHAVES_LOCAIS.denuncias, state.denunciasLocais);
       }
       state.escudo.reporteAberto = false;
       state.escudo.reporteConfirmado = false;
-      state.escudo.feedback = "Relato guardado localmente apenas como hash SHA-256 + data (nenhuma chave em texto puro foi salva ou enviada).";
+      state.escudo.feedback = "Relato guardado só neste aparelho como hash com salt, data e UF. Nenhuma chave em texto puro foi salva ou enviada.";
       if (window.BREQUE_ESCUDO) {
         state.escudo.resultado = window.BREQUE_ESCUDO.diagnosticarChavePix(state.escudo.chave, {
           favorecidos: state.favorecidos,
+        saltLocal: SALT_LOCAL,
           denunciasLocais: state.denunciasLocais
         });
       }
@@ -1511,6 +1542,7 @@
       if (state.escudo.chave.trim() && window.BREQUE_ESCUDO) {
         state.escudo.resultado = window.BREQUE_ESCUDO.diagnosticarChavePix(state.escudo.chave, {
           favorecidos: state.favorecidos,
+        saltLocal: SALT_LOCAL,
           denunciasLocais: state.denunciasLocais
         });
       }
@@ -1626,18 +1658,23 @@
 
     function destinoEstaNoCofre(nome) {
       if (!window.BRECODE || typeof window.BRECODE.destinoConhecido !== "function") return false;
-      return window.BRECODE.destinoConhecido(nome || "", state.cofre);
+      return window.BRECODE.destinoConhecido(nome || "", state.cofre, SALT_LOCAL);
     }
 
-    function adicionarResultadoAoCofre() {      const resultado = state.raioX.resultado;
+    function adicionarResultadoAoCofre() {
+      const resultado = state.raioX.resultado;
       const nome = (resultado && resultado.nomeRecebedor) || state.raioX.nomeEsperado.trim();
-      if (!nome) return;
-      state.cofre.push({ nome, nota: "Adicionado pelo Raio-X", criadoEm: Date.now() });
-      salvarCofre();
+      if (!nome || !window.BRECODE || typeof window.BRECODE.hashDestinoCofre !== "function") return;
+      const hash = window.BRECODE.hashDestinoCofre(nome, SALT_LOCAL);
+      if (!hash) return;
+      if (!state.cofre.some((entrada) => entrada.hash === hash)) {
+        state.cofre.push({ hash, criadoEm: Date.now() });
+        salvarCofre();
+      }
       state.raioX.comparacao = {
         divergencias: [],
         nivel: "ALINHADO",
-        pergunta: `${nome} agora está no seu Cofre. Destinos novos vão gerar pausa.`
+        pergunta: "Esse destinatário agora está no seu Cofre como hash. Destinos novos vão gerar pausa."
       };
       render();
     }
@@ -3473,6 +3510,10 @@
 
       if (state.screen === "escudo_pix") {
         const res = state.escudo.resultado;
+        const hashLocalParaRemover =
+          res && res.formatoValido && window.BREQUE_ESCUDO && window.BREQUE_ESCUDO.hashChavePixLocal
+            ? window.BREQUE_ESCUDO.hashChavePixLocal(state.escudo.chave.trim(), SALT_LOCAL)
+            : "";
         const lembretes = (res && res.lembreteFixo) || (window.BREQUE_ESCUDO && window.BREQUE_ESCUDO.lembreteFixo) || [
           "1. Conferiu com a pessoa por outro canal (número antigo, ligação ou pessoalmente)?",
           "2. Ligou no número do verso do cartão ou usou a Discagem Segura se disserem ser do \"banco\"?",
@@ -3543,16 +3584,15 @@
               ${res.formatoValido && !res.ehFavorecidoVerificado ? `
                 <div class="rr-block">
                   <div class="rr-title">Já pagou e confirmou que é legítimo?</div>
-                  <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Salve nos Favorecidos Verificados. O BREQUE guarda <strong>apenas o hash SHA-256</strong> e o apelido — nunca a chave Pix em texto puro.</p>
+                  <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Salve nos Favorecidos Verificados. O BREQUE guarda <strong>só um identificador com salt deste aparelho</strong> — nunca a chave Pix em texto puro, nem apelido ou nome.</p>
                   <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-                    <input type="text" maxlength="60" style="flex:1; min-width:160px;" placeholder="Apelido (ex.: Aluguel, Mercado do bairro)" value="${escapeHtml(state.escudo.apelidoNovo)}" oninput="state.escudo.apelidoNovo=this.value" />
-                    <button class="btn btn-secondary" style="width:auto;" onclick="salvarFavorecidoVerificado()">Salvar (só hash)</button>
+                    <button class="btn btn-secondary" style="width:auto;" onclick="salvarFavorecidoVerificado()">Salvar (só identificador)</button>
                   </div>
                 </div>
               ` : ""}
 
               ${res.formatoValido && res.constaEmDenuncia && res.origemDenuncia === "local" ? `
-                <button class="btn btn-ghost" style="font-size:0.82rem;" onclick="removerDenunciaLocalPix('${escapeHtml(res.hash)}')">Remover este marcador local</button>
+                <button class="btn btn-ghost" style="font-size:0.82rem;" onclick="removerDenunciaLocalPix('${escapeHtml(hashLocalParaRemover)}')">Remover este marcador local</button>
               ` : ""}
 
               ${res.formatoValido && !res.constaEmDenuncia ? `
@@ -3561,14 +3601,14 @@
                     ? `<button class="btn btn-ghost" style="font-size:0.82rem; padding:6px 0;" onclick="state.escudo.reporteAberto=true; render();">Já caiu em golpe com esta chave? Registrar hash localmente →</button>`
                     : `<div class="stack" style="margin-top:6px;">
                         <div class="rr-title">Reportar chave (somente hash local na v1)</div>
-                        <p style="font-size:0.82rem; color:var(--text);">Só reporte se você <strong>já caiu em golpe ou tem suspeita documentada</strong>. Falso reporte é abuso. Apenas o hash SHA-256, a data e o estado (opcional) ficam guardados localmente — nenhuma chave em texto puro sai do aparelho.</p>
+                        <p style="font-size:0.82rem; color:var(--text);">Só reporte se você <strong>já caiu em golpe ou tem suspeita documentada</strong>. Falso reporte é abuso. Apenas um identificador com salt, a data e o estado (opcional) ficam guardados localmente — nenhuma chave em texto puro sai do aparelho.</p>
                         <div>
                           <label class="field-label" for="escudo-uf">Estado / UF (opcional, ex.: PA, SP)</label>
                           <input id="escudo-uf" type="text" maxlength="2" placeholder="Ex.: PA" value="${escapeHtml(state.escudo.reporteUf)}" oninput="state.escudo.reporteUf=this.value" />
                         </div>
                         <label style="display:flex; gap:10px; align-items:flex-start; font-size:0.86rem;">
                           <input type="checkbox" style="width:auto; margin-top:3px;" ${state.escudo.reporteConfirmado ? "checked" : ""} onchange="state.escudo.reporteConfirmado=this.checked; render();" />
-                          <span>Confirmo que houve golpe ou suspeita documentada e entendo que apenas o hash SHA-256 ficará salvo neste aparelho.</span>
+                          <span>Confirmo que houve golpe ou suspeita documentada e entendo que apenas um identificador com salt ficará salvo neste aparelho.</span>
                         </label>
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                           <button class="btn btn-risk" style="flex:1;" onclick="registrarDenunciaLocalPix()">Registrar hash localmente</button>
@@ -3590,12 +3630,12 @@
 
           <div class="card card-soft stack">
             <h3>Favorecidos Verificados (${state.favorecidos.length})</h3>
-            <p style="font-size:0.82rem; color:var(--text-muted);">Guardados só neste aparelho como <strong>hash SHA-256</strong>. Nenhuma chave Pix em texto puro é salva.</p>
+            <p style="font-size:0.82rem; color:var(--text-muted);">Guardados só neste aparelho como <strong>identificador com salt</strong>. Nenhuma chave, apelido ou nome em texto puro é salvo.</p>
             ${state.favorecidos.length ? state.favorecidos.map((fav, idx) => `
               <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:var(--surface);">
                 <div>
-                  <div style="font-weight:700; font-size:0.92rem;">${escapeHtml(fav.apelido)}</div>
-                  <div style="font-size:0.76rem; color:var(--text-muted);">${escapeHtml(fav.tipo)} • hash ${escapeHtml(String(fav.hash || "").slice(0, 10))}…</div>
+                  <div style="font-weight:700; font-size:0.92rem;">Favorecido ${idx + 1}</div>
+                  <div style="font-size:0.76rem; color:var(--text-muted);">${escapeHtml(fav.tipo || "chave")} • identificador ${escapeHtml(String(fav.hash || "").slice(0, 10))}…</div>
                 </div>
                 <button class="btn btn-secondary" style="width:auto; padding:6px 10px; font-size:0.78rem;" onclick="removerFavorecidoVerificado(${idx})">Remover</button>
               </div>
@@ -3716,32 +3756,28 @@
 
           <div class="card card-soft">
             <strong>${state.cofre.length} destino(s) no cofre.</strong>
-            <p style="font-size:0.84rem;">Fica só no seu aparelho. Não guardamos número de conta, chave Pix nem valor.</p>
+            <p style="font-size:0.84rem;">Fica só no seu aparelho, como identificador com salt. Nome, nota, chave Pix, conta e valor não são gravados.</p>
           </div>
 
           <div class="stack">
             ${state.cofre.length ? state.cofre.map((entrada, i) => `
               <div class="card card-soft" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
                 <div>
-                  <div style="font-weight:700;">${escapeHtml(entrada.nome)}</div>
-                  <div style="font-size:0.82rem; color:var(--text-muted);">${escapeHtml(entrada.nota || "Destino recorrente")}</div>
+                  <div style="font-weight:700;">Destino ${i + 1}</div>
+                  <div style="font-size:0.82rem; color:var(--text-muted);">Identificador ${escapeHtml(String(entrada.hash || "").slice(0, 10))}… • salvo neste aparelho</div>
                 </div>
                 <button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" onclick="removerCofre(${i})">Remover</button>
               </div>
-            `).join("") : `<div class="card card-amber"><strong>Ainda não há destinos.</strong><p>Comece por quem você já paga todo mês. Não cadastre chave Pix, só o nome que você reconhece.</p></div>`}
+            `).join("") : `<div class="card card-amber"><strong>Ainda não há destinos.</strong><p>Cadastre quem você já paga todo mês. O nome é usado só na hora de cadastrar e vira um identificador com salt — nada fica em texto puro.</p></div>`}
           </div>
 
           <div class="card stack">
             <h3>Adicionar destino confiável</h3>
             <div>
-              <label class="field-label" for="cofre-nome">Nome do recebedor</label>
+              <label class="field-label" for="cofre-nome">Nome do recebedor (não será gravado)</label>
               <input id="cofre-nome" type="text" maxlength="80" placeholder="Ex.: João (filho) ou Mercado do bairro" value="${escapeHtml(state.cofreNome)}" oninput="state.cofreNome=this.value" />
             </div>
-            <div>
-              <label class="field-label" for="cofre-nota">Para que serve? (opcional)</label>
-              <input id="cofre-nota" type="text" maxlength="80" placeholder="Ex.: mensalidade, feira, aluguel" value="${escapeHtml(state.cofreNota)}" oninput="state.cofreNota=this.value" />
-            </div>
-            <button class="btn btn-primary btn-center" onclick="adicionarCofre()">Salvar no cofre local</button>
+            <button class="btn btn-primary btn-center" onclick="adicionarCofre()">Salvar como identificador local</button>
           </div>
 
           <button class="btn btn-secondary btn-center" onclick="navigate('raio_x')">Conferir um Pix ou boleto agora →</button>
@@ -4908,6 +4944,7 @@
 
     render();
     window.addEventListener("breque:modulos-prontos", () => {
+      migrarCofreLegado();
       render();
     });
   </script>

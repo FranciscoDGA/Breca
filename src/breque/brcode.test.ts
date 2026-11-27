@@ -6,6 +6,7 @@ import {
   crc16,
   destinoConhecido,
   fatorParaData,
+  hashDestinoCofre,
   tipoDeChave,
 } from './brcode'
 
@@ -91,6 +92,17 @@ describe('Cofre de destinos', () => {
     expect(destinoConhecido('Fulano de Tal', [{ nome: 'fulano' }])).toBe(true)
     expect(destinoConhecido('Maria Silva', [{ nome: 'Fulano de Tal' }])).toBe(false)
     expect(destinoConhecido('', [{ nome: 'Fulano' }])).toBe(false)
+  })
+
+  it('guarda apenas hash com salt; nomes em claro não são necessários', () => {
+    const hash = hashDestinoCofre('Fulano de Tal', 'salt-do-aparelho')
+    expect(hash).toMatch(/^[a-f0-9]{64}$/)
+    expect(hash).not.toContain('fulano')
+    expect(hash).not.toBe(hashDestinoCofre('Fulano de Tal', 'outro-salt'))
+    expect(hashDestinoCofre('Fulano de Tal', 'salt-do-aparelho')).toBe(hash)
+    expect(destinoConhecido('fulano de tal', [{ hash }], 'salt-do-aparelho')).toBe(true)
+    expect(destinoConhecido('fulano de tal', [{ hash }], 'outro-salt')).toBe(false)
+    expect(destinoConhecido('Fulano de Tal', [{ hash }])).toBe(false)
   })
 })
 

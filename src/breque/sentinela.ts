@@ -35,7 +35,6 @@ export interface RelatoSentinela {
   readonly dominio: string
   readonly padrao: PadraoSentinela
   readonly rotuloPadrao: string
-  readonly trechoSanitizado: string
   readonly uf: string
   readonly dataIso: string
 }
@@ -178,18 +177,19 @@ export function criarRelatoSentinela(entrada: EntradaRelatoSentinela): RelatoSen
 
   const dominio = extrairDominioSuspeito(bruto)
   const padrao = classificarPadraoSentinela(bruto)
+  // A sanitização continua como filtro de segurança, mas o texto NUNCA é
+  // devolvido nem persistido: só o tipo de sinal, domínio, UF e data.
   const trechoSanitizado = sanitizarTrechoSemPii(bruto)
   if (!trechoSanitizado || contemPii(trechoSanitizado)) return null
 
   const uf = limparUf(entrada.uf)
-  const id = sha256Hex(`sentinela-v1:${entrada.dataIso}:${uf}:${padrao}:${dominio}:${trechoSanitizado}`).slice(0, 16)
+  const id = sha256Hex(`sentinela-v1:${entrada.dataIso}:${uf}:${padrao}:${dominio}`).slice(0, 16)
 
   return {
     id,
     dominio,
     padrao,
     rotuloPadrao: ROTULO_PADRAO_SENTINELA[padrao],
-    trechoSanitizado,
     uf,
     dataIso: entrada.dataIso,
   }
@@ -273,9 +273,12 @@ export function prepararLoteSincronizacaoStub(
   if (!optInAtivo) {
     return { modo: 'local_only_v1', enviado: false, quantidadeElegivel: 0, itensSanitizados: [] }
   }
-  const itens = relatos
-    .filter((r) => !contemPii(r.trechoSanitizado))
-    .map((r) => ({ dominio: r.dominio, padrao: r.padrao, uf: r.uf, dataIso: r.dataIso }))
+  const itens = relatos.map((r) => ({
+    dominio: r.dominio,
+    padrao: r.padrao,
+    uf: r.uf,
+    dataIso: r.dataIso,
+  }))
   return {
     modo: 'local_only_v1',
     enviado: false,

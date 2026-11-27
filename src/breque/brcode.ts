@@ -8,6 +8,8 @@
  *   conferido na tela oficial do banco. Não prometemos validação antifraude.
  */
 
+import { sha256Hex } from '../core/engine/privacidade/hash'
+
 export interface CampoEmv {
   readonly id: string
   readonly valor: string
@@ -308,15 +310,32 @@ export function formatarBRL(valor: number): string {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
-/** Destino já cadastrado no cofre local (comparação por nome normalizado). */
+/**
+ * Identificador do Cofre: SHA-256 do nome normalizado com salt do aparelho.
+ * O nome nunca é gravado — apenas este identificador pseudonimizado.
+ */
+export function hashDestinoCofre(nome: string, salt = ''): string {
+  const alvo = normalizarNome(String(nome ?? ''))
+  return alvo ? sha256Hex(`breque-cofre-v1:${salt}:${alvo}`) : ''
+}
+
+/**
+ * Destino já cadastrado no cofre local.
+ * Compare por hash (novas entradas); entradas legadas com `nome` em claro
+ * continuam funcionando até serem removidas pelo usuário.
+ */
 export function destinoConhecido(
   nomeRecebedor: string,
-  cofre: readonly { nome: string }[],
+  cofre: readonly { nome?: string; hash?: string }[],
+  salt = '',
 ): boolean {
-  const alvo = normalizarNome(nomeRecebedor)
+  const alvoHash = hashDestinoCofre(nomeRecebedor, salt)
+  if (alvoHash && cofre.some((entrada) => entrada.hash === alvoHash)) return true
+
+  const alvo = normalizarNome(String(nomeRecebedor ?? ''))
   if (alvo === '') return false
   return cofre.some((entrada) => {
-    const nome = normalizarNome(entrada.nome)
+    const nome = normalizarNome(String(entrada.nome ?? ''))
     return nome !== '' && (alvo.includes(nome) || nome.includes(alvo))
   })
 }

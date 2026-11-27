@@ -4,7 +4,8 @@
  * Regras invioláveis:
  * - Zero rede no runtime: não consulta DICT nem servidores externos.
  * - Nenhuma chave Pix é armazenada em texto puro: favorecidos e denúncias
- *   usam exclusivamente hash SHA-256 determinístico da chave normalizada.
+ *   locais usam hash com salt do aparelho; o hash determinístico sem salt
+ *   serve só para comparar com o catálogo comunitário embutido.
  * - Nunca emite veredito "seguro" / selo verde nem afirma "é golpe" como certeza.
  */
 
@@ -252,7 +253,10 @@ export function classificarChavePix(chaveBruta: string): ClassificacaoChave {
   }
 }
 
-/** Hash SHA-256 determinístico da chave Pix normalizada (zero armazenamento em claro). */
+/**
+ * Hash determinístico usado APENAS para comparar com o catálogo comunitário
+ * embutido, que precisa de um valor comum entre aparelhos.
+ */
 export function hashChavePix(chaveBruta: string): string {
   const { chave } = extrairChaveEntrada(chaveBruta)
   const info = classificarChavePix(chave)
@@ -260,10 +264,24 @@ export function hashChavePix(chaveBruta: string): string {
   return sha256Hex(`breque-pix-v1:${info.tipo}:${info.normalizada}`)
 }
 
+/**
+ * Hash para persistência LOCAL, com salt gerado no aparelho.
+ * CPF e telefone são previsíveis; sem salt, o hash comunitário pode ser
+ * descoberto por força bruta. Favorecidos e denúncias locais usam este.
+ */
+export function hashChavePixLocal(chaveBruta: string, salt: string): string {
+  const { chave } = extrairChaveEntrada(chaveBruta)
+  const info = classificarChavePix(chave)
+  if (!info.normalizada) return ''
+  return sha256Hex(`breque-pix-local-v1:${salt}:${info.tipo}:${info.normalizada}`)
+}
+
 export interface OpcoesDiagnosticoEscudo {
   readonly favorecidos?: readonly FavorecidoHash[]
   readonly denunciasLocais?: readonly DenunciaHash[]
   readonly denunciasComunitarias?: readonly DenunciaHash[]
+  /** Salt local: quando informado, permite comparar hashes salvos no aparelho. */
+  readonly saltLocal?: string
 }
 
 export function diagnosticarChavePix(
@@ -273,7 +291,8 @@ export function diagnosticarChavePix(
   const { chave, extraidaDeBrCode } = extrairChaveEntrada(entradaBruta)
   const info = classificarChavePix(chave)
   const rotuloTipo = ROTULO_TIPO[info.tipo]
-  const hash = info.normalizada ? sha256Hex(`breque-pix-v1:${info.tipo}:${info.normalizada}`) : ''
+  const hash = info.normalizada ? hashChavePix(entradaBruta) : ''
+  const hashLocal = opcoes.saltLocal ? hashChavePixLocal(entradaBruta, opcoes.saltLocal) : ''
 
   const avisos: string[] = []
   if (extraidaDeBrCode) {
@@ -319,12 +338,15 @@ export function diagnosticarChavePix(
   const denunciasLocais = opcoes.denunciasLocais ?? []
   const favorecidos = opcoes.favorecidos ?? []
 
-  const bateLocal = denunciasLocais.some((d) => d.hash === hash)
+  const bateLocal = denunciasLocais.some(
+    (d) => d.hash === hash || (hashLocal !== '' && d.hash === hashLocal),
+  )
   const bateComunitaria = denunciasComunitarias.some((d) => d.hash === hash)
   const constaEmDenuncia = bateLocal || bateComunitaria
   const origemDenuncia = bateLocal ? 'local' : bateComunitaria ? 'comunitaria' : 'nenhuma'
 
-  const favorecido = favorecidos.find((f) => f.hash === hash) ?? null
+  const favorecido =
+    favorecidos.find((f) => f.hash === hash || (hashLocal !== '' && f.hash === hashLocal)) ?? null
   const ehFavorecidoVerificado = favorecido !== null
 
   const mensagemBase = `Formato reconhecido como chave ${rotuloTipo}. Isso NÃO significa que a pessoa é confiável. Confira com quem você vai pagar.`

@@ -39,7 +39,7 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).toContain('${escapeHtml(state.helpPreviewText)}')
     expect(html).toContain('${escapeHtml(state.raioX.entrada)}')
     expect(html).toContain('${escapeHtml(state.escudo.chave)}')
-    expect(html).toContain('${escapeHtml(fav.apelido)}')
+    expect(html).not.toContain('${escapeHtml(fav.apelido)}')
     expect(html).toContain('${escapeHtml(c.name)}')
   })
 
@@ -59,6 +59,16 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(sw).toContain('breque-pwa-v5')
     const vite = readFileSync(resolve(process.cwd(), 'vite.config.ts'), 'utf-8')
     expect(vite).toContain("entryFileNames: 'assets/[name].js'")
+  })
+
+  it('app.html não persiste nomes, notas, apelidos nem hashes sem salt', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).not.toContain('cofre.push({ nome')
+    expect(html).not.toContain('cofreNota')
+    expect(html).not.toContain('apelidoNovo')
+    expect(html).toContain('hashDestinoCofre(nome, SALT_LOCAL)')
+    expect(html).toContain('hashChavePixLocal(chave, SALT_LOCAL)')
+    expect(html).toContain('saltLocal: "breca.saltLocal.v1"')
   })
 
   it('app.html não promete bloqueio nem fala em ação "segura"', () => {

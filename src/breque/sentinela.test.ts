@@ -78,7 +78,9 @@ describe('Rede Sentinela — Radar de Golpes da Semana e alerta cruzado', () => 
 
     const relatos = [r1, r2, antigo].filter((x): x is NonNullable<typeof x> => x !== null)
     expect(relatos).toHaveLength(3)
-    expect(relatos.every((r) => !contemPii(r.trechoSanitizado))).toBe(true)
+    expect(relatos.every((r) => !('trechoSanitizado' in r))).toBe(true)
+    expect(JSON.stringify(relatos)).not.toContain('tk=111')
+    expect(JSON.stringify(relatos)).not.toContain('tk=222')
 
     const grupos = agruparRadarSemana(relatos, '2026-11-26', 'PA')
     expect(grupos).toHaveLength(1)
