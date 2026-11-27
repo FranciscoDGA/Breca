@@ -32,9 +32,12 @@
     html { scroll-behavior: smooth; }
     section { scroll-margin-top: 84px; }
     :focus-visible { outline: 3px solid rgba(245, 158, 11, 0.6); outline-offset: 3px; }
+    h1, h2, h3, blockquote { text-wrap: balance; }
+    p { text-wrap: pretty; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      font-feature-settings: "kern" 1;
       color: var(--text);
       background: var(--bg);
       line-height: 1.55;
@@ -222,10 +225,10 @@
     }
 
     .hero h1 {
-      font-size: 2.9rem;
-      line-height: 1.1;
+      font-size: clamp(2.1rem, 5vw, 3.05rem);
+      line-height: 1.08;
       margin: 0 0 20px;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.035em;
       font-weight: 800;
     }
 
@@ -273,6 +276,57 @@
       font-size: 0.82rem;
       color: #a9c9d7;
       margin-top: 16px;
+    }
+
+    .momentos {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 24px;
+      padding: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .momentos a {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #dbeaf1;
+    }
+
+    .momentos a:hover { color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+    .momentos a.is-active { background: #fbc96a; color: #0f1b24; }
+
+    /* CENA DO PRODUTO */
+    .hero-scene { position: relative; max-width: 370px; margin: 0 auto; }
+
+    .hero-float {
+      position: absolute;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow-lg);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.35;
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-float strong { display: block; color: var(--brand); font-size: 0.72rem; font-weight: 700; }
+    .hero-float--top { left: -34px; top: 7%; }
+    .hero-float--bottom { right: -28px; bottom: 9%; }
+    .hero-float-dot {
+      width: 9px; height: 9px; flex: none; border-radius: 50%;
+      background: var(--amber-bright); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18);
     }
 
     /* MOCKUP DE CELULAR */
@@ -373,9 +427,10 @@
     }
 
     .section-head h2 {
-      font-size: 2rem;
-      line-height: 1.2;
+      font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+      line-height: 1.16;
       margin: 0 0 12px;
+      letter-spacing: -0.02em;
       color: var(--brand);
     }
 
@@ -386,6 +441,26 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 22px;
     }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .bento-item {
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .bento-item--wide { grid-column: span 2; }
+    .bento-item:hover { transform: translateY(-3px); border-color: var(--amber-border); box-shadow: 0 16px 34px rgba(11, 39, 52, 0.09); }
+    .bento-item .step-num { background: var(--amber-bg); color: var(--amber); }
+    .bento-item--wide h3 { font-size: 1.24rem; }
+    .bento-item--wide p { font-size: 0.98rem; }
+    .step-card[id] { scroll-margin-top: 100px; }
 
     .chat-bubble {
       background: #ffffff;
@@ -560,6 +635,34 @@
 
     .fact-card p { margin: 0; color: var(--muted); font-size: 0.92rem; }
 
+    .manifesto {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(245, 158, 11, 0.18), transparent 42%),
+        linear-gradient(135deg, #0b2430 0%, #123d4f 100%);
+      color: #ffffff;
+      padding: 96px 0;
+    }
+
+    .manifesto::before {
+      content: "“";
+      position: absolute;
+      left: 6%;
+      top: -70px;
+      font-family: Georgia, serif;
+      font-size: 20rem;
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+    }
+
+    .manifesto-inner { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; text-align: center; }
+    .manifesto .section-eyebrow { color: #fde68a; }
+    .manifesto blockquote { margin: 0 0 18px; font-size: clamp(2rem, 4.6vw, 3.2rem); line-height: 1.12; letter-spacing: -0.03em; font-weight: 800; }
+    .manifesto blockquote em { font-style: normal; color: #fbc96a; }
+    .manifesto p { margin: 0 auto; max-width: 680px; color: #cfe1e9; font-size: 1.05rem; }
+
     .mobile-cta { display: none; }
 
     @media (max-width: 860px) {
@@ -567,10 +670,19 @@
       header .container { padding-left: 24px; padding-right: 24px; }
       .logo { font-size: 1.05rem; gap: 8px; }
       .logo svg { width: 24px; height: 24px; }
-      .hero-grid, .grid-3, .trust-grid, .family-banner, .fact-grid { grid-template-columns: 1fr; }
+      .hero-grid, .grid-3, .bento, .trust-grid, .family-banner, .fact-grid { grid-template-columns: 1fr; }
+      .bento-item--wide { grid-column: auto; }
+      .bento-item { min-height: 0; }
       .hero { padding: 56px 0 64px; }
       .hero h1 { font-size: 2.15rem; }
       .hero p { font-size: 1rem; }
+      .hero-scene { display: flex; flex-direction: column; gap: 12px; max-width: 330px; }
+      .hero-float { position: static; align-self: center; max-width: 320px; }
+      .hero-float--top { order: -1; }
+      .momentos { width: 100%; justify-content: space-between; }
+      .momentos a { flex: 1; padding: 8px 6px; font-size: 0.76rem; text-align: center; }
+      .manifesto { padding: 72px 0; }
+      .manifesto::before { font-size: 12rem; left: -2%; }
       .family-banner { padding: 28px 22px; }
       .footer-grid { grid-template-columns: 1fr; gap: 22px; }
 
@@ -624,6 +736,8 @@
 
     @media (max-width: 520px) {
       .hero h1 { font-size: 1.85rem; }
+      .manifesto blockquote { font-size: 1.8rem; }
+      .momentos a { font-size: 0.72rem; }
       .hero-actions .btn-primary, .hero-actions .btn-ghost-light { width: 100%; }
       .trust-grid { gap: 8px; }
       .trust-grid div { font-size: 0.78rem; }
@@ -680,24 +794,39 @@
           <li>Sem ler seu WhatsApp</li>
           <li>100% local no aparelho</li>
         </ul>
+        <div class="momentos" role="group" aria-label="Escolha seu momento">
+          <a href="#situacoes" class="is-active">Vou pagar agora</a>
+          <a href="#recuperacao">Já paguei</a>
+          <a href="#treino">Quero treinar</a>
+        </div>
         <div class="hero-note">Sem cartão e sem permissão invasiva. <a href="/privacidade.html" style="color:#fde68a; text-decoration:underline;">Veja como tratamos seus dados</a>.</div>
       </div>
 
-      <div class="phone-mock" aria-label="Prévia do aplicativo BREQUE">
-        <div class="mock-screen">
-          <div class="mock-top">
-            <span>BREQUE</span>
-            <span style="font-size:0.72rem; opacity:0.85;">100% offline</span>
-          </div>
-          <div class="mock-body">
-            <div class="mock-amber">
-              <div style="font-size:0.72rem; font-weight:800; color:#b45309; text-transform:uppercase;">Escudo do Destinatário • Antes do Pix</div>
-              <div style="font-weight:800; font-size:0.95rem; margin:4px 0;">Chave nova? Pause e confira antes de apertar confirmar.</div>
-              <div style="font-size:0.78rem; color:#4b5c6b;">Identificador com salt só neste aparelho, sem selo falso de "seguro".</div>
+      <div class="hero-scene">
+        <div class="hero-float hero-float--top">
+          <span class="hero-float-dot"></span>
+          <span>Mensagem nova<strong>Pausa antes de responder</strong></span>
+        </div>
+        <div class="phone-mock" aria-label="Prévia do aplicativo BREQUE">
+          <div class="mock-screen">
+            <div class="mock-top">
+              <span>BREQUE</span>
+              <span style="font-size:0.72rem; opacity:0.85;">100% offline</span>
             </div>
-            <div class="mock-card"><strong>Falar com meu banco agora (1 toque)</strong><br/><span style="color:#4b5c6b;">Catálogo offline com canais verificados em 26/11/2026 e fonte oficial.</span></div>
-            <div class="mock-card"><strong>Já fiz Pix ou passei dados (Mesa 2.0)</strong><br/><span style="color:#4b5c6b;">Prazos reais do MED: pedido até 80 dias, análise em 7, devolução em até 96h (fonte: Banco Central).</span></div>
+            <div class="mock-body">
+              <div class="mock-amber">
+                <div style="font-size:0.72rem; font-weight:800; color:#b45309; text-transform:uppercase;">Escudo do Destinatário • Antes do Pix</div>
+                <div style="font-weight:800; font-size:0.95rem; margin:4px 0;">Chave nova? Pause e confira antes de apertar confirmar.</div>
+                <div style="font-size:0.78rem; color:#4b5c6b;">Identificador com salt só neste aparelho, sem selo falso de "seguro".</div>
+              </div>
+              <div class="mock-card"><strong>Falar com meu banco agora (1 toque)</strong><br/><span style="color:#4b5c6b;">Catálogo offline com canais verificados em 26/11/2026 e fonte oficial.</span></div>
+              <div class="mock-card"><strong>Já fiz Pix ou passei dados (Mesa 2.0)</strong><br/><span style="color:#4b5c6b;">Prazos reais do MED: pedido até 80 dias, análise em 7, devolução em até 96h (fonte: Banco Central).</span></div>
+            </div>
           </div>
+        </div>
+        <div class="hero-float hero-float--bottom">
+          <span class="hero-float-dot"></span>
+          <span>Canal oficial<strong>1 toque, sem digitar</strong></span>
         </div>
       </div>
     </div>
@@ -777,6 +906,14 @@
     </div>
   </section>
 
+  <section id="manifesto" class="manifesto">
+    <div class="container manifesto-inner">
+      <span class="section-eyebrow">O princípio do BREQUE</span>
+      <blockquote>A decisão continua <em>sua.</em></blockquote>
+      <p>Ele cria um segundo de pausa, nunca um bloqueio. Sem selo verde, sem promessa de devolução e sem vigilância — só a pergunta certa na hora certa.</p>
+    </div>
+  </section>
+
   <section id="como-funciona">
     <div class="container">
       <div class="section-head">
@@ -795,7 +932,7 @@
           <h3>Olhe a saída antes do Pix</h3>
           <p>Cole a chave no <strong>Escudo do Destinatário</strong> e ligue você mesmo para o canal oficial na <strong>Discagem Segura</strong> (1 toque, 100% offline).</p>
         </div>
-        <div class="step-card">
+        <div class="step-card" id="recuperacao">
           <div class="step-num">3</div>
           <h3>Aja rápido com o MED</h3>
           <p>Se já fez Pix ou passou dados, a <strong>Mesa de Recuperação 2.0</strong> guia o passo a passo com prazos reais do MED: pedido até 80 dias, análise em 7 dias e devolução em até 96h (fonte: Banco Central).</p>
@@ -811,33 +948,33 @@
         <h2>Não é só “tomar cuidado”. É conferir antes do dinheiro sair.</h2>
         <p>Tudo roda no seu aparelho, sem ler WhatsApp, sem pedir senha e sem prometer que algo “está seguro”.</p>
       </div>
-      <div class="grid-3">
-        <div class="step-card">
+      <div class="bento">
+        <div class="step-card bento-item bento-item--wide">
           <div class="step-num">1</div>
           <h3>Escudo do Destinatário</h3>
           <p>Antes de apertar confirmar, verifique a chave Pix. <strong>Os apps antivírus analisam a mensagem. O BREQUE olha a saída: para quem você vai pagar.</strong> Favorecidos salvos apenas como hash SHA-256 — nenhuma chave em texto puro.</p>
         </div>
-        <div class="step-card">
+        <div class="step-card bento-item">
           <div class="step-num">2</div>
           <h3>Jornada de 24h (Espera)</h3>
           <p>Configure seu compromisso (ex.: Pix novo acima de R$ 200 → esperar 1 hora). <strong>Quando o golpista pressiona, você ganha uma desculpa oficial: “meu app de segurança aplicou um período de espera obrigatório”.</strong></p>
         </div>
-        <div class="step-card">
+        <div class="step-card bento-item">
           <div class="step-num">3</div>
           <h3>Mesa de Recuperação 2.0 (MED)</h3>
           <p>Já fez Pix ou passou dados? Assistente em 5 passos com prazos verificados do <strong>Banco Central</strong> (pedido em até 80 dias, análise em 7 dias, devolução em até 96h, com bloqueios sucessivos) e relato em .txt/.json/PDF com hash SHA-256.</p>
         </div>
-        <div class="step-card">
+        <div class="step-card bento-item">
           <div class="step-num">4</div>
           <h3>Discagem Segura (o “159 do app”)</h3>
           <p>Memorize seu banco 1 vez e ligue para o canal oficial em 1 toque, mesmo sem internet. Cada telefone mostra quando usar, fonte oficial e data de verificação.</p>
         </div>
-        <div class="step-card">
+        <div class="step-card bento-item bento-item--wide" id="treino">
           <div class="step-num">5</div>
           <h3>Vacina de 60 Segundos + Check-up</h3>
           <p>Reforço periódico a cada 60 dias com golpes reais da safra (incluindo o caso real de portal de notícia falso no Pará / Banpará) + check-up rápido de 6 perguntas para gerar o Briefing Familiar.</p>
         </div>
-        <div class="step-card">
+        <div class="step-card bento-item">
           <div class="step-num">6</div>
           <h3>Radar de Golpes (Opt-in Local)</h3>
           <p>Reporte padrões e domínios suspeitos em 2 toques com filtro automático que remove CPF, telefone, e-mail, chave Pix e valores — 100% local e desligado por padrão.</p>
