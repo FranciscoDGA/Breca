@@ -60,6 +60,19 @@ import {
   hashChavePixLocal,
 } from './escudoPix'
 import { avaliarAudioSuspeito } from './fraudeVoz'
+import {
+  AVISO_LIMITE_PLANO_PESSOAL,
+  OPCOES_PAPEL_APOIO,
+  REGRAS_PLANO_PESSOAL,
+  alternarRegraPlano,
+  criarPlanoPessoalSugerido,
+  criarPlanoPessoalVazio,
+  definirPapelApoio,
+  normalizarPlanoPessoal,
+  obterOpcaoPapelApoio,
+  resumirPlanoParaCopia,
+  selecionarRegrasParaPressao,
+} from './planoPessoal'
 
 declare global {
   interface Window {
@@ -128,6 +141,19 @@ declare global {
     }
     BREQUE_VOZ?: {
       avaliarAudioSuspeito: typeof avaliarAudioSuspeito
+    }
+    BREQUE_PLANO_PESSOAL?: {
+      avisoLimite: string
+      regras: typeof REGRAS_PLANO_PESSOAL
+      opcoesApoio: typeof OPCOES_PAPEL_APOIO
+      criarVazio: typeof criarPlanoPessoalVazio
+      criarSugerido: typeof criarPlanoPessoalSugerido
+      normalizar: typeof normalizarPlanoPessoal
+      alternarRegra: typeof alternarRegraPlano
+      definirPapelApoio: typeof definirPapelApoio
+      obterOpcaoApoio: typeof obterOpcaoPapelApoio
+      selecionarParaPressao: typeof selecionarRegrasParaPressao
+      resumirParaCopia: typeof resumirPlanoParaCopia
     }
   }
 }
@@ -207,6 +233,20 @@ window.BREQUE_SENTINELA = {
 
 window.BREQUE_VOZ = {
   avaliarAudioSuspeito,
+}
+
+window.BREQUE_PLANO_PESSOAL = {
+  avisoLimite: AVISO_LIMITE_PLANO_PESSOAL,
+  regras: REGRAS_PLANO_PESSOAL,
+  opcoesApoio: OPCOES_PAPEL_APOIO,
+  criarVazio: criarPlanoPessoalVazio,
+  criarSugerido: criarPlanoPessoalSugerido,
+  normalizar: normalizarPlanoPessoal,
+  alternarRegra: alternarRegraPlano,
+  definirPapelApoio,
+  obterOpcaoApoio: obterOpcaoPapelApoio,
+  selecionarParaPressao: selecionarRegrasParaPressao,
+  resumirParaCopia: resumirPlanoParaCopia,
 }
 
 window.dispatchEvent(new CustomEvent('breque:modulos-prontos'))

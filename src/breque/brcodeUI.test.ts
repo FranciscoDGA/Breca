@@ -18,3 +18,23 @@ describe('ponte local de sinais de voz', () => {
     expect(resultado.avisoLimiteDeepfake).toMatch(/não pode afirmar/)
   })
 })
+
+describe('ponte local do plano de proteção pessoal', () => {
+  it('expõe regras fixas, normalização sem PII e seleção contextual para pressão', () => {
+    const api = window.BREQUE_PLANO_PESSOAL
+    expect(api).toBeDefined()
+    expect(api!.regras).toHaveLength(6)
+
+    const limpo = api!.normalizar({
+      regrasIds: ['nao_compartilhar_codigo', 'qualquer_texto_com_nome'],
+      papelApoio: 'familiar',
+      nomeContato: 'Fulano',
+    })
+    expect(limpo.regrasIds).toEqual(['nao_compartilhar_codigo'])
+    expect(limpo.papelApoio).toBe('familiar')
+
+    const lembretes = api!.selecionarParaPressao(limpo, 'banco', 3)
+    expect(lembretes).toHaveLength(1)
+    expect(lembretes[0].id).toBe('nao_compartilhar_codigo')
+  })
+})

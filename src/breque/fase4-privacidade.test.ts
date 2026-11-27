@@ -16,6 +16,7 @@ const ARQUIVOS_NUCLEO = [
   'sentinela.ts',
   'posIncidente.ts',
   'compartilhamento.ts',
+  'planoPessoal.ts',
 ]
 
 const TERMOS_PROIBIDOS = [
