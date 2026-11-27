@@ -16,7 +16,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:motor": "node scripts/verificar-motor-puro.mjs"
+    "check:motor": "node scripts/verificar-motor-puro.mjs",
+    "check:seguranca": "npm run lint && npm run check:motor && npm run check:catalogo && vitest run src/breque/seguranca.test.ts src/breque/fase4-privacidade.test.ts && npm audit --omit=dev"
   },
   "dependencies": {
     "react": "^19.1.0",
