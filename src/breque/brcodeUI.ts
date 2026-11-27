@@ -59,6 +59,7 @@ import {
   hashChavePix,
   hashChavePixLocal,
 } from './escudoPix'
+import { avaliarAudioSuspeito } from './fraudeVoz'
 
 declare global {
   interface Window {
@@ -124,6 +125,9 @@ declare global {
       criarRelatoSentinela: typeof criarRelatoSentinela
       agruparRadarSemana: typeof agruparRadarSemana
       dominioNoRadar: typeof dominioNoRadar
+    }
+    BREQUE_VOZ?: {
+      avaliarAudioSuspeito: typeof avaliarAudioSuspeito
     }
   }
 }
@@ -199,6 +203,10 @@ window.BREQUE_SENTINELA = {
   criarRelatoSentinela,
   agruparRadarSemana,
   dominioNoRadar,
+}
+
+window.BREQUE_VOZ = {
+  avaliarAudioSuspeito,
 }
 
 window.dispatchEvent(new CustomEvent('breque:modulos-prontos'))

@@ -122,6 +122,18 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect((html.match(/<details\b/g) || []).length).toBeGreaterThanOrEqual(5)
   })
 
+  it('breques extremos usam sinais explícitos e não persistem dados', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).toContain('function registrarSinalSeguro(tipo)')
+    expect(html).toContain('state.linhaTempo.push({ tipo: String(tipo), em: new Date().toISOString() })')
+    expect(html).toContain('function sairSemExplicar()')
+    expect(html).toContain('function alternarModoVisitante()')
+    expect(html).toContain('function avaliarSinaisVozLocal()')
+    expect(html).toContain('PASSOS_AUDIO_EXTREMOS')
+    expect(html).not.toMatch(/linhaTempo[^\n]*(verifyText|chave|valor)/i)
+    expect(html).not.toMatch(/gravarLocal\([^\n]*linhaTempo/)
+  })
+
   it('landing tem menu mobile acessível, FAQ ampliada e páginas institucionais', () => {
     const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf-8')
     expect(html).toContain('data-menu-toggle')
