@@ -31,14 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.querySelectorAll('[data-copiar]').forEach((botaoCopia) => {
+    const rotuloOriginal = botaoCopia.textContent || 'Copiar'
     botaoCopia.addEventListener('click', async () => {
       const texto = botaoCopia.getAttribute('data-copiar') || ''
       const aviso = document.getElementById(botaoCopia.getAttribute('data-aviso') || '')
       try {
         await navigator.clipboard.writeText(texto)
-        if (aviso) aviso.textContent = 'Copiado neste aparelho. Nada foi enviado.'
+        botaoCopia.textContent = '✓ Copiado!'
+        if (aviso) aviso.textContent = 'Modelo copiado para a área de transferência. Cole (Ctrl+V) no seu e-mail quando quiser enviar — nada foi enviado por este site.'
+        window.setTimeout(() => {
+          botaoCopia.textContent = rotuloOriginal
+        }, 2600)
       } catch {
-        if (aviso) aviso.textContent = 'Não foi possível copiar automaticamente. Selecione o texto manualmente.'
+        if (aviso) aviso.textContent = 'Não foi possível copiar automaticamente. Selecione e copie o modelo exibido acima manualmente.'
       }
     })
   })

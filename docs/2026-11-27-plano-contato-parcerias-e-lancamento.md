@@ -11,9 +11,14 @@ Bancos, cooperativas de crédito e órgãos públicos têm filtros rígidos de c
 
 A combinação recomendada para ativar na página `public/contato.html`:
 
-1. **E-mail corporativo com domínio próprio (prioritário para bancos)**
-   - Exemplos: `parcerias@breque.com.br` ou `contato@breque.app`.
-   - Exibir o endereço na página junto com o botão **"Copiar e-mail"** e o botão **"Copiar roteiro de parceria"** (já implementado em `public/contato.html`).
+1. **E-mail corporativo com domínio próprio (prioritário para bancos — custo ~R$ 40/ano)**
+   - **Passo 1 — Registrar domínio:** registrar um `.com.br` no **Registro.br** (~R$ 40/ano, ex.: `breque.com.br` ou alternativa disponível).
+   - **Passo 2 — Apontar na Vercel (grátis):** em *Vercel → Project Settings → Domains*, conectar o domínio próprio (HTTPS automático).
+   - **Passo 3 — Criar e-mail profissional sem mensalidade:**
+     - **Opção 1 (enviar e receber):** **Zoho Mail Free** (plano gratuito para 1 domínio, até 5 contas como `parcerias@...` e `contato@...`).
+     - **Opção 2 (encaminhar para Gmail dedicado):** **Cloudflare Email Routing** (grátis, encaminha `parcerias@...` para um Gmail exclusivo do projeto, sem expor e-mail pessoal).
+   - **Alternativa temporária (R$ 0):** se precisar ativar contato antes de comprar o domínio, criar um Gmail exclusivo do projeto (ex.: `contato.breque@...`), nunca usando e-mail ou telefone pessoais.
+   - Exibir o endereço na página junto com o botão **"Copiar e-mail"** e o bloco visível do **"Roteiro de parceria"** (já estruturado em `public/contato.html`).
    - Manter **sem formulário HTML**, **sem `mailto:`** (para respeitar os testes em `src/breque/seguranca.test.ts`) e **sem envio automático**.
 
 2. **LinkedIn do fundador e/ou página institucional do BREQUE**
