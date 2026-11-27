@@ -23,10 +23,15 @@
       --bg: #ffffff;
       --soft: #f5f7f9;
       --border: #dfe6ec;
+      --shadow-sm: 0 2px 10px rgba(11, 39, 52, 0.06);
+      --shadow-lg: 0 24px 60px rgba(11, 39, 52, 0.16);
+      --radius: 18px;
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
+    section { scroll-margin-top: 84px; }
+    :focus-visible { outline: 3px solid rgba(245, 158, 11, 0.6); outline-offset: 3px; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
@@ -79,6 +84,37 @@
       font-weight: 600;
       color: var(--muted);
     }
+
+    .nav-secondary { display: none; }
+
+    .menu-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--brand);
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .menu-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .menu-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     .btn-primary {
       display: inline-flex;
@@ -135,12 +171,28 @@
 
     /* HERO */
     .hero {
-      background: linear-gradient(150deg, #0b2430 0%, #0f2f3d 52%, #194d63 100%);
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 82% 18%, rgba(245, 158, 11, 0.24), transparent 38%),
+        radial-gradient(circle at 8% 92%, rgba(56, 189, 248, 0.18), transparent 42%),
+        linear-gradient(150deg, #0b2430 0%, #0f2f3d 52%, #194d63 100%);
       color: #ffffff;
-      padding: 64px 0 72px;
+      padding: 76px 0 84px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -60% 40%;
+      height: 420px;
+      background: radial-gradient(ellipse, rgba(255, 255, 255, 0.08), transparent 65%);
+      pointer-events: none;
     }
 
     .hero-grid {
+      position: relative;
+      z-index: 1;
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
       gap: 48px;
@@ -151,34 +203,69 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(253, 230, 138, 0.35);
       color: #fde68a;
-      padding: 6px 14px;
+      padding: 7px 15px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
+      letter-spacing: 0.01em;
     }
 
     .hero h1 {
-      font-size: 2.65rem;
-      line-height: 1.14;
-      margin: 0 0 18px;
-      letter-spacing: -0.02em;
+      font-size: 2.9rem;
+      line-height: 1.1;
+      margin: 0 0 20px;
+      letter-spacing: -0.03em;
+      font-weight: 800;
     }
+
+    .hero h1 em { font-style: normal; color: #fbc96a; }
 
     .hero p {
-      font-size: 1.08rem;
-      color: #d6e7ef;
-      margin: 0 0 28px;
-      max-width: 560px;
+      font-size: 1.12rem;
+      color: #dbeaf1;
+      margin: 0 0 30px;
+      max-width: 590px;
+      line-height: 1.65;
     }
 
-    .hero-note {
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-ghost-light {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      border-radius: 999px;
+      padding: 13px 22px;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .hero-proof {
+      list-style: none;
+      margin: 22px 0 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      color: #bcd8e4;
       font-size: 0.84rem;
-      color: #b7d3e0;
-      margin-top: 14px;
+      font-weight: 600;
+    }
+
+    .hero-proof li::before { content: "✓"; color: #fbbf24; margin-right: 6px; font-weight: 800; }
+
+    .hero-note {
+      font-size: 0.82rem;
+      color: #a9c9d7;
+      margin-top: 16px;
     }
 
     /* MOCKUP DE CELULAR */
@@ -234,20 +321,30 @@
 
     /* FAIXA DE CONFIANÇA */
     .trust-strip {
-      background: var(--soft);
+      background: linear-gradient(180deg, #ffffff 0%, var(--soft) 100%);
       border-bottom: 1px solid var(--border);
-      padding: 20px 0;
+      padding: 22px 0;
     }
 
     .trust-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
       text-align: center;
-      font-size: 0.9rem;
+    }
+
+    .trust-grid div {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 10px;
+      font-size: 0.87rem;
       font-weight: 700;
       color: var(--brand);
+      box-shadow: var(--shadow-sm);
     }
+
+    .trust-grid div::before { content: "●"; color: var(--amber-bright); margin-right: 7px; font-size: 0.7rem; }
 
     section { padding: 72px 0; }
     .section-soft { background: var(--soft); }
@@ -380,18 +477,31 @@
     details {
       background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 160ms ease, box-shadow 160ms ease;
     }
+
+    details[open] { border-color: var(--amber-border); box-shadow: 0 12px 30px rgba(180, 83, 9, 0.08); }
 
     summary {
       font-weight: 700;
       cursor: pointer;
       color: var(--brand);
       font-size: 1rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
     }
 
-    details p { margin: 10px 0 0; color: var(--muted); font-size: 0.94rem; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--amber); font-size: 1.3rem; line-height: 1; font-weight: 500; }
+    details[open] summary::after { content: "−"; }
+
+    details p { margin: 12px 0 0; color: var(--muted); font-size: 0.94rem; line-height: 1.65; }
 
     .final-cta {
       background: var(--brand-soft);
@@ -402,15 +512,113 @@
     footer {
       background: #0b222c;
       color: #c2d6e0;
-      padding: 40px 0;
+      padding: 48px 0;
       font-size: 0.88rem;
     }
 
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 28px;
+    }
+
+    .footer-grid > div { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .footer-grid strong { color: #ffffff; margin-bottom: 4px; }
+    .footer-grid a { color: #c2d6e0; }
+    .footer-grid a:hover { color: #fde68a; }
+
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .fact-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--amber-bright);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .fact-card strong {
+      display: block;
+      font-size: 1.8rem;
+      color: var(--brand);
+      line-height: 1.1;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .fact-card p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+    .mobile-cta { display: none; }
+
     @media (max-width: 860px) {
-      .hero-grid, .grid-3, .trust-grid, .family-banner { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 2rem; }
-      .nav-links a:not(.btn-dark) { display: none; }
+      body { padding-bottom: 72px; }
+      .hero-grid, .grid-3, .trust-grid, .family-banner, .fact-grid { grid-template-columns: 1fr; }
+      .hero { padding: 56px 0 64px; }
+      .hero h1 { font-size: 2.15rem; }
+      .hero p { font-size: 1rem; }
       .family-banner { padding: 28px 22px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 22px; }
+
+      .menu-toggle { display: flex; }
+
+      .nav-links {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: #ffffff;
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+        padding: 12px 20px 20px;
+      }
+
+      .nav-links.open { display: flex; }
+      .nav-links > a:not(.btn-dark) { padding: 11px 0; border-bottom: 1px solid var(--border); }
+      .nav-links .btn-dark { margin-top: 14px; }
+
+      .nav-secondary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        padding-top: 12px;
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+
+      .mobile-cta {
+        display: flex;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 40;
+        gap: 10px;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        background: rgba(255, 255, 255, 0.96);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -8px 24px rgba(11, 39, 52, 0.08);
+      }
+
+      .mobile-cta .btn-primary { flex: 1; padding: 12px 16px; font-size: 0.9rem; }
+      .mobile-cta .btn-dark { padding: 12px 16px; font-size: 0.88rem; }
+    }
+
+    @media (max-width: 520px) {
+      .hero h1 { font-size: 1.85rem; }
+      .hero-actions .btn-primary, .hero-actions .btn-ghost-light { width: 100%; }
+      .trust-grid { gap: 8px; }
+      .trust-grid div { font-size: 0.78rem; }
+      section { padding: 52px 0; }
+      .section-head h2 { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -425,12 +633,21 @@
         </svg>
         BREQUE
       </a>
-      <nav class="nav-links">
+      <button class="menu-toggle" type="button" data-menu-toggle aria-controls="nav-principal" aria-expanded="false" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="nav-principal">
         <a href="#situacoes">Quando usar</a>
         <a href="#recursos">Recursos</a>
         <a href="#como-funciona">Como funciona</a>
         <a href="#planos">Planos</a>
-        <a href="#baixar" class="btn-dark" style="padding:10px 18px; font-size:0.88rem;">Baixar o app</a>
+        <div class="nav-secondary">
+          <a href="/sobre.html">Sobre</a>
+          <a href="/contato.html">Contato</a>
+          <a href="/privacidade.html">Privacidade</a>
+          <a href="/termos.html">Termos</a>
+        </div>
+        <a href="/app.html" class="btn-dark" style="padding:10px 18px; font-size:0.88rem;">Baixar o app</a>
       </nav>
     </div>
   </header>
@@ -438,15 +655,22 @@
   <section class="hero">
     <div class="container hero-grid">
       <div>
-        <span class="hero-pill">O BREQUE não substitui o antivírus, o banco, a polícia ou o seu gerente. Ele é o segundo antes do Pix.</span>
-        <h1>Golpes não invadem seu celular. Eles apressam a sua decisão.</h1>
+        <span class="hero-pill">O segundo antes do Pix • Apoio à decisão, não garantia</span>
+        <h1>Golpes não invadem seu celular. <em>Eles apressam a sua decisão.</em></h1>
         <p>
-          O BREQUE ajuda você e sua família a pausar na hora do susto, verificar a chave Pix antes de pagar, ligar para o canal oficial do seu banco em 1 toque e agir com os prazos reais do MED se algo já aconteceu.
+          Você tem poucos segundos entre a mensagem suspeita e o Pix. O BREQUE transforma esse susto em uma pausa: confira a chave no aparelho, ligue para o canal oficial em 1 toque e siga os prazos reais do MED se algo já aconteceu.
         </p>
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <a href="/app.html" class="btn-primary">Testar o BREQUE grátis agora →</a>
+        <div class="hero-actions">
+          <a href="/app.html" class="btn-primary">Testar grátis em 1 minuto →</a>
+          <a href="#como-funciona" class="btn-ghost-light">Ver como funciona ↓</a>
         </div>
-        <div class="hero-note">Grátis • Sem criar conta • Sem pedir senhas • 100% local no aparelho (LGPD)</div>
+        <ul class="hero-proof">
+          <li>Sem cadastro</li>
+          <li>Sem senha ou CPF</li>
+          <li>Sem ler seu WhatsApp</li>
+          <li>100% local no aparelho</li>
+        </ul>
+        <div class="hero-note">Sem cartão e sem permissão invasiva. <a href="/privacidade.html" style="color:#fde68a; text-decoration:underline;">Veja como tratamos seus dados</a>.</div>
       </div>
 
       <div class="phone-mock" aria-label="Prévia do aplicativo BREQUE">
@@ -459,7 +683,7 @@
             <div class="mock-amber">
               <div style="font-size:0.72rem; font-weight:800; color:#b45309; text-transform:uppercase;">Escudo do Destinatário • Antes do Pix</div>
               <div style="font-weight:800; font-size:0.95rem; margin:4px 0;">Chave nova? Pause e confira antes de apertar confirmar.</div>
-              <div style="font-size:0.78rem; color:#4b5c6b;">Verifica o formato no aparelho (só hash SHA-256), sem selo falso de "seguro".</div>
+              <div style="font-size:0.78rem; color:#4b5c6b;">Identificador com salt só neste aparelho, sem selo falso de "seguro".</div>
             </div>
             <div class="mock-card"><strong>Falar com meu banco agora (1 toque)</strong><br/><span style="color:#4b5c6b;">Catálogo offline com canais verificados em 26/11/2026 e fonte oficial.</span></div>
             <div class="mock-card"><strong>Já fiz Pix ou passei dados (Mesa 2.0)</strong><br/><span style="color:#4b5c6b;">Prazos reais do MED: pedido até 80 dias, análise em 7, devolução em até 96h (fonte: Banco Central).</span></div>
@@ -474,6 +698,7 @@
       <div>Zero senhas ou dados bancários pedidos</div>
       <div>Processamento 100% local no aparelho (LGPD)</div>
       <div>Nenhuma chave Pix guardada em texto puro</div>
+      <div>Canais oficiais com fonte e revisão trimestral</div>
     </div>
   </div>
 
@@ -523,6 +748,22 @@
           </ul>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section id="fatos" class="section-soft">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-eyebrow">Fatos verificáveis</span>
+        <h2>Sem número inflado. Sem promessa de eficácia.</h2>
+        <p>O que você vê aqui é função disponível e prazo oficial — não taxa de sucesso inventada.</p>
+      </div>
+      <div class="fact-grid">
+        <div class="fact-card"><strong>13</strong><p>instituições no catálogo offline, cada contato com fonte oficial e data de verificação.</p></div>
+        <div class="fact-card"><strong>80 dias</strong><p>para pedir o MED após o Pix, conforme o Banco Central. A análise e a devolução têm prazos próprios.</p></div>
+        <div class="fact-card"><strong>1 toque</strong><p>para ligar para o canal oficial salvo no catálogo — sem digitar número suspeito recebido por mensagem.</p></div>
+      </div>
+      <p style="text-align:center; color:var(--muted); font-size:0.86rem; margin:22px auto 0; max-width:680px;">O BREQUE não mede “taxa de golpes evitados” e não afirma que qualquer pagamento está seguro. A decisão continua sua.</p>
     </div>
   </section>
 
@@ -758,16 +999,52 @@
       </div>
       <div class="faq-list">
         <details open>
-          <summary>Posso confiar? O BREQUE pede senha do banco ou lê meu WhatsApp?</summary>
-          <p>Não. O BREQUE nunca pede senha, código de SMS, CPF ou número de cartão, não acessa seu WhatsApp nem seu banco, e nunca salva chave Pix em texto puro. Tudo roda localmente no seu aparelho.</p>
+          <summary>O BREQUE pede senha do banco, CPF ou lê meu WhatsApp?</summary>
+          <p>Não. Ele nunca pede senha, código de SMS, CPF ou número de cartão, não acessa seu WhatsApp nem seu banco e não pede permissão de notificações, chamadas, câmera ou localização. Tudo roda no seu aparelho.</p>
         </details>
         <details>
-          <summary>O BREQUE garante que nunca vou cair em golpe ou que vou recuperar meu dinheiro?</summary>
-          <p>Não — e desconfie de quem promete isso. O BREQUE é um apoio à decisão: ajuda você a pausar sob pressão, verificar por outro canal e organizar rapidamente os passos junto ao seu banco (como o MED: pedido em até 80 dias, análise em 7 dias e devolução em até 96h, conforme o Banco Central), cuja análise depende do banco.</p>
+          <summary>Ele garante que vou evitar golpes ou recuperar meu dinheiro?</summary>
+          <p>Não — e desconfie de quem promete isso. O BREQUE é apoio à decisão: ajuda a pausar sob pressão, conferir por outro canal e organizar os passos com o banco. A contestação (MED) tem prazos oficiais — pedido em até 80 dias, análise em até 7 dias e devolução em até 96h —, mas a decisão sobre devolver é do banco.</p>
+        </details>
+        <details>
+          <summary>Já fiz o Pix. O que o app faz por mim agora?</summary>
+          <p>Abre a Mesa de Recuperação com a linha do tempo do MED, o que anotar, o que evitar (como pagar “intermediário” para estornar) e um relato organizado para levar ao banco ou à delegacia. Ele não acessa seu banco e não promete devolução.</p>
+        </details>
+        <details>
+          <summary>O que acontece com a chave Pix que eu colo no Escudo?</summary>
+          <p>Ela não é guardada em texto puro. O app grava só um identificador com salt criado no seu aparelho; o hash comum serve apenas para comparar com a lista comunitária embutida. Você pode apagar tudo pelo botão “Apagar meus dados” dentro do app.</p>
+        </details>
+        <details>
+          <summary>Eu posso sair da pausa se estiver com pressa?</summary>
+          <p>Pode, em 1 toque. O BREQUE não bloqueia pagamento nem ligação: ele só aumenta o atrito para você ter um segundo de cabeça fria. Nenhuma ação sua é impedida.</p>
+        </details>
+        <details>
+          <summary>Como sei que o número do banco no catálogo é oficial?</summary>
+          <p>Cada contato traz fonte oficial e data de verificação, com revisão trimestral. Ainda assim, confira sempre pelo verso do cartão, pelo app oficial do banco ou pela central conhecida. O catálogo é apoio: ausência dele não prova que um número é golpe.</p>
         </details>
         <details>
           <summary>Preciso baixar na Google Play ou App Store?</summary>
-          <p>Não precisa. Ele funciona como aplicativo instalável direto pelo navegador (PWA): basta abrir no celular e tocar em “Instalar” para colocar o ícone na tela inicial.</p>
+          <p>Não. É um PWA: abra no celular e use “Adicionar à tela inicial” no navegador. No Android, o compartilhamento direto de mensagens para o app pode variar conforme o navegador; no iPhone, a instalação funciona, mas esse atalho de compartilhamento pode não aparecer.</p>
+        </details>
+        <details>
+          <summary>Funciona sem internet?</summary>
+          <p>Sim, depois de carregado e instalado: as funções e o catálogo ficam no aparelho. O app não envia nada à rede. O que você cola para conferir fica apenas na memória da sessão, salvo decisão sua de copiar ou exportar.</p>
+        </details>
+        <details>
+          <summary>Serve para pessoa idosa ou quem não entende de tecnologia?</summary>
+          <p>Sim. Texto grande, áudio em português, Cartão de Bolso para fixar no WhatsApp ou na geladeira e a Pergunta Secreta da Família. O ideal é combinar isso antes, em família, e não no meio da pressão.</p>
+        </details>
+        <details>
+          <summary>Por que não uso só o antivírus?</summary>
+          <p>Antivírus protege o aparelho; o BREQUE olha a decisão. Golpes de engenharia social normalmente chegam sem vírus nenhum — chegam com urgência, sigilo e uma voz conhecida. São camadas diferentes, não concorrentes.</p>
+        </details>
+        <details>
+          <summary>É gratuito? Para que servem os planos?</summary>
+          <p>O app para pessoa física é gratuito, sem cadastro ou cartão. Os planos institucionais são uma proposta para cooperativas, bancos e prefeituras que queiram levar o treino aos seus clientes; não há cobrança no site e nada é ativado aqui.</p>
+        </details>
+        <details>
+          <summary>Onde leio os termos e a política de privacidade?</summary>
+          <p>Nas páginas <a href="/termos.html" style="color:var(--amber); text-decoration:underline;">Termos de Uso e LGPD</a> e <a href="/privacidade.html" style="color:var(--amber); text-decoration:underline;">Política de Privacidade</a>. Em resumo: sem conta, sem servidor nosso, sem analytics e sem terceiros coletando dados.</p>
         </details>
       </div>
     </div>
@@ -777,22 +1054,44 @@
     <div class="container">
       <h2 style="font-size:1.95rem; color:var(--brand); margin:0 0 12px;">Teste o BREQUE agora em menos de 1 minuto.</h2>
       <p style="color:var(--muted); max-width:560px; margin:0 auto 24px;">Sem cadastro, sem cartão e sem instalar nada pesado. Abra no celular e veja como funciona.</p>
-      <a href="/app.html" class="btn-primary">Testar o BREQUE grátis agora →</a>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a href="/app.html" class="btn-primary">Testar grátis em 1 minuto →</a>
+        <a href="/contato.html" class="btn-dark">Falar sobre parceria →</a>
+      </div>
+      <p style="color:var(--muted); font-size:0.84rem; margin:18px 0 0;">
+        <a href="/privacidade.html" style="color:var(--amber); text-decoration:underline;">Privacidade</a> •
+        <a href="/termos.html" style="color:var(--amber); text-decoration:underline;">Termos e LGPD</a> •
+        <a href="/sobre.html" style="color:var(--amber); text-decoration:underline;">Sobre o projeto</a>
+      </p>
     </div>
   </section>
 
   <footer>
-    <div class="container" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+    <div class="container footer-grid">
       <div>
-        <strong style="color:#fff;">BREQUE — O segundo antes do Pix</strong>
-        <p style="margin:6px 0 0; max-width:540px;">Ferramenta de apoio à decisão. Não substitui antivírus, banco, polícia ou gerente, não garante prevenção de golpes nem devolução de valores.</p>
+        <strong>BREQUE — O segundo antes do Pix</strong>
+        <p style="margin:6px 0 0; max-width:520px;">Ferramenta de apoio à decisão. Não substitui antivírus, banco, polícia ou gerente, não garante prevenção de golpes nem devolução de valores.</p>
       </div>
-      <div style="display:flex; gap:18px; align-items:center; flex-wrap:wrap;">
-        <a href="/app.html" style="color:#fde68a; font-weight:700;">Testar o App</a>
-        <a href="#canais-verificados" style="color:#c2d6e0;">Canais verificados</a>
-        <a href="#duvidas" style="color:#c2d6e0;">Tirar dúvidas primeiro</a>
+      <div>
+        <strong>Produto</strong>
+        <a href="/app.html">Testar o app</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#duvidas">Tirar dúvidas</a>
+      </div>
+      <div>
+        <strong>Institucional</strong>
+        <a href="/sobre.html">Sobre</a>
+        <a href="/contato.html">Contato</a>
+        <a href="/privacidade.html">Política de Privacidade</a>
+        <a href="/termos.html">Termos de Uso / LGPD</a>
       </div>
     </div>
   </footer>
+
+  <div class="mobile-cta">
+    <a href="/app.html" class="btn-primary">Testar grátis →</a>
+    <a href="/contato.html" class="btn-dark">Contato</a>
+  </div>
+  <script src="/site.js" defer></script>
 </body>
 </html>
