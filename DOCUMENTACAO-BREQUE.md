@@ -1,7 +1,8 @@
 # BREQUE / BRECA — Documentação de Produto, Arquitetura, Mudanças e Roadmap
 
-> **Última atualização:** 2026-11-21  
+> **Última atualização:** 2026-11-27  
 > **Repositório:** `https://github.com/FranciscoDGA/Breca` (branch `master`)
+> **Produção:** `https://breca-rho.vercel.app/` (Camada 1 — PWA 100% local)
 
 ---
 
@@ -49,6 +50,23 @@ Todos os módulos abaixo são 100% locais, determinísticos (com injeção de `R
 - **Fase 2 (`bc1a1e7`):** `src/breque/canaisOficiais.ts` (catálogo auditável com fonte e data), `src/breque/posIncidente.ts` (planos priorizados para 5 tipos de incidente), `src/breque/fase2.test.ts` (3 testes).
 - **Fase 3 (`1f20f48`):** `src/breque/compartilhamento.ts` (prévia de pedido de ajuda com confirmação explícita + exportador local `.txt` com aviso probatório), `src/breque/fase3.test.ts` (2 testes).
 - **Fase 4 (`222f6b4`):** `src/breque/fase4-privacidade.test.ts` (invariante garantindo zero `fetch`, `localStorage`, `Date.now()` e `Math.random()` no núcleo) + `docs/CHECKLIST-REVISAO-BREQUE.md`.
+
+### C. Evolução para Produção (27/11/2026 — Camada 1 PWA + Site Institucional)
+- **Plano de Proteção Pessoal (Pré-Compromisso 100% local) (`816bbfc`, `8e40773`, ADR 0020):** módulo puro `src/breque/planoPessoal.ts` com 6 regras fechadas e papel genérico de apoio (sem PII, sem texto livre), lembretes automáticos na Sessão de Proteção (`pressure_pause`/`pressure_guide`), ocultação no Modo Visitante e exclusão total integrada.
+- **Catálogo oficial offline `v1.1.0` (`8512297`, ADR 0021):** ampliado para **19 instituições** verificadas em `27/11/2026` (próxima revisão trimestral em `27/02/2027`), incluindo INSS (`135`), Celular Seguro (`celularseguro.mj.gov.br`), PicPay, Mercado Pago, PagBank e C6 Bank, todas com fonte HTTPS oficial e data de conferência.
+- **Higiene PWA, navegação e UX sob estresse (`0caf494`, `474e891`, ADR 0021):**
+  - Ícones PNG nativos (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png` 180×180) e cartão Open Graph (`og-image.png` 1200×630) + atalhos rápidos de emergência (`?atalho=pressao` e `?atalho=socorro`) no `manifest.webmanifest`.
+  - Limpeza imediata da URL do Web Share Target (`history.replaceState` em `limparUrlAtual`), botão físico/gesto Voltar do Android integrado (`pushState`/`popstate`), tamanho de fonte salvo (`breca.fontScale.v1`), abertura direta na Home para usuários recorrentes/PWA instalado, `Screen Wake Lock` nas telas críticas e novos roteiros de golpes (`selfie_inss`, `advogado`, `maquininha`, `celular_roubado` e PIN em duas etapas do WhatsApp).
+- **Auditoria AppSec e Rotina Permanente de Segurança (`eb9dd69`, `daab9e6`, `e55a33c`, ADR 0022):**
+  - Remoção de credenciais/URL residuais do protótipo legado (`prototipo-breque/index.html`) e reforço do `.gitignore`.
+  - Eliminação de interpolação JS em atributos `onclick` em `app.html` (`data-*`/`this.dataset.*`), proteção contra Prototype Pollution na leitura de `localStorage` (`jsonParseSeguro`) e validação estrita hex para hashes locais.
+  - Endurecimento de `supabase/schema.sql` (Camada 2+ futura: `REVOKE ALL` / menor privilégio, escopo `TO` nas policies RLS, trigger com `search_path = ''`) e cabeçalhos HTTP em `vercel.json` (`COOP`, `CORP`, `X-DNS-Prefetch-Control`, `X-Permitted-Cross-Domain-Policies`, `Permissions-Policy` e diretivas explícitas de CSP).
+  - Criação do script permanente `npm run check:seguranca` e do guia `docs/ROTINA-SEGURANCA.md` (0 vulnerabilidades em `npm audit --omit=dev`).
+- **Landing Visual, Páginas Institucionais, SEO, 404 e Acessibilidade (`8f0bf74`, `bb6595f`, `7b0852d`, `e1991db`, ADR 0023):**
+  - Landing `index.html` redesenhada no formato **Texto curto + Visual** com 2 ilustrações editoriais próprias e otimizadas (`public/img/cena-pausa.jpg` e `public/img/cena-familia.jpg`, zero texto interno, zero carga externa), cenas realistas de golpe (`#situacoes`) e mini-telas do app em `#como-funciona`, `#recursos` e `#baixar`.
+  - `public/sobre.html` e `public/privacidade.html` sincronizados com o catálogo de 19 instituições, Plano de Proteção Pessoal, `fontScale` e `history.replaceState`; `public/contato.html` e `public/site.js` com modelo visível do roteiro de parceria, feedback `✓ Copiado!` e guia de domínio próprio + e-mail profissional salvo em `docs/2026-11-27-plano-contato-parcerias-e-lancamento.md`.
+  - Adicionados `<link rel="canonical">` e `<link rel="manifest">` em `index.html`, `public/robots.txt`, `public/sitemap.xml` e `public/404.html` amigável.
+  - Acessibilidade em `app.html` (`:focus-visible` + checklist `post_plan` com `<button type="button" aria-pressed>`) e Service Worker em `breque-pwa-v9`.
 
 ---
 
@@ -111,12 +129,15 @@ Ajustes aplicados e recomendações permanentes:
 ## 7. Como Rodar e Publicar
 
 ```bash
-# Validar lint e testes do núcleo BREQUE (14 testes)
-npx eslint src/breque
-npx vitest run src/breque
+# Rotina completa de segurança (lint, pureza do motor, catálogo, testes AppSec/privacidade e audit de produção)
+npm run check:seguranca
 
-# Build de produção (gera dist/ com o protótipo BREQUE na raiz)
+# Testes unitários do motor de coerção e suíte completa (22 arquivos / 160 testes)
+npm run test:engine
+npm test
+
+# Build de produção (valida catálogo, typecheck e gera dist/)
 npm run build
 ```
 
-- **Vercel:** basta importar `https://github.com/FranciscoDGA/Breca` com o Root Directory padrão (`.`).
+- **Vercel:** importado de `https://github.com/FranciscoDGA/Breca` com o Root Directory padrão (`.`) e cabeçalhos definidos em `vercel.json`.

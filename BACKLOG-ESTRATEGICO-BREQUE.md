@@ -1,6 +1,6 @@
 # BREQUE — Backlog Estratégico, Ideias e Decisões Futuras
 
-> **Data:** 2026-11-21  
+> **Última atualização:** 2026-11-27  
 > **Objetivo:** Centralizar ideias estratégicas, diferenciais validados e futuras features para revisão após os primeiros testes com pessoas reais.
 
 ---
@@ -24,14 +24,19 @@
   - Termos de Uso, Limitação de Responsabilidade e Política de Privacidade/LGPD na aba *Dados* e páginas institucionais dedicadas.
 - **Pré-Compromisso e Distribuição PWA (entregues em 27/11/2026):**
   - **Plano de Proteção Pessoal (ADR 0020):** regras de ouro 100% locais sem PII, exibidas automaticamente sob pressão e ocultas no Modo Visitante.
-  - **Open Graph PNG (`og-image.png`), ícones PNG (`apple-touch-icon.png`, `192`/`512`/`maskable`) e Web Share Target com limpeza imediata de URL (`replaceState`)** + histórico do botão Voltar (`popstate`) + Wake Lock na pausa/socorro + catálogo ampliado (INSS 135, Celular Seguro, PicPay, Mercado Pago, PagBank, C6 Bank).
+  - **Open Graph PNG (`og-image.png`), ícones PNG (`apple-touch-icon.png`, `192`/`512`/`maskable`) e Web Share Target com limpeza imediata de URL (`replaceState`)** + histórico do botão Voltar (`popstate`) + Wake Lock na pausa/socorro + catálogo `v1.1.0` ampliado para **19 instituições** (INSS 135, Celular Seguro, PicPay, Mercado Pago, PagBank, C6 Bank) + novos roteiros de golpes (`selfie_inss`, `advogado`, `maquininha`, `celular_roubado`, PIN 2 etapas WhatsApp).
+- **Auditoria AppSec e Rotina Permanente (27/11/2026 — ADR 0022):**
+  - Remoção de credenciais residuais no protótipo legado, eliminação de injeção JS em `onclick` (`data-*`/`this.dataset.*`), defesa contra Prototype Pollution (`jsonParseSeguro`), cabeçalhos HTTP reforçados na Vercel (`COOP`, `CORP`, CSP), `supabase/schema.sql` endurecido com menor privilégio, script permanente `npm run check:seguranca` e `docs/ROTINA-SEGURANCA.md`.
+- **Landing Visual, SEO, 404 e Acessibilidade (27/11/2026 — ADR 0023):**
+  - Landing `index.html` redesenhada no formato **Texto curto + Visual** com ilustrações editoriais próprias (`public/img/cena-pausa.jpg` e `public/img/cena-familia.jpg`), mini-telas de golpes e prévia do produto.
+  - Páginas `sobre.html` e `privacidade.html` sincronizadas; `contato.html` com roteiro visível + feedback de cópia + guia de domínio/e-mail salvo em `docs/2026-11-27-plano-contato-parcerias-e-lancamento.md`; `canonical`, `manifest`, `robots.txt`, `sitemap.xml` e `404.html`; `:focus-visible`, checklist `<button>` em `app.html` e Service Worker `breque-pwa-v9`.
 
 ---
 
 ## 2. Próximas Features Estratégicas (Pós-Validação com Usuários)
 
-### A. Exclusiva para Assinantes (Plano Família / Gold)
-- **Plano de Proteção Pessoal (Pré-Compromisso):**
+### A. Pré-Compromisso (entregue na Camada 1 — ADR 0020)
+- **Plano de Proteção Pessoal (Pré-Compromisso — já entregue e em produção):**
   - Quando a pessoa está calma, ela escolhe e salva localmente suas próprias regras de ouro:
     - *“Nunca vou compartilhar código de verificação com alguém que me ligou.”*
     - *“Se alguém pedir dinheiro em meu nome, vou confirmar por um contato que já conheço.”*
