@@ -51,6 +51,20 @@ Regra de dependência: `app → core`, nunca `core → app`. O diretório
 `indexedDB`, `Date.now()` nem `Math.random()`; isso é verificado por
 `npm run check:motor` e pelo teste `manifestoSemPermissaoInternet`.
 
+### 2.1 Caminho de execução em produção
+
+As seções abaixo descrevem o **modelo de domínio e a referência testada**. No
+site publicado, `index.html` e `app.html` carregam apenas `assets/app.js`, gerado
+a partir de `src/breque/brcodeUI.ts`. A árvore React (`src/main.tsx`, `src/app/`)
+e o motor em `src/core/engine/` não são referenciados por esses HTML: rodam nos
+testes e servem de base futura, mas não participam do bundle de produção. Ver
+ADR-0013. Toda mudança no motor, portanto, não altera o site até uma decisão
+explícita de integração.
+
+Para o comportamento efetivamente publicado, consulte `app.html` e os módulos
+em `src/breque/`, além dos testes de regressão AppSec em
+`src/breque/seguranca.test.ts`.
+
 ## 3. Modelo de domínio
 
 ### 3.1 Átomos de coerção (`Atomo`)
@@ -155,8 +169,10 @@ silêncio. O hash FNV-1a do arquivo aparece na TelaInicio.
 - **Retenção.** Eventos: 30 dias. Avaliações: 180 dias. Purga no startup e
   diariamente (`agendadorRetencao.ts`, equivalente ao WorkManager da spec).
   A borda exata do TTL é preservada (expira só quando a idade é maior).
-- **"Apagar meus dados"** zera todas as lojas do IndexedDB, gira o salt e
-  redefine o motor (janela, episódio, cooldowns).
+- **"Apagar meus dados"** na PWA publicada remove todas as chaves `breca.*` do
+  `localStorage` (inclusive o salt) e recarrega a página. Na referência React,
+  zera as lojas do IndexedDB, gira o salt e redefine o motor (janela, episódio,
+  cooldowns).
 
 ### Base legal (LGPD)
 

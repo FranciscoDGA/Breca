@@ -17,8 +17,10 @@ canais oficiais verificados e guia a contestação no MED se o pior já acontece
 1. **Nunca existe veredito "seguro" / verde** — apenas leitura calibrada de risco.
 2. **Atrito, nunca bloqueio** — a pessoa pode encerrar qualquer pausa em 1 toque.
 3. **100% local (Camada 1)** — zero requisições de rede no runtime.
-4. **Zero PII persistida** — chaves Pix em Favorecidos Verificados e denúncias
-   usam apenas hash SHA-256; relatos do MED ficam só em memória para exportação.
+4. **Zero PII persistida** — Favorecidos, denúncias e Cofre usam apenas
+   identificadores com salt do aparelho; o hash sem salt existe só para comparar
+   com o catálogo comunitário. Nenhum nome, apelido ou trecho de mensagem é
+   gravado. Ver ADR-0012.
 5. **Motor puro e determinístico** — `src/core/engine/` e os módulos puros de
    `src/breque/` não usam DOM, rede, storage nem relógio global.
 
@@ -36,6 +38,11 @@ npm run dev
 
 - **Landing page:** `http://localhost:5173/` (`index.html`)
 - **Aplicativo PWA:** `http://localhost:5173/app.html` (`app.html`)
+
+O bundle de produção contém `index.html`, `app.html`, `assets/app.js`,
+`manifest.webmanifest`, `sw.js` e `icon.svg`. A árvore React (`src/main.tsx`,
+`src/app/`) e o motor `src/core/engine/` permanecem como referência testada,
+fora do site publicado (ADR-0013).
 
 ---
 
@@ -120,12 +127,14 @@ experiência da linha 159 dentro do app, 100% offline).
 index.html                  landing page pública
 app.html                    PWA principal (Discagem Segura, Escudo Pix, Jornada, MED, Vacina, Radar)
 data/canais-oficiais.json   catálogo offline versionado (validado no build)
-data/denuncias-locais.json  lista offline de hashes SHA-256 (vazia na v1)
+data/denuncias-locais.json  lista offline de hashes comunitários (vazia na v1)
 data/vacinas.json           safras versionadas da Vacina de 60 Segundos (caso Banpará + clássicos)
 src/breque/                 módulos puros testados (canais, brcode, escudoPix, agenda, dossie, vacinas, sentinela)
-src/core/engine/            motor puro de coerção v2 + privacidade + manifesto
-src/core/nlu/               classificador léxico PT-BR on-device
-docs/adr/                   Decisões de Arquitetura (ADR 0001 a 0010)
+src/breque/brcodeUI.ts      ponte window.BREQUE_* usada pelo app.html (único JS no bundle)
+src/core/engine/            motor puro de coerção v2 + privacidade + manifesto (referência/testes)
+src/core/nlu/               classificador léxico PT-BR on-device (referência/testes)
+src/main.tsx, src/app/      árvore React de referência — não entra no bundle de produção
+docs/adr/                   Decisões de Arquitetura (ADR 0001 a 0013)
 ```
 
 ## Licença
