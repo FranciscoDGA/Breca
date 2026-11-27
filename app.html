@@ -1287,6 +1287,8 @@
       bancoFavoritoId: "",
       operadoraCodigo: "",
       compromisso: { valorMinimo: 200, duracaoMin: 60, confirmarConfianca: true, configurado: false },
+      planoPessoal: { regrasIds: [], papelApoio: "nenhum", atualizadoEm: "" },
+      planoPessoalAviso: "",
       pausa: { ativo: false, inicio: 0, duracaoMin: 60, motivo: "banco", concluida: false },
       pausaInterval: null,
       pausaAviso: "",
@@ -1313,6 +1315,7 @@
       metricas: "breca.metricas.v1",
       pausa: "breca.pausa.v1",
       compromisso: "breca.compromisso.v1",
+      planoPessoal: "breca.planoPessoal.v1",
       vacinaAgenda: "breca.vacinaAgenda.v1",
       med: "breca.med.v1",
       medDatas: "breca.medDatas.v1",
@@ -1379,6 +1382,86 @@
     }
     state.metricas = { ...state.metricas, ...lerLocal(CHAVES_LOCAIS.metricas, {}) };
     state.compromisso = { ...state.compromisso, ...lerLocal(CHAVES_LOCAIS.compromisso, {}) };
+    const REGRAS_PLANO_FALLBACK = [
+      {
+        id: "nao_compartilhar_codigo",
+        tituloCurto: "Nunca passar código por ligação",
+        compromisso: "Nunca vou compartilhar código de verificação, senha ou token com alguém que me ligou.",
+        lembretePressao: "Você combinou consigo: não informar código, senha ou token em ligação recebida.",
+        topicos: ["banco", "suporte", "outro"],
+        sugerida: true
+      },
+      {
+        id: "confirmar_por_outro_canal",
+        tituloCurto: "Confirmar por número conhecido",
+        compromisso: "Se alguém pedir dinheiro em meu nome ou de um familiar, vou confirmar por um contato que eu já conheço.",
+        lembretePressao: "Você combinou consigo: confirmar pedido de dinheiro por um canal que você já tinha antes.",
+        topicos: ["familiar", "dinheiro"],
+        sugerida: true
+      },
+      {
+        id: "pausar_diante_de_pressa",
+        tituloCurto: "Parar diante de urgência",
+        compromisso: "Se disserem que preciso agir imediatamente ou perder algo em minutos, vou parar e verificar com calma.",
+        lembretePressao: "Você combinou consigo: diante de pressa ou prazo de minutos, parar antes de decidir.",
+        topicos: ["dinheiro", "banco", "familiar", "ameaca", "investimento", "suporte", "outro"],
+        sugerida: true
+      },
+      {
+        id: "nao_instalar_acesso_remoto",
+        tituloCurto: "Recusar acesso remoto ao celular",
+        compromisso: "Não vou instalar aplicativo de acesso remoto nem compartilhar minha tela durante uma ligação.",
+        lembretePressao: "Você combinou consigo: não instalar app de suporte nem espelhar a tela sob orientação por ligação.",
+        topicos: ["suporte", "banco"],
+        sugerida: false
+      },
+      {
+        id: "usar_canal_do_cartao",
+        tituloCurto: "Ligar só pelo verso do cartão",
+        compromisso: "Se alguém disser ser do banco, vou encerrar e procurar o número do verso do cartão ou o app oficial.",
+        lembretePressao: "Você combinou consigo: desligar e confirmar apenas pelo canal oficial que você abrir por conta própria.",
+        topicos: ["banco", "dinheiro"],
+        sugerida: false
+      },
+      {
+        id: "pedir_apoio_antes_de_decidir",
+        tituloCurto: "Ouvir uma segunda opinião antes",
+        compromisso: "Antes de transferir um valor fora do comum sob pressão, vou pausar e falar com alguém de confiança.",
+        lembretePressao: "Você combinou consigo: ouvir uma segunda opinião antes de fazer transferência sob pressão.",
+        topicos: ["dinheiro", "investimento", "ameaca", "familiar"],
+        sugerida: false
+      }
+    ];
+    const OPCOES_APOIO_FALLBACK = [
+      { id: "nenhum", rotulo: "Sem preferência registrada", lembrete: "" },
+      { id: "familiar", rotulo: "Falar com um familiar antes de decidir", lembrete: "Seu lembrete de apoio: conversar com um familiar antes de concluir." },
+      { id: "pessoa_confianca", rotulo: "Ouvir uma pessoa de confiança (sem nome salvo aqui)", lembrete: "Seu lembrete de apoio: ouvir uma pessoa de confiança compartilhando só o que você escolher." },
+      { id: "canal_oficial", rotulo: "Confirmar primeiro no canal oficial da instituição", lembrete: "Seu lembrete de apoio: confirmar antes pelo canal oficial no verso do cartão ou app." }
+    ];
+    function normalizarPlanoPessoalLocal(entrada) {
+      if (window.BREQUE_PLANO_PESSOAL && typeof window.BREQUE_PLANO_PESSOAL.normalizar === "function") {
+        return window.BREQUE_PLANO_PESSOAL.normalizar(entrada);
+      }
+      if (!entrada || typeof entrada !== "object") {
+        return { regrasIds: [], papelApoio: "nenhum", atualizadoEm: "" };
+      }
+      const validos = new Set(REGRAS_PLANO_FALLBACK.map((r) => r.id));
+      const marcados = new Set(
+        Array.isArray(entrada.regrasIds)
+          ? entrada.regrasIds.filter((id) => typeof id === "string" && validos.has(id))
+          : []
+      );
+      const regrasIds = REGRAS_PLANO_FALLBACK.filter((r) => marcados.has(r.id)).map((r) => r.id);
+      const papeisValidos = new Set(OPCOES_APOIO_FALLBACK.map((p) => p.id));
+      const papelApoio = typeof entrada.papelApoio === "string" && papeisValidos.has(entrada.papelApoio)
+        ? entrada.papelApoio
+        : "nenhum";
+      const atualizadoEm = typeof entrada.atualizadoEm === "string" && /^\d{4}-\d{2}-\d{2}$/.test(entrada.atualizadoEm)
+        ? entrada.atualizadoEm
+        : "";
+      return { regrasIds, papelApoio, atualizadoEm };
+    }
+    state.planoPessoal = normalizarPlanoPessoalLocal(lerLocal(CHAVES_LOCAIS.planoPessoal, null));
     state.pausa = { ...state.pausa, ...lerLocal(CHAVES_LOCAIS.pausa, {}) };
     state.vacinaAgenda = { ...state.vacinaAgenda, ...lerLocal(CHAVES_LOCAIS.vacinaAgenda, {}) };
     state.medChecklist = lerLocal(CHAVES_LOCAIS.med, {});
@@ -2901,6 +2984,145 @@
       }, 1000);
     }
 
+    // ---------- Plano de Proteção Pessoal (Pré-Compromisso 100% local) ----------
+    function obterRegrasPlanoPessoal() {
+      return window.BREQUE_PLANO_PESSOAL && Array.isArray(window.BREQUE_PLANO_PESSOAL.regras)
+        ? window.BREQUE_PLANO_PESSOAL.regras
+        : REGRAS_PLANO_FALLBACK;
+    }
+
+    function obterOpcoesApoioPlano() {
+      return window.BREQUE_PLANO_PESSOAL && Array.isArray(window.BREQUE_PLANO_PESSOAL.opcoesApoio)
+        ? window.BREQUE_PLANO_PESSOAL.opcoesApoio
+        : OPCOES_APOIO_FALLBACK;
+    }
+
+    function salvarPlanoPessoalLocal(novoPlano, aviso) {
+      state.planoPessoal = normalizarPlanoPessoalLocal(novoPlano);
+      gravarLocal(CHAVES_LOCAIS.planoPessoal, {
+        regrasIds: state.planoPessoal.regrasIds,
+        papelApoio: state.planoPessoal.papelApoio,
+        atualizadoEm: state.planoPessoal.atualizadoEm
+      });
+      state.planoPessoalAviso = aviso || "";
+      render();
+    }
+
+    function alternarRegraPlanoLocal(regraId) {
+      const hoje = new Date().toISOString().slice(0, 10);
+      let proximo;
+      if (window.BREQUE_PLANO_PESSOAL && typeof window.BREQUE_PLANO_PESSOAL.alternarRegra === "function") {
+        proximo = window.BREQUE_PLANO_PESSOAL.alternarRegra(state.planoPessoal, regraId, hoje);
+      } else {
+        const atual = normalizarPlanoPessoalLocal(state.planoPessoal);
+        const conjunto = new Set(atual.regrasIds);
+        if (conjunto.has(regraId)) conjunto.delete(regraId);
+        else conjunto.add(regraId);
+        proximo = normalizarPlanoPessoalLocal({
+          regrasIds: Array.from(conjunto),
+          papelApoio: atual.papelApoio,
+          atualizadoEm: hoje
+        });
+      }
+      salvarPlanoPessoalLocal(
+        proximo,
+        proximo.regrasIds.length
+          ? `Plano salvo neste aparelho (${proximo.regrasIds.length} regra${proximo.regrasIds.length === 1 ? "" : "s"} escolhida${proximo.regrasIds.length === 1 ? "" : "s"}).`
+          : "Nenhuma regra marcada. O app fica em silêncio na tela de pausa até você escolher alguma."
+      );
+    }
+
+    function alterarPapelApoioLocal(papel) {
+      const hoje = new Date().toISOString().slice(0, 10);
+      const proximo = window.BREQUE_PLANO_PESSOAL && typeof window.BREQUE_PLANO_PESSOAL.definirPapelApoio === "function"
+        ? window.BREQUE_PLANO_PESSOAL.definirPapelApoio(state.planoPessoal, papel, hoje)
+        : normalizarPlanoPessoalLocal({ ...state.planoPessoal, papelApoio: papel, atualizadoEm: hoje });
+      salvarPlanoPessoalLocal(proximo, "Preferência de apoio salva apenas neste aparelho (sem nomes nem telefones).");
+    }
+
+    function aplicarSugestaoPlanoLocal() {
+      const hoje = new Date().toISOString().slice(0, 10);
+      const sugerido = window.BREQUE_PLANO_PESSOAL && typeof window.BREQUE_PLANO_PESSOAL.criarSugerido === "function"
+        ? window.BREQUE_PLANO_PESSOAL.criarSugerido(hoje)
+        : normalizarPlanoPessoalLocal({
+            regrasIds: REGRAS_PLANO_FALLBACK.filter((r) => r.sugerida).map((r) => r.id),
+            papelApoio: state.planoPessoal.papelApoio,
+            atualizadoEm: hoje
+          });
+      salvarPlanoPessoalLocal(
+        { ...sugerido, papelApoio: state.planoPessoal.papelApoio },
+        "3 regras iniciais marcadas. Você pode ligar, desligar ou apagar qualquer uma quando quiser."
+      );
+    }
+
+    function limparPlanoPessoalLocal() {
+      const vazio = window.BREQUE_PLANO_PESSOAL && typeof window.BREQUE_PLANO_PESSOAL.criarVazio === "function"
+        ? window.BREQUE_PLANO_PESSOAL.criarVazio()
+        : { regrasIds: [], papelApoio: "nenhum", atualizadoEm: "" };
+      salvarPlanoPessoalLocal(vazio, "Plano pessoal limpo neste aparelho.");
+    }
+
+    async function copiarResumoPlanoPessoal() {
+      const texto = window.BREQUE_PLANO_PESSOAL && typeof window.BREQUE_PLANO_PESSOAL.resumirParaCopia === "function"
+        ? window.BREQUE_PLANO_PESSOAL.resumirParaCopia(state.planoPessoal)
+        : [
+            "BREQUE — Meu Plano de Proteção Pessoal",
+            ...obterRegrasPlanoPessoal()
+              .filter((r) => state.planoPessoal.regrasIds.includes(r.id))
+              .map((r, i) => `${i + 1}. ${r.compromisso}`),
+            "",
+            "Lembrete salvo apenas no aparelho. Não bloqueia ações: a decisão continua sua."
+          ].join("\n");
+      let aviso = "Resumo do seu plano copiado. Nada foi enviado para servidor.";
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          await navigator.clipboard.writeText(texto);
+        } else {
+          aviso = "Copie o resumo manualmente: este navegador não liberou a área de transferência.";
+        }
+      } catch {
+        aviso = "Não foi possível copiar automaticamente neste navegador.";
+      }
+      state.planoPessoalAviso = aviso;
+      render();
+    }
+
+    function selecionarRegrasPressaoLocal(topico, limite = 3) {
+      if (state.visitante) return [];
+      const plano = normalizarPlanoPessoalLocal(state.planoPessoal);
+      if (!plano.regrasIds.length) return [];
+      if (window.BREQUE_PLANO_PESSOAL && typeof window.BREQUE_PLANO_PESSOAL.selecionarParaPressao === "function") {
+        return window.BREQUE_PLANO_PESSOAL.selecionarParaPressao(plano, topico, limite);
+      }
+      const mapa = new Map(obterRegrasPlanoPessoal().map((r) => [r.id, r]));
+      const ativas = plano.regrasIds.map((id) => mapa.get(id)).filter(Boolean);
+      if (!topico) return ativas.slice(0, limite);
+      const prioritarias = ativas.filter((r) => Array.isArray(r.topicos) && r.topicos.includes(topico));
+      const demais = ativas.filter((r) => !prioritarias.includes(r));
+      return [...prioritarias, ...demais].slice(0, limite);
+    }
+
+    function renderLembretePlanoPressao(topico) {
+      if (state.visitante) return "";
+      const lembretes = selecionarRegrasPressaoLocal(topico, 3);
+      if (!lembretes.length) return "";
+      const opcaoApoio = obterOpcoesApoioPlano().find((o) => o.id === state.planoPessoal.papelApoio);
+      return `
+        <div class="card card-soft stack" data-bloco="lembrete-plano-pessoal">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <span class="pill pill-brand">Seu combinado prévio</span>
+            <button class="btn-ghost" style="font-size:0.78rem; padding:4px 6px;" onclick="navigate('plano_pessoal')">Editar plano</button>
+          </div>
+          <p style="font-size:0.84rem; color:var(--text-muted); margin:0;">Regras que você mesma(o) escolheu quando estava com calma:</p>
+          <ul class="list-clean" style="color:var(--text);">
+            ${lembretes.map((r) => `<li><strong>${escapeHtml(r.tituloCurto)}:</strong> ${escapeHtml(r.lembretePressao)}</li>`).join("")}
+          </ul>
+          ${opcaoApoio && opcaoApoio.lembrete ? `<p style="font-size:0.82rem; color:var(--brand); margin:0;"><strong>${escapeHtml(opcaoApoio.lembrete)}</strong></p>` : ""}
+          <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">Apenas um lembrete seu — nada é bloqueado e a decisão continua sua.</p>
+        </div>
+      `;
+    }
+
     // ---------- Jornada de Espera / Pausa Programada (Fase 3) ----------
     function salvarCompromisso() {
       const valInput = document.getElementById("compromisso-valor");
@@ -3541,6 +3763,15 @@
                 </div>
               </button>`;
 
+        const qtdRegrasPlano = state.planoPessoal.regrasIds.length;
+        const atalhoPlanoPessoalHtml = `<button class="action-card" onclick="navigate('plano_pessoal')">
+            <div class="icon-badge icon-brand">${qtdRegrasPlano ? escapeHtml(qtdRegrasPlano) : "✓"}</div>
+            <div>
+              <span class="action-title">${qtdRegrasPlano ? `Meu Plano de Proteção Pessoal (${qtdRegrasPlano} regra${qtdRegrasPlano === 1 ? "" : "s"})` : "Criar meu Plano de Proteção Pessoal"}</span>
+              <span class="action-sub">${qtdRegrasPlano ? "Regras que você escolheu com calma — aparecem na pausa sob pressão" : "Escolha regras de ouro quando estiver calma(o) (100% local, sem nomes)"}</span>
+            </div>
+          </button>`;
+
         app.innerHTML = `
           <div class="status-glass" data-audio="BREQUE local. Pause, verifique e decida com calma.">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -3577,6 +3808,7 @@
                 <summary>Meus atalhos e lembretes</summary>
                 <div class="stack" style="gap:10px;">
                   ${atalhoBancoHtml}
+                  ${atalhoPlanoPessoalHtml}
                   ${atalhoJornadaHtml}
                   ${barraVacinaHtml}
                 </div>
@@ -3602,7 +3834,7 @@
             </div>
 
             <details class="details-bloco" aria-label="Ferramentas essenciais" data-bloco="ferramentas">
-              <summary>Caixa de ferramentas — ver todas (14)</summary>
+              <summary>Caixa de ferramentas — ver todas (15)</summary>
               <div class="stack" style="gap:10px;">
                 <button class="summary-row" onclick="navigate('central_mais')">
                   <div class="summary-left">
@@ -3613,6 +3845,17 @@
                     </div>
                   </div>
                   <span class="summary-tag">Abrir</span>
+                </button>
+
+                <button class="summary-row" onclick="navigate('plano_pessoal')">
+                  <div class="summary-left">
+                    <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                    <div>
+                      <div style="font-weight:700; font-size:0.92rem;">Plano de Proteção Pessoal</div>
+                      <div style="font-size:0.78rem; color:var(--text-muted);">Suas regras de pré-compromisso (100% local)</div>
+                    </div>
+                  </div>
+                  <span class="summary-tag">${state.planoPessoal.regrasIds.length ? `${state.planoPessoal.regrasIds.length} ativas` : "Montar"}</span>
                 </button>
 
                 <button class="summary-row" onclick="navigate('escudo_pix')">
@@ -3820,6 +4063,14 @@
           <details class="details-bloco">
             <summary>Mais opções e configurações</summary>
             <div class="stack">
+              <button class="action-card" onclick="navigate('plano_pessoal')">
+                <div class="icon-badge icon-brand">${state.planoPessoal.regrasIds.length || "✓"}</div>
+                <div>
+                  <span class="action-title">Plano de Proteção Pessoal</span>
+                  <span class="action-sub">${state.planoPessoal.regrasIds.length ? `${state.planoPessoal.regrasIds.length} regra(s) de pré-compromisso ativa(s) neste aparelho` : "Escolha suas regras de ouro quando estiver calma(o)"}</span>
+                </div>
+              </button>
+
               <button class="action-card" onclick="navigate('pacto_familia')">
                 <div class="icon-badge icon-brand">✓</div>
                 <div>
@@ -4956,6 +5207,74 @@
         return;
       }
 
+      if (state.screen === "plano_pessoal") {
+        const regras = obterRegrasPlanoPessoal();
+        const opcoesApoio = obterOpcoesApoioPlano();
+        const plano = normalizarPlanoPessoalLocal(state.planoPessoal);
+        const total = plano.regrasIds.length;
+        const avisoLimite = window.BREQUE_PLANO_PESSOAL && window.BREQUE_PLANO_PESSOAL.avisoLimite
+          ? window.BREQUE_PLANO_PESSOAL.avisoLimite
+          : "Este plano é um lembrete pessoal salvo apenas neste aparelho, sem nomes nem telefones. Ele não bloqueia nenhuma ação: a decisão continua sua.";
+
+        app.innerHTML = `
+          <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
+          <button class="audio-btn" type="button" data-audio-toggle aria-pressed="false" onclick="alternarAudioTela()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+            <span data-audio-label>Ouvir esta tela</span>
+          </button>
+          <span id="audio-aviso" class="audio-aviso" role="status" aria-live="polite"></span>
+
+          <div data-audio="Plano de Proteção Pessoal. Escolha, com calma, as regras que você quer rever em momentos de pressão. Tudo fica salvo apenas neste aparelho, sem nomes nem telefones.">
+            <span class="section-eyebrow">Pré-Compromisso 100% local</span>
+            <h1 class="panel-titulo">Plano de Proteção Pessoal</h1>
+            <p style="margin-top:6px;">Quando estiver calma(o), escolha seus próprios combinados. Na hora da pressão, o BREQUE só lembra o que <strong>você mesma(o) decidiu</strong>.</p>
+          </div>
+
+          <div class="card card-soft stack">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="pill pill-brand">${total} de ${regras.length} regra${regras.length === 1 ? "" : "s"} ativa${total === 1 ? "" : "s"}</span>
+              ${plano.atualizadoEm ? `<span style="font-size:0.78rem; color:var(--text-muted);">Atualizado em ${escapeHtml(formatarDataBr(plano.atualizadoEm))}</span>` : ""}
+            </div>
+            <p style="font-size:0.84rem; margin:0;">Marque só o que faz sentido para você. Se nenhuma regra estiver marcada, o app fica em silêncio.</p>
+            <div class="stack" style="gap:10px;">
+              ${regras.map((regra) => {
+                const marcada = plano.regrasIds.includes(regra.id);
+                return `
+                  <label class="card" style="display:flex; align-items:flex-start; gap:10px; padding:12px; cursor:pointer; border-color:${marcada ? "var(--brand)" : "var(--border)"}; background:${marcada ? "var(--brand-soft)" : "var(--surface)"};">
+                    <input type="checkbox" style="margin-top:4px; width:18px; height:18px; flex-shrink:0;" ${marcada ? "checked" : ""} onchange="alternarRegraPlanoLocal('${escapeHtml(regra.id)}')" />
+                    <span>
+                      <strong style="display:block; font-size:0.92rem; color:var(--text);">${escapeHtml(regra.tituloCurto)}</strong>
+                      <span style="display:block; font-size:0.84rem; color:var(--text-muted); margin-top:2px;">${escapeHtml(regra.compromisso)}</span>
+                    </span>
+                  </label>
+                `;
+              }).join("")}
+            </div>
+            <button class="btn btn-secondary btn-center" onclick="aplicarSugestaoPlanoLocal()">Marcar as 3 regras mais comuns</button>
+          </div>
+
+          <div class="card stack">
+            <label class="field-label" for="plano-papel-apoio">Se eu quiser uma segunda opinião antes de decidir (opcional):</label>
+            <select id="plano-papel-apoio" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface-soft); color:var(--text);" onchange="alterarPapelApoioLocal(this.value)">
+              ${opcoesApoio.map((op) => `<option value="${escapeHtml(op.id)}" ${plano.papelApoio === op.id ? "selected" : ""}>${escapeHtml(op.rotulo)}</option>`).join("")}
+            </select>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Por privacidade, não pedimos nem salvamos nome, telefone, CPF ou chave Pix neste plano.</p>
+          </div>
+
+          ${state.planoPessoalAviso ? `<div class="quote-box" role="status" aria-live="polite">${escapeHtml(state.planoPessoalAviso)}</div>` : ""}
+
+          <div class="stack" style="gap:10px;">
+            <button class="btn btn-primary btn-center" onclick="copiarResumoPlanoPessoal()">Copiar resumo do meu plano</button>
+            ${total > 0 ? `<button class="btn btn-ghost btn-center" onclick="limparPlanoPessoalLocal()">Limpar regras selecionadas</button>` : ""}
+          </div>
+
+          <div class="card card-amber">
+            <p style="font-size:0.84rem; color:var(--text); margin:0;">${escapeHtml(avisoLimite)}</p>
+          </div>
+        `;
+        return;
+      }
+
       if (state.screen === "pressure_pause") {
         const pauseHtml = state.pauseSeconds > 0
           ? `<div class="timer-box"><div><strong>Respire fundo</strong><p style="font-size:0.84rem;">Nenhuma decisão séria precisa ser tomada em segundos.</p></div><div class="timer-count">${state.pauseSeconds}s</div></div>`
@@ -4981,6 +5300,7 @@
 
           ${audioBtn}
           ${pauseHtml}
+          ${renderLembretePlanoPressao()}
 
           <div class="card stack">
             <span class="pill pill-brand">Áudio em etapas</span>
@@ -5034,6 +5354,7 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           ${renderRoteiroCard(3, extra)}
+          ${renderLembretePlanoPressao(state.pressureTopic)}
           <details class="details-bloco">
             <summary>Se parece voz de alguém conhecido</summary>
             <div class="stack" style="gap:8px;">
@@ -5541,6 +5862,7 @@
     render();
     window.addEventListener("breque:modulos-prontos", () => {
       migrarCofreLegado();
+      state.planoPessoal = normalizarPlanoPessoalLocal(lerLocal(CHAVES_LOCAIS.planoPessoal, null));
       render();
     });
   </script>

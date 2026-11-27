@@ -56,7 +56,7 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     const sw = readFileSync(resolve(process.cwd(), 'public/sw.js'), 'utf-8')
     expect(sw).toContain("url.search === ''")
     expect(sw).toContain("'/assets/app.js'")
-    expect(sw).toContain('breque-pwa-v6')
+    expect(sw).toContain('breque-pwa-v7')
     const vite = readFileSync(resolve(process.cwd(), 'vite.config.ts'), 'utf-8')
     expect(vite).toContain("entryFileNames: 'assets/[name].js'")
   })
@@ -132,6 +132,22 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).toContain('PASSOS_AUDIO_EXTREMOS')
     expect(html).not.toMatch(/linhaTempo[^\n]*(verifyText|chave|valor)/i)
     expect(html).not.toMatch(/gravarLocal\([^\n]*linhaTempo/)
+  })
+
+  it('plano de proteção pessoal persiste só códigos fechados, respeita modo visitante e é apagável', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).toContain('planoPessoal: "breca.planoPessoal.v1"')
+    expect(html).toContain('function normalizarPlanoPessoalLocal(entrada)')
+    expect(html).toContain('function renderLembretePlanoPressao(topico)')
+    expect(html).toContain('if (state.screen === "plano_pessoal")')
+    expect(html).toContain('if (state.visitante) return "";')
+    expect(html).toContain('renderLembretePlanoPressao(state.pressureTopic)')
+    const blocoTelaPlano = html.match(
+      /if \(state\.screen === "plano_pessoal"\) \{[\s\S]*?if \(state\.screen === "pressure_pause"\)/,
+    )
+    expect(blocoTelaPlano).not.toBeNull()
+    expect(blocoTelaPlano![0]).not.toMatch(/<input[^>]+type="text"/i)
+    expect(blocoTelaPlano![0]).not.toMatch(/<textarea\b/i)
   })
 
   it('landing tem menu mobile acessível, FAQ ampliada e páginas institucionais', () => {
