@@ -68,7 +68,7 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(sw).toContain("'/assets/app.js'")
     expect(sw).toContain("'/icon-192.png'")
     expect(sw).toContain("'/apple-touch-icon.png'")
-    expect(sw).toContain('breque-pwa-v8')
+    expect(sw).toContain('breque-pwa-v9')
     const vite = readFileSync(resolve(process.cwd(), 'vite.config.ts'), 'utf-8')
     expect(vite).toContain("entryFileNames: 'assets/[name].js'")
   })
@@ -330,5 +330,45 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(gitignore).toContain('!.env.example')
     expect(gitignore).toContain('*.pem')
     expect(gitignore).toContain('*.key')
+  })
+
+  it('mantém SEO técnico, 404 amigável, páginas institucionais alinhadas, landing visual e acessibilidade no app', () => {
+    for (const ativo of [
+      'public/robots.txt',
+      'public/sitemap.xml',
+      'public/404.html',
+      'public/img/cena-pausa.jpg',
+      'public/img/cena-familia.jpg',
+    ]) {
+      expect(existsSync(resolve(process.cwd(), ativo)), ativo).toBe(true)
+    }
+
+    const landing = readFileSync(resolve(process.cwd(), 'index.html'), 'utf-8')
+    expect(landing).toContain('<link rel="canonical"')
+    expect(landing).toContain('<link rel="manifest"')
+    expect(landing).toContain('/img/cena-pausa.jpg')
+    expect(landing).toContain('/img/cena-familia.jpg')
+    expect(landing).not.toMatch(/<img[^>]+src="https?:\/\//i)
+
+    const notFound = readFileSync(resolve(process.cwd(), 'public/404.html'), 'utf-8')
+    expect(notFound).toContain('data-menu-toggle')
+    expect(notFound).toContain('/app.html')
+    expect(notFound).not.toMatch(/<form\b/i)
+    expect(notFound).not.toMatch(/\bfetch\s*\(/)
+    expect(notFound).not.toContain('mailto:')
+    expect(notFound).not.toContain('está seguro')
+
+    const sobre = readFileSync(resolve(process.cwd(), 'public/sobre.html'), 'utf-8')
+    expect(sobre).toContain('19 instituições')
+    expect(sobre).toContain('Plano de Proteção Pessoal')
+
+    const privacidade = readFileSync(resolve(process.cwd(), 'public/privacidade.html'), 'utf-8')
+    expect(privacidade).toContain('history.replaceState')
+    expect(privacidade).toContain('Plano de Proteção Pessoal')
+
+    const app = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(app).toContain(':focus-visible')
+    expect(app).toContain('<button type="button" class="check-item')
+    expect(app).not.toContain('<div class="check-item')
   })
 })

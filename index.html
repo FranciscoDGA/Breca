@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BREQUE — Um breque na hora da dúvida, antes de o dinheiro sair</title>
   <meta name="description" content="Golpes não invadem seu celular — eles apressam a sua decisão. O BREQUE ajuda você e sua família a pausar, conferir por outro canal e agir com calma." />
+  <link rel="canonical" href="https://breca-rho.vercel.app/" />
+  <link rel="manifest" href="/manifest.webmanifest" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="pt_BR" />
   <meta property="og:url" content="https://breca-rho.vercel.app/" />
@@ -541,6 +543,319 @@
     .step-card h3 { margin: 0 0 8px; color: var(--brand); font-size: 1.08rem; }
     .step-card p { margin: 0; color: var(--muted); font-size: 0.94rem; }
 
+    /* CENAS VISUAIS DE GOLPE E MINI-TELAS DO APP */
+    .scene-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .scene-header {
+      padding: 10px 14px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .scene-header--wa { background: #e8f0f3; color: #0f2f3d; border-bottom: 1px solid var(--border); }
+    .scene-header--call { background: #142a36; color: #f8fafc; }
+    .scene-header--sms { background: #eef2f5; color: #0f2f3d; border-bottom: 1px solid var(--border); }
+
+    .scene-screen {
+      padding: 16px;
+      background: #f7f9fb;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .scene-screen--call {
+      background: linear-gradient(160deg, #0f2430 0%, #193b4d 100%);
+      color: #ffffff;
+      text-align: center;
+      padding: 18px 16px;
+    }
+
+    .wa-bubble {
+      background: #ffffff;
+      border: 1px solid #d9e4ea;
+      border-radius: 4px 14px 14px 14px;
+      padding: 11px 13px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      box-shadow: 0 2px 6px rgba(15, 27, 36, 0.04);
+      line-height: 1.45;
+    }
+
+    .wa-meta {
+      display: block;
+      text-align: right;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .call-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      color: #fde68a;
+      font-weight: 700;
+      margin: 0 auto;
+    }
+
+    .call-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f59e0b;
+    }
+
+    .scene-fix {
+      background: var(--amber-bg);
+      border-top: 1px solid var(--amber-border);
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .scene-fix strong { color: #7c2d12; }
+
+    .split-editorial {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .editorial-frame {
+      margin: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 42px rgba(5, 16, 24, 0.28);
+    }
+
+    .editorial-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 900 / 672;
+      object-fit: cover;
+    }
+
+    .editorial-frame figcaption {
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e2eff5;
+      background: rgba(11, 34, 44, 0.72);
+    }
+
+    .chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .chip-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: #ffffff;
+    }
+
+    .mini-ui {
+      background: #f5f7f9;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mini-ui--dark {
+      background: linear-gradient(155deg, #0b2430 0%, #154357 100%);
+      border-color: #1b4b60;
+      color: #ffffff;
+    }
+
+    .mini-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: #7c2d12;
+    }
+
+    .mini-pill--brand {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #fde68a;
+    }
+
+    .mini-row {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 11px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .med-timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .med-step {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 6px;
+    }
+
+    .med-step strong {
+      display: block;
+      font-size: 0.94rem;
+      color: var(--brand);
+      line-height: 1.15;
+    }
+
+    .med-step span {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .bento-split {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      align-items: center;
+      height: 100%;
+    }
+
+    .bento-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+
+    .install-layout {
+      display: grid;
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .homescreen-mock {
+      background: linear-gradient(155deg, #0b2430 0%, #17465a 100%);
+      border: 5px solid #1e3342;
+      border-radius: 28px;
+      padding: 18px 16px;
+      color: #ffffff;
+      box-shadow: var(--shadow-lg);
+      max-width: 320px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .homescreen-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #bcd8e4;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .homescreen-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+
+    .app-tile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #dbeaf1;
+    }
+
+    .app-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .app-icon-box--breque {
+      background: #0f2f3d;
+      border: 2px solid #f59e0b;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.22);
+    }
+
+    .app-icon-box--wa {
+      background: #14532d;
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
     .bank-logos {
       display: flex;
       flex-wrap: wrap;
@@ -712,8 +1027,8 @@
       header .container { padding-left: 24px; padding-right: 24px; }
       .logo { font-size: 1.05rem; gap: 8px; }
       .logo svg { width: 24px; height: 24px; }
-      .hero-grid, .grid-3, .bento, .trust-grid, .family-banner, .fact-grid { grid-template-columns: minmax(0, 1fr); }
-      .grid-3 > *, .bento > *, .trust-grid > *, .family-banner > *, .fact-grid > *, .footer-grid > * { min-width: 0; }
+      .hero-grid, .grid-3, .bento, .trust-grid, .family-banner, .fact-grid, .split-editorial, .bento-split, .install-layout { grid-template-columns: minmax(0, 1fr); }
+      .grid-3 > *, .bento > *, .trust-grid > *, .family-banner > *, .fact-grid > *, .footer-grid > *, .split-editorial > *, .bento-split > *, .install-layout > * { min-width: 0; }
       .bento-item--wide { grid-column: auto; }
       .bento-item { min-height: 0; }
       .hero { padding: 56px 0 64px; }
@@ -862,7 +1177,7 @@
                 <div style="font-weight:800; font-size:0.95rem; margin:4px 0;">Chave nova? Pause e confira antes de apertar confirmar.</div>
                 <div style="font-size:0.78rem; color:#4b5c6b;">Identificador com salt só neste aparelho, sem selo falso de "seguro".</div>
               </div>
-              <div class="mock-card"><strong>Falar com meu banco agora (1 toque)</strong><br/><span style="color:#4b5c6b;">Catálogo offline com canais verificados em 26/11/2026 e fonte oficial.</span></div>
+              <div class="mock-card"><strong>Falar com meu banco agora (1 toque)</strong><br/><span style="color:#4b5c6b;">Catálogo offline com canais verificados em 27/11/2026 e fonte oficial.</span></div>
               <div class="mock-card"><strong>Já fiz Pix ou passei dados (Mesa 2.0)</strong><br/><span style="color:#4b5c6b;">Prazos reais do MED: pedido até 80 dias, análise em 7, devolução em até 96h (fonte: Banco Central).</span></div>
             </div>
           </div>
@@ -889,45 +1204,78 @@
       <div class="section-head">
         <span class="section-eyebrow">Reconhece alguma destas cenas?</span>
         <h2>Na hora da pressa, qualquer pessoa pode travar.</h2>
-        <p>O golpista conta com o susto e o isolamento. O BREQUE entra exatamente nesses 60 segundos decisivos.</p>
+        <p>O golpista conta com o susto. Veja como o BREQUE quebra a pressa em cada cena.</p>
       </div>
       <div class="grid-3">
-        <div class="chat-bubble">
-          <span class="chat-tag">WhatsApp • Número novo</span>
-          <p class="chat-quote">“Oi mãe, meu celular quebrou. Preciso pagar um boleto urgente agora, depois te devolvo.”</p>
-          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> lembra você de pausar, verificar a chave no Escudo do Destinatário e confirmar pela Pergunta Secreta da Família.</p>
-        </div>
-        <div class="chat-bubble">
-          <span class="chat-tag">Ligação • Falsa central</span>
-          <p class="chat-quote">“Detectamos uma compra suspeita. Não desligue a ligação e informe o código que chegou por SMS.”</p>
-          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> oferece áudio calmo, frase pronta para desligar e discagem em 1 toque para o número oficial do seu banco.</p>
-        </div>
-        <div class="chat-bubble">
-          <span class="chat-tag">SMS ou WhatsApp • Link de susto</span>
-          <p class="chat-quote">“Fraude no Pix no seu banco” ou “Encomenda retida — pague a taxa em até 1 hora pelo link abaixo.”</p>
-          <p class="chat-fix"><strong>Como o BREQUE ajuda:</strong> analisa o domínio localmente sem abrir o site e treina a família com casos reais na Vacina de 60 Segundos.</p>
-        </div>
+        <article class="scene-card">
+          <div class="scene-header scene-header--wa">
+            <span>Número desconhecido</span>
+            <span>WhatsApp • agora</span>
+          </div>
+          <div class="scene-screen">
+            <div class="wa-bubble">
+              “Oi mãe, meu celular quebrou. Preciso pagar um boleto urgente agora, depois te devolvo.”
+              <span class="wa-meta">14:08 ✓✓</span>
+            </div>
+          </div>
+          <div class="scene-fix">
+            <strong>BREQUE:</strong> pausa, checagem da chave no Escudo Pix e Pergunta Secreta da Família.
+          </div>
+        </article>
+
+        <article class="scene-card">
+          <div class="scene-header scene-header--call">
+            <span>Ligação recebida • Falsa central</span>
+            <span>00:42</span>
+          </div>
+          <div class="scene-screen scene-screen--call">
+            <div class="call-dots"><span class="call-dot" aria-hidden="true"></span><span>Ligação ativa — pressão</span></div>
+            <p style="margin:6px 0 0; font-size:0.9rem; font-weight:600; color:#e2eff5;">“Compra suspeita detectada. Não desligue e informe o código do SMS.”</p>
+          </div>
+          <div class="scene-fix">
+            <strong>BREQUE:</strong> áudio calmo, frase pronta para desligar e 1 toque para o banco oficial.
+          </div>
+        </article>
+
+        <article class="scene-card">
+          <div class="scene-header scene-header--sms">
+            <span>SMS / Link de susto</span>
+            <span>Urgência falsa</span>
+          </div>
+          <div class="scene-screen">
+            <div class="wa-bubble" style="border-left:4px solid #b45309;">
+              “Encomenda retida ou fraude no Pix — regularize em até 1 hora pelo link abaixo.”
+              <span class="wa-meta">domínio-estranho.xyz</span>
+            </div>
+          </div>
+          <div class="scene-fix">
+            <strong>BREQUE:</strong> analisa o link localmente sem abrir e treina a família com casos reais.
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
   <section id="antivirus" class="section-soft">
     <div class="container">
-      <div class="family-banner" style="background:linear-gradient(135deg, #0f2f3d 0%, #17465a 100%);">
-        <div>
-          <span class="hero-pill" style="margin-bottom:12px;">Pergunta justa</span>
-          <h2 style="margin:0 0 12px; font-size:1.85rem;">Por que não uso só o antivírus?</h2>
-          <p style="margin:0; color:#e2eff5; font-size:1.05rem;">
-            <strong>O antivírus protege o aparelho. O BREQUE protege a sua decisão.</strong> São coisas diferentes — golpistas não invadem o celular: eles apressam você.
-          </p>
-        </div>
-        <div class="mock-card" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.22); color:#fff; padding:20px;">
-          <strong style="color:#fde68a; font-size:0.95rem;">Onde o BREQUE atua:</strong>
-          <ul style="margin:10px 0 0; padding-left:18px; color:#e2eff5; font-size:0.92rem;">
-            <li style="margin-bottom:6px;">Não compete com antivírus, banco, polícia ou gerente.</li>
-            <li style="margin-bottom:6px;">Entra no segundo antes do Pix, quando o susto acelera a mão.</li>
-            <li>Funciona 100% offline, sem pedir senha e sem ler seu WhatsApp.</li>
-          </ul>
+      <div class="family-banner" style="background:linear-gradient(135deg, #0f2f3d 0%, #17465a 100%); grid-template-columns:1fr;">
+        <div class="split-editorial">
+          <div>
+            <span class="hero-pill" style="margin-bottom:12px;">Pergunta justa</span>
+            <h2 style="margin:0 0 12px; font-size:1.85rem;">Por que não uso só o antivírus?</h2>
+            <p style="margin:0; color:#e2eff5; font-size:1.05rem;">
+              <strong>O antivírus protege o aparelho. O BREQUE protege a sua decisão.</strong> Golpes de engenharia social não trazem vírus — trazem pressa.
+            </p>
+            <div class="chip-list">
+              <span class="chip-item">Sem competir com seu banco</span>
+              <span class="chip-item">100% offline no aparelho</span>
+              <span class="chip-item">Sem ler seu WhatsApp</span>
+            </div>
+          </div>
+          <figure class="editorial-frame">
+            <img src="/img/cena-pausa.jpg" alt="Pessoa em mesa iluminada pausando com calma antes de decidir uma transferência no celular" width="900" height="672" loading="lazy" decoding="async" />
+            <figcaption>Um segundo de calma antes de apertar confirmar.</figcaption>
+          </figure>
         </div>
       </div>
     </div>
@@ -938,12 +1286,12 @@
       <div class="section-head">
         <span class="section-eyebrow">Fatos verificáveis</span>
         <h2>Sem número inflado. Sem promessa de eficácia.</h2>
-        <p>O que você vê aqui é função disponível e prazo oficial — não taxa de sucesso inventada.</p>
+        <p>Só função disponível e prazo oficial — nunca inventamos estatísticas.</p>
       </div>
       <div class="fact-grid">
-        <div class="fact-card"><strong>13</strong><p>instituições no catálogo offline, cada contato com fonte oficial e data de verificação.</p></div>
-        <div class="fact-card"><strong>80 dias</strong><p>para pedir o MED após o Pix, conforme o Banco Central. A análise e a devolução têm prazos próprios.</p></div>
-        <div class="fact-card"><strong>1 toque</strong><p>para ligar para o canal oficial salvo no catálogo — sem digitar número suspeito recebido por mensagem.</p></div>
+        <div class="fact-card"><strong>19</strong><p>instituições no catálogo offline (bancos, cooperativas, BC 145, INSS 135 e Celular Seguro) com fonte e data.</p></div>
+        <div class="fact-card"><strong>80 dias</strong><p>para pedir o MED após o Pix, conforme o Banco Central (análise em 7 dias, devolução em até 96h).</p></div>
+        <div class="fact-card"><strong>1 toque</strong><p>para ligar para o canal oficial salvo no catálogo — sem digitar número recebido por mensagem.</p></div>
       </div>
       <p style="text-align:center; color:var(--muted); font-size:0.86rem; margin:22px auto 0; max-width:680px;">O BREQUE não mede “taxa de golpes evitados” e não afirma que qualquer pagamento está seguro. A decisão continua sua.</p>
     </div>
@@ -962,23 +1310,46 @@
       <div class="section-head">
         <span class="section-eyebrow">Simples de verdade</span>
         <h2>3 passos para retomar o controle com calma</h2>
-        <p>Sem jargões técnicos, sem julgamento e sem selos falsos de “está seguro”.</p>
+        <p>Sem jargões técnicos e sem selos falsos de “está seguro”.</p>
       </div>
       <div class="grid-3">
         <div class="step-card">
+          <div class="mini-ui mini-ui--dark" aria-hidden="true">
+            <span class="mini-pill mini-pill--brand">BREQUE • Pausa 10s</span>
+            <div style="font-size:0.84rem; font-weight:700;">Respire. Você pode sair quando quiser.</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:2px;">
+              <span style="background:rgba(255,255,255,0.16); border-radius:8px; padding:5px 9px; font-size:0.74rem; font-weight:700;">Ouvir áudio calmo</span>
+              <span style="background:rgba(245,158,11,0.22); color:#fde68a; border-radius:8px; padding:5px 9px; font-size:0.74rem; font-weight:700;">Frase p/ desligar</span>
+            </div>
+          </div>
           <div class="step-num">1</div>
           <h3>Interrompa a pressão</h3>
-          <p>Toque em <strong>BREQUE</strong> ou ative a <strong>Jornada de Espera</strong> para respirar 10 segundos e usar uma desculpa pronta oficial sem parecer desconfiado.</p>
+          <p>Ative a pausa de 10s ou a <strong>Jornada de Espera</strong> e use uma desculpa pronta oficial para desligar sem constrangimento.</p>
         </div>
+
         <div class="step-card">
+          <div class="mini-ui" aria-hidden="true">
+            <span class="mini-pill">Escudo Pix • Confira antes</span>
+            <div class="mini-row"><span>Chave ••••892-00</span><span style="color:#b45309;">Nova no aparelho</span></div>
+            <div class="mini-row"><span>Meu banco oficial</span><span style="color:#0f2f3d;">1 toque →</span></div>
+          </div>
           <div class="step-num">2</div>
-          <h3>Olhe a saída antes do Pix</h3>
-          <p>Cole a chave no <strong>Escudo do Destinatário</strong> e ligue você mesmo para o canal oficial na <strong>Discagem Segura</strong> (1 toque, 100% offline).</p>
+          <h3>Confira a saída antes do Pix</h3>
+          <p>Cheque a chave no <strong>Escudo do Destinatário</strong> e ligue você mesmo pelo catálogo offline da <strong>Discagem Segura</strong>.</p>
         </div>
+
         <div class="step-card" id="recuperacao">
+          <div class="mini-ui" aria-hidden="true">
+            <span class="mini-pill">Mesa MED 2.0 • Prazos BC</span>
+            <div class="med-timeline">
+              <div class="med-step"><strong>80 dias</strong><span>pedir MED</span></div>
+              <div class="med-step"><strong>7 dias</strong><span>análise</span></div>
+              <div class="med-step"><strong>96h</strong><span>devolução</span></div>
+            </div>
+          </div>
           <div class="step-num">3</div>
           <h3>Aja rápido com o MED</h3>
-          <p>Se já fez Pix ou passou dados, a <strong>Mesa de Recuperação 2.0</strong> guia o passo a passo com prazos reais do MED: pedido até 80 dias, análise em 7 dias e devolução em até 96h (fonte: Banco Central).</p>
+          <p>Se já fez Pix ou passou dados, a <strong>Mesa de Recuperação 2.0</strong> guia os 5 passos e gera seu relato organizado.</p>
         </div>
       </div>
     </div>
@@ -987,40 +1358,68 @@
   <section id="recursos" class="section-soft">
     <div class="container">
       <div class="section-head">
-        <span class="section-eyebrow">O que torna o BREQUE diferente</span>
+        <span class="section-eyebrow">O que o app coloca na sua mão</span>
         <h2>Não é só “tomar cuidado”. É conferir antes do dinheiro sair.</h2>
-        <p>Tudo roda no seu aparelho, sem ler WhatsApp, sem pedir senha e sem prometer que algo “está seguro”.</p>
+        <p>Cada recurso roda no aparelho — sem ler mensagens e sem pedir senhas.</p>
       </div>
       <div class="bento">
         <div class="step-card bento-item bento-item--wide">
-          <div class="step-num">1</div>
-          <h3>Escudo do Destinatário</h3>
-          <p>Antes de apertar confirmar, verifique a chave Pix. <strong>Os apps antivírus analisam a mensagem. O BREQUE olha a saída: para quem você vai pagar.</strong> Favorecidos salvos apenas como hash SHA-256 — nenhuma chave em texto puro.</p>
+          <div class="bento-split">
+            <div>
+              <div class="step-num">1</div>
+              <h3>Escudo do Destinatário</h3>
+              <p>Olha para <strong>quem vai receber o Pix</strong> antes de você confirmar. Favorecidos ficam salvos só como hash SHA-256 com salt — nenhuma chave em texto puro.</p>
+            </div>
+            <div class="mini-ui" style="margin:0;" aria-hidden="true">
+              <span class="mini-pill">Antes de pagar</span>
+              <div class="mini-row"><span>Chave Pix colada</span><span>CPF / Telefone</span></div>
+              <div class="mini-row"><span>Registro local</span><span style="color:#b45309;">Só hash com salt</span></div>
+              <div style="font-size:0.74rem; color:var(--muted); font-weight:600;">Nunca exibe selo “seguro” — pede conferência real.</div>
+            </div>
+          </div>
         </div>
+
         <div class="step-card bento-item">
+          <span class="bento-badge">Espera até 24h</span>
           <div class="step-num">2</div>
-          <h3>Jornada de 24h (Espera)</h3>
-          <p>Configure seu compromisso (ex.: Pix novo acima de R$ 200 → esperar 1 hora). <strong>Quando o golpista pressiona, você ganha uma desculpa oficial: “meu app de segurança aplicou um período de espera obrigatório”.</strong></p>
+          <h3>Jornada de Espera</h3>
+          <p>Defina uma pausa para valores fora do comum e ganhe uma desculpa oficial diante de quem apressa você.</p>
         </div>
+
         <div class="step-card bento-item">
+          <span class="bento-badge">5 passos pós-golpe</span>
           <div class="step-num">3</div>
-          <h3>Mesa de Recuperação 2.0 (MED)</h3>
-          <p>Já fez Pix ou passou dados? Assistente em 5 passos com prazos verificados do <strong>Banco Central</strong> (pedido em até 80 dias, análise em 7 dias, devolução em até 96h, com bloqueios sucessivos) e relato em .txt/.json/PDF com hash SHA-256.</p>
+          <h3>Mesa MED 2.0 + Dossiê</h3>
+          <p>Checklist na ordem certa com prazos do Banco Central e exportação local (.txt, .json ou PDF) com hash SHA-256.</p>
         </div>
+
         <div class="step-card bento-item">
+          <span class="bento-badge">19 canais offline</span>
           <div class="step-num">4</div>
-          <h3>Discagem Segura (o “159 do app”)</h3>
-          <p>Memorize seu banco 1 vez e ligue para o canal oficial em 1 toque, mesmo sem internet. Cada telefone mostra quando usar, fonte oficial e data de verificação.</p>
+          <h3>Discagem Segura (o “159”)</h3>
+          <p>Salve seu banco uma vez e ligue em 1 toque mesmo sem internet, com fonte oficial e data de conferência.</p>
         </div>
+
         <div class="step-card bento-item bento-item--wide" id="treino">
-          <div class="step-num">5</div>
-          <h3>Vacina de 60 Segundos + Check-up</h3>
-          <p>Reforço periódico a cada 60 dias com golpes reais da safra (incluindo o caso real de portal de notícia falso no Pará / Banpará) + check-up rápido de 6 perguntas para gerar o Briefing Familiar.</p>
+          <div class="bento-split">
+            <div>
+              <div class="step-num">5</div>
+              <h3>Vacina 60s + Plano Pessoal</h3>
+              <p>Treino rápido com safras reais (como o falso portal no Pará/Banpará) e seu <strong>Plano de Proteção Pessoal</strong> relembrado automaticamente sob pressão.</p>
+            </div>
+            <div class="mini-ui" style="margin:0;" aria-hidden="true">
+              <span class="mini-pill">Pré-Compromisso • Sem PII</span>
+              <div class="mini-row"><span>Vacina de 60s</span><span>Caso real 1/3</span></div>
+              <div class="mini-row"><span>Seu combinado</span><span style="color:#0f2f3d;">Ativo na pausa</span></div>
+            </div>
+          </div>
         </div>
+
         <div class="step-card bento-item">
+          <span class="bento-badge">Opt-in • Sem PII</span>
           <div class="step-num">6</div>
-          <h3>Radar de Golpes (Opt-in Local)</h3>
-          <p>Reporte padrões e domínios suspeitos em 2 toques com filtro automático que remove CPF, telefone, e-mail, chave Pix e valores — 100% local e desligado por padrão.</p>
+          <h3>Radar Local de Golpes</h3>
+          <p>Desligado por padrão: guarda só domínio suspeito e padrão no aparelho, filtrando CPF, telefone e valores.</p>
         </div>
       </div>
       <div style="text-align:center; margin-top:30px;">
@@ -1032,9 +1431,9 @@
   <section id="canais-verificados">
     <div class="container">
       <div class="section-head">
-        <span class="section-eyebrow">Transparência verificável • Catálogo offline v1.0.0</span>
+        <span class="section-eyebrow">Transparência verificável • Catálogo offline v1.1.0</span>
         <h2>Nossos canais oficiais, verificados</h2>
-        <p>Nenhum número entra sem fonte oficial e data de conferência. Última revisão da equipe: <strong>26/11/2026</strong> (próxima revisão trimestral: <strong>26/02/2027</strong>).</p>
+        <p>Nenhum número entra sem fonte oficial e data de conferência. Última revisão: <strong>27/11/2026</strong> (próxima revisão trimestral: <strong>27/02/2027</strong>).</p>
       </div>
       <div class="grid-3">
         <div class="step-card">
@@ -1049,9 +1448,9 @@
               <rect x="9" y="28.5" width="22" height="3" rx="1" fill="#e5b82e"/>
             </svg>
           </div>
-          <span class="chat-tag">Regulador • Verificado em 26/11/2026</span>
-          <h3 style="margin-top:8px;">Banco Central do Brasil</h3>
-          <p><strong>145</strong> e Fale Conosco em <code>bcb.gov.br/meubc/faleconosco</code>. Reclamar de banco e tirar dúvidas sobre o MED.</p>
+          <span class="chat-tag">Reguladores e Governo • Verificado em 27/11/2026</span>
+          <h3 style="margin-top:8px;">Banco Central, INSS e Celular Seguro</h3>
+          <p>BC <strong>145</strong>, INSS <strong>135</strong> (<code>meu.inss.gov.br</code>) e bloqueio oficial em <code>celularseguro.mj.gov.br</code>.</p>
         </div>
         <div class="step-card">
           <div class="bank-logos" aria-label="Logotipo do Banpará">
@@ -1063,7 +1462,7 @@
               <text x="20" y="34.5" text-anchor="middle" fill="#003366" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="7" font-weight="800">PARÁ</text>
             </svg>
           </div>
-          <span class="chat-tag">Banco local do Pará • Verificado em 26/11/2026</span>
+          <span class="chat-tag">Banco local do Pará • Verificado em 27/11/2026</span>
           <h3 style="margin-top:8px;">Banpará</h3>
           <p><strong>3004 4444</strong> (Belém e RM) / <strong>0800 285 8080</strong> (demais localidades, fixo). Fonte: <code>banpara.b.br</code>.</p>
         </div>
@@ -1075,7 +1474,7 @@
               <text x="20" y="25.5" text-anchor="middle" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="18" font-weight="800" letter-spacing="-0.04em">nu</text>
             </svg>
           </div>
-          <span class="chat-tag">Sem telefone público • Verificado em 26/11/2026</span>
+          <span class="chat-tag">Sem telefone público • Verificado em 27/11/2026</span>
           <h3 style="margin-top:8px;">Nubank</h3>
           <p>Atendimento <strong>somente pelo chat dentro do app 24h</strong>. Se alguém ligar se passando pelo Nubank, desligue.</p>
         </div>
@@ -1113,9 +1512,9 @@
               <path d="M20 9.5c-2.2 3.2-.6 5.4 1.2 7.4 1.8 2 2.4 4.2.5 6.8 3.6-1.4 5.5-4.7 4-8.1-.8-1.9-2.8-3.4-3.7-6.1H20zm-5.2 4.5c-2.8 2.4-3.8 6-2 9.4 1.3 2.5 4.4 4.1 7.8 4.1 3.5 0 6.8-1.6 8.2-4.3-1.4 1.2-3.5 1.8-6 1.8-4.2 0-7.2-2.2-7.2-5.6 0-1.9.8-3.6 2-5.4h-2.8z" fill="#ffffff"/>
             </svg>
           </div>
-          <span class="chat-tag">Bancos nacionais • Verificado em 26/11/2026</span>
+          <span class="chat-tag">Bancos nacionais • Verificado em 27/11/2026</span>
           <h3 style="margin-top:8px;">BB, Caixa, Itaú, Bradesco e Santander</h3>
-          <p>BB (4004 0001 / 0800 729 0001) • Caixa (4004 0104 / 0800 104 0104) • Itaú (4004 4828 / 0800 970 4828) • Bradesco (4002 0022 / 0800 570 0022) • Santander (4004 3535 / 0800 702 3535).</p>
+          <p>BB (4004 0001 / 0800 729 0001) • Caixa (4004 0104) • Itaú (4004 4828) • Bradesco (4002 0022) • Santander (4004 3535).</p>
         </div>
         <div class="step-card">
           <div class="bank-logos" aria-label="Logotipos de Inter e Banrisul">
@@ -1131,9 +1530,9 @@
               <text x="20" y="25.5" text-anchor="middle" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="16" font-weight="800">B</text>
             </svg>
           </div>
-          <span class="chat-tag">Digitais e Regionais • Verificado em 26/11/2026</span>
-          <h3 style="margin-top:8px;">Inter e Banrisul</h3>
-          <p>Inter SAC 24h (<strong>0800 940 9999</strong>) • Banrisul SAC (<strong>0800 646 1515</strong>) e Banrifone (<strong>(51) 3210 0122</strong> / <strong>0800 541 8855</strong>).</p>
+          <span class="chat-tag">Digitais e Regionais • Verificado em 27/11/2026</span>
+          <h3 style="margin-top:8px;">Inter, PicPay, Mercado Pago, PagBank, C6 e Banrisul</h3>
+          <p>Inter (<strong>0800 940 9999</strong>) • PicPay, Mercado Pago, PagBank, C6 Bank e Banrisul completos dentro do app.</p>
         </div>
         <div class="step-card">
           <div class="bank-logos" aria-label="Logotipos de Sicredi e Sicoob">
@@ -1149,13 +1548,13 @@
               <path d="M20 19.5l4.2 8H15.8l4.2-8z" fill="#00ae9d"/>
             </svg>
           </div>
-          <span class="chat-tag">Cooperativas • Verificado em 26/11/2026</span>
+          <span class="chat-tag">Cooperativas • Verificado em 27/11/2026</span>
           <h3 style="margin-top:8px;">Sicredi e Sicoob</h3>
           <p>Sicredi (<strong>0800 724 4770</strong>) • Sicoob (<strong>4000 1111</strong> / <strong>0800 642 0000</strong>). Todos com fonte oficial clicável dentro do app.</p>
         </div>
       </div>
       <p style="text-align:center; font-size:0.84rem; color:var(--muted); margin-top:18px;">
-        Catálogo 100% offline dentro do app. Em caso de dúvida, vale sempre o número impresso no verso do seu cartão.<br/>
+        Catálogo 100% offline dentro do app (19 instituições no total: bancos, cooperativas, INSS 135, Celular Seguro e Banco Central 145). Em caso de dúvida, vale sempre o número impresso no verso do seu cartão.<br/>
         Nomes e ícones identificam apenas canais públicos de atendimento — o BREQUE é independente e não possui vínculo oficial com as instituições listadas.
       </p>
     </div>
@@ -1166,23 +1565,72 @@
       <div class="section-head">
         <span class="section-eyebrow">Sem fricção de loja</span>
         <h2>Primeiro a página. O app só se você quiser.</h2>
-        <p>Sem loja, sem cadastro e sem cobrança para usar o essencial. O ícone fica na tela inicial do celular.</p>
+        <p>Sem Play Store, sem App Store e sem cadastro. Fica na primeira tela do celular.</p>
       </div>
-      <div class="grid-3">
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <h3>Abra no celular</h3>
-          <p>Toque em <strong>Testar o BREQUE grátis agora</strong>. Ele abre direto no navegador e funciona offline depois do primeiro acesso.</p>
+      <div class="install-layout">
+        <div class="homescreen-mock" aria-label="Exemplo do ícone BREQUE instalado ao lado do WhatsApp na tela inicial do celular">
+          <div class="homescreen-top"><span>Tela inicial</span><span>Offline pronto</span></div>
+          <div class="homescreen-grid">
+            <div class="app-tile">
+              <div class="app-icon-box app-icon-box--wa">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/></svg>
+              </div>
+              <span>Mensagens</span>
+            </div>
+            <div class="app-tile">
+              <div class="app-icon-box app-icon-box--breque">
+                <svg width="26" height="26" viewBox="0 0 512 512" aria-hidden="true">
+                  <path d="M256 92L124 146v106c0 92 56 174 132 204 76-30 132-112 132-204V146L256 92z" fill="#17465a" stroke="#e2eef2" stroke-width="22" stroke-linejoin="round"/>
+                  <rect x="206" y="192" width="34" height="128" rx="14" fill="#f59e0b"/>
+                  <rect x="272" y="192" width="34" height="128" rx="14" fill="#f59e0b"/>
+                </svg>
+              </div>
+              <strong style="color:#fde68a;">BREQUE</strong>
+            </div>
+            <div class="app-tile">
+              <div class="app-icon-box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><rect x="3" y="10" width="18" height="10" rx="2"/><path d="M12 3l9 7H3l9-7z"/></svg>
+              </div>
+              <span>Banco</span>
+            </div>
+            <div class="app-tile">
+              <div class="app-icon-box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <span>Telefone</span>
+            </div>
+          </div>
+          <p style="margin:14px 0 0; font-size:0.78rem; color:#cfe4f0; text-align:center;">Coloque o BREQUE na 1ª tela, ao lado das mensagens.</p>
         </div>
-        <div class="step-card">
-          <div class="step-num">2</div>
-          <h3>Instale em 2 toques</h3>
-          <p>No Android, use <strong>Instalar aplicativo</strong>. No iPhone, toque em <strong>Compartilhar → Adicionar à Tela de Início</strong>.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">3</div>
-          <h3>Memorize o banco e a regra</h3>
-          <p>Escolha o banco na Discagem Segura, combine a Pergunta Secreta e faça a primeira Vacina de 60 Segundos.</p>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="step-card" style="padding:18px 20px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="step-num" style="margin:0; flex:none;">1</div>
+              <div>
+                <h3 style="margin-bottom:2px;">Abra no celular</h3>
+                <p>Toque em <strong>Testar grátis</strong>; funciona offline após o primeiro acesso.</p>
+              </div>
+            </div>
+          </div>
+          <div class="step-card" style="padding:18px 20px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="step-num" style="margin:0; flex:none;">2</div>
+              <div>
+                <h3 style="margin-bottom:2px;">Instale em 2 toques</h3>
+                <p>Android: <strong>Instalar app</strong> • iPhone: <strong>Compartilhar → Tela de Início</strong>.</p>
+              </div>
+            </div>
+          </div>
+          <div class="step-card" style="padding:18px 20px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="step-num" style="margin:0; flex:none;">3</div>
+              <div>
+                <h3 style="margin-bottom:2px;">Salve seu banco e combinado</h3>
+                <p>Memorize o banco em 1 toque e escolha seu <strong>Plano de Proteção Pessoal</strong>.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1192,22 +1640,23 @@
     <div class="container">
       <div class="family-banner">
         <div>
-          <span class="hero-pill" style="margin-bottom:12px;">Pacto Familiar de Autonomia • Para filhos e cuidadores</span>
-          <h2 style="margin:0 0 12px; font-size:1.85rem;">Instale no celular dos seus pais em 2 minutos, de longe, por link.</h2>
-          <p style="margin:0 0 20px; color:#d6e7ef;">
-            Apps invasivos geram constrangimento e são desinstalados. Envie o link do BREQUE no WhatsApp dos seus pais, deixem o banco deles memorizado em 1 toque, combinem a Pergunta Secreta da Família e gerem o Cartão de Bolso — apoio sem espionagem.
+          <span class="hero-pill" style="margin-bottom:12px;">Pacto Familiar • Almoço de Domingo</span>
+          <h2 style="margin:0 0 12px; font-size:1.85rem;">Instale no celular dos seus pais em 2 minutos, sem vigiar ninguém.</h2>
+          <p style="margin:0 0 14px; color:#d6e7ef;">
+            Envie o link no WhatsApp, memorizem o banco oficial juntos e combinem a Pergunta Secreta da Família — apoio respeitoso sem espionagem.
           </p>
+          <div class="chip-list" style="margin:0 0 22px;">
+            <span class="chip-item">Banco em 1 toque</span>
+            <span class="chip-item">Escudo Pix</span>
+            <span class="chip-item">Cartão PNG</span>
+            <span class="chip-item">Letra A+ e Áudio</span>
+          </div>
           <a href="/app.html?install=1" class="btn-primary">Instalar no celular dos meus pais →</a>
         </div>
-        <div class="mock-card" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:#fff; padding:20px;">
-          <strong style="color:#fde68a; font-size:0.95rem;">Incluso grátis no app:</strong>
-          <ul style="margin:10px 0 0; padding-left:18px; color:#e2eff5; font-size:0.9rem;">
-            <li style="margin-bottom:6px;">Discagem Segura em 1 toque para o banco dos pais</li>
-            <li style="margin-bottom:6px;">Escudo do Destinatário (chave Pix antes de pagar)</li>
-            <li style="margin-bottom:6px;">Vacina de 60 Segundos a cada 60 dias + Cartão PNG</li>
-            <li>Fonte ajustável (A- / A+) e Áudio-Guia calmo</li>
-          </ul>
-        </div>
+        <figure class="editorial-frame">
+          <img src="/img/cena-familia.jpg" alt="Filho adulto e mãe ou avó sorrindo juntos na mesa de café enquanto ajustam o celular com calma" width="900" height="672" loading="lazy" decoding="async" />
+          <figcaption>Combinado em família, com autonomia e respeito.</figcaption>
+        </figure>
       </div>
     </div>
   </section>
