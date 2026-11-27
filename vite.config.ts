@@ -18,6 +18,12 @@ export default defineConfig({
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         app: fileURLToPath(new URL('./app.html', import.meta.url)),
       },
+      // Nome estável para o bundle (chunk de entrada) entrar no precache do SW.
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name][extname]',
+      },
     },
   },
   test: {

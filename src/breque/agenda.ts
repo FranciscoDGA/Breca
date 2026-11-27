@@ -14,7 +14,7 @@ export const TEXTO_NEUTRO_JORNADA =
   'Isso não é você sendo paranoico. É um período automático de segurança que você mesma configurou.'
 
 export const DESCULPA_OFICIAL_JORNADA =
-  'O app de segurança do meu celular aplicou um período de espera obrigatório. Não dá para liberar antes. Amanhã eu te oriento.'
+  'Vou esperar um pouco antes de responder. Quero conferir com calma e te respondo depois.'
 
 export const TEXTO_FIM_JORNADA =
   'Passou a hora. Golpista não espera. Se a pessoa continua com pressa, é sinal vermelho.'

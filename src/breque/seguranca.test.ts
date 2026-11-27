@@ -51,4 +51,22 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).not.toMatch(/sendBeacon/)
     expect(html).not.toMatch(/supabase/i)
   })
+
+  it('service worker nunca guarda URLs com parâmetros (texto do Web Share Target)', () => {
+    const sw = readFileSync(resolve(process.cwd(), 'public/sw.js'), 'utf-8')
+    expect(sw).toContain("url.search === ''")
+    expect(sw).toContain("'/assets/app.js'")
+    expect(sw).toContain('breque-pwa-v5')
+    const vite = readFileSync(resolve(process.cwd(), 'vite.config.ts'), 'utf-8')
+    expect(vite).toContain("entryFileNames: 'assets/[name].js'")
+  })
+
+  it('app.html não promete bloqueio nem fala em ação "segura"', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).not.toContain('Não dá para liberar antes')
+    expect(html).not.toContain('Desligar é sempre seguro')
+    expect(html).not.toContain('ação curta e segura')
+    expect(html).not.toContain('Prova de eficácia')
+    expect(html).toContain('você pode sair quando quiser')
+  })
 })

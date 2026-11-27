@@ -1259,7 +1259,7 @@
         msg: "“Aqui é da central do seu banco. Detectamos uma compra suspeita. Não desligue e leia o código de 6 dígitos que chegou por SMS.”",
         opcoes: [
           { label: "Desligar e ligar para o número no verso do cartão", correta: true, feedback: "Perfeito! Banco de verdade nunca pede código de SMS por ligação nem proíbe você de desligar." },
-          { label: "Ler o código rápido para cancelar a compra", correta: false, feedback: "Esse código costuma ser usado para entrar na sua conta ou aprovar uma transferência. Desligar é sempre seguro." }
+          { label: "Ler o código rápido para cancelar a compra", correta: false, feedback: "Esse código costuma ser usado para entrar na sua conta ou aprovar uma transferência. Desligue e ligue para o número do cartão." }
         ]
       },
       {
@@ -2567,7 +2567,7 @@
 
     async function copiarDesculpaPausa() {
       const texto = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.desculpaOficial) ||
-        "O app de segurança do meu celular aplicou um período de espera obrigatório. Não dá para liberar antes. Amanhã eu te oriento.";
+        "Vou esperar um pouco antes de responder. Quero conferir com calma e te respondo depois.";
       try {
         await navigator.clipboard.writeText(texto);
         state.pausaAviso = "Desculpa pronta copiada! Agora cole no WhatsApp ou SMS para enviar.";
@@ -3884,7 +3884,7 @@
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
             <span class="pill pill-brand">Painel local • Sem telemetria</span>
-            <h1>Prova de eficácia no seu aparelho</h1>
+            <h1>Números locais do seu treino</h1>
             <p style="margin-top:6px;">Números anônimos que ficam só aqui. Sem painel inflado: se o treino não mudar o comportamento, você vê.</p>
           </div>
 
@@ -4128,7 +4128,7 @@
               </ul>
               ${alertaRadar.encontrado ? `<div class="card card-risk" style="padding:12px; margin:0;"><strong>${escapeHtml(alertaRadar.aviso)}</strong></div>` : ""}
               <button class="btn btn-primary btn-center" onclick="state.activeStage=${localScan.stage}; navigate('stages_overview');">
-                Ver próximo passo seguro (Roteiro Reverso) →
+                Ver próximo passo (Roteiro Reverso) →
               </button>
               <button class="btn btn-secondary btn-center" onclick="navigate('verify_q1')">
                 Refinar com 3 perguntas rápidas
@@ -4236,7 +4236,7 @@
         const textoNeutro = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.textoNeutro) ||
           "Isso não é você sendo paranoico. É um período automático de segurança que você mesma configurou.";
         const desculpaOficial = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.desculpaOficial) ||
-          "O app de segurança do meu celular aplicou um período de espera obrigatório. Não dá para liberar antes. Amanhã eu te oriento.";
+          "Vou esperar um pouco antes de responder. Quero conferir com calma e te respondo depois.";
         const textoFim = (window.BREQUE_AGENDA && window.BREQUE_AGENDA.textoFim) ||
           "Passou a hora. Golpista não espera. Se a pessoa continua com pressa, é sinal vermelho.";
         const breathHtml = state.pauseSeconds > 0
@@ -4826,7 +4826,7 @@
         const tabs = [1, 2, 3, 4, 5, 6].map(n => `<button class="top-pill" style="flex:1; background:${state.activeStage === n ? 'var(--brand)' : 'var(--surface)'}; color:${state.activeStage === n ? '#fff' : 'var(--text)'}; border-color:var(--border);" onclick="state.activeStage=${n}; render();">${n}</button>`).join("");
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div><h1>Roteiro Reverso (6 estágios)</h1><p style="margin-top:4px;">Toque em um estágio para ver a ação curta e segura recomendada.</p></div>
+          <div><h1>Roteiro Reverso (6 estágios)</h1><p style="margin-top:4px;">Toque em um estágio para ver uma ação curta recomendada.</p></div>
           <div style="display:flex; gap:6px;">${tabs}</div>
           ${renderRoteiroCard(state.activeStage)}
           <div class="card card-soft">
