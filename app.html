@@ -1261,7 +1261,18 @@
       pausa: { ativo: false, inicio: 0, duracaoMin: 60, motivo: "banco", concluida: false },
       pausaInterval: null,
       pausaAviso: "",
-      medChecklist: {}
+      medChecklist: {},
+      visitante: false,
+      socorroContexto: null,
+      linhaTempo: [],
+      vozSinais: {
+        pedidoUrgenteDinheiro: false,
+        pressaoEmocionalOuEmergencia: false,
+        inconsistenciaNoRelato: false,
+        pedidoDeSegredo: false,
+        impedeConfirmacaoPorOutroCanal: false
+      },
+      vozResultado: null
     };
 
     const CHAVES_LOCAIS = {
@@ -2403,6 +2414,22 @@
 
     let audioTelaAtivo = false;
     let utteranceTela = null;
+    let passoAudioAtivo = false;
+    let passoAtualAudio = 0;
+
+    const PASSOS_AUDIO_EXTREMOS = [
+      "Respire fundo. Você não precisa responder agora.",
+      "Diga: vou confirmar pelo app do banco.",
+      "Desligue quando quiser. A decisão continua sua."
+    ];
+
+    const SINAIS_VOZ = [
+      { id: "pedidoUrgenteDinheiro", rotulo: "Pedido urgente de dinheiro ou Pix" },
+      { id: "pressaoEmocionalOuEmergencia", rotulo: "Emergência súbita ou forte apelo emocional" },
+      { id: "inconsistenciaNoRelato", rotulo: "A história mudou ou a voz soou diferente" },
+      { id: "pedidoDeSegredo", rotulo: "Pediu para não avisar ninguém" },
+      { id: "impedeConfirmacaoPorOutroCanal", rotulo: "Impediu ligação de vídeo ou retorno ao número antigo" }
+    ];
 
     function clearTimer() {
       if (state.pauseInterval) {
@@ -2434,7 +2461,9 @@
       state.isSpeaking = false;
       audioTelaAtivo = false;
       utteranceTela = null;
+      passoAudioAtivo = false;
       atualizarBotoesAudio();
+      atualizarPainelPassos();
     }
 
     if ("speechSynthesis" in window) {
@@ -2450,6 +2479,7 @@
         return;
       }
 
+      pararAudioPasso();
       pararAudioTela();
       const synth = window.speechSynthesis;
       synth.cancel();
@@ -2549,6 +2579,223 @@
       }, 60);
     }
 
+    function atualizarPainelPassos() {
+      const texto = document.getElementById("passo-audio-texto");
+      if (texto) texto.textContent = PASSOS_AUDIO_EXTREMOS[passoAtualAudio];
+      const botao = document.getElementById("passo-audio-botao");
+      if (botao) botao.textContent = passoAudioAtivo ? "Parar áudio" : `Ouvir passo ${passoAtualAudio + 1}`;
+    }
+
+    function pararAudioPasso() {
+      if (passoAudioAtivo && "speechSynthesis" in window) window.speechSynthesis.cancel();
+      passoAudioAtivo = false;
+      atualizarPainelPassos();
+    }
+
+    function reproduzirPassoAudio() {
+      if (passoAudioAtivo) {
+        pararAudioPasso();
+        return;
+      }
+      if (state.isSpeaking) {
+        stopCalmGuidance();
+        render();
+      }
+      if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+        const aviso = document.getElementById("passo-audio-aviso");
+        if (aviso) aviso.textContent = "Sem voz local neste aparelho. Continue lendo as instruções.";
+        return;
+      }
+      pararAudioTela();
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      synth.resume();
+      const utter = new SpeechSynthesisUtterance(PASSOS_AUDIO_EXTREMOS[passoAtualAudio]);
+      utter.lang = "pt-BR";
+      utter.rate = 0.92;
+      utter.pitch = 1;
+      utter.volume = 1;
+      const voices = synth.getVoices();
+      const ptVoice = voices.find((v) => /pt[-_]BR/i.test(v.lang)) || voices.find((v) => /^pt/i.test(v.lang));
+      if (ptVoice) utter.voice = ptVoice;
+      const finalizar = () => {
+        passoAudioAtivo = false;
+        atualizarPainelPassos();
+      };
+      utter.onend = finalizar;
+      utter.onerror = finalizar;
+      passoAudioAtivo = true;
+      atualizarPainelPassos();
+      setTimeout(() => {
+        synth.resume();
+        synth.speak(utter);
+      }, 60);
+    }
+
+    function repetirPassoAudio() {
+      pararAudioPasso();
+      reproduzirPassoAudio();
+    }
+
+    function avancarPassoAudio() {
+      pararAudioPasso();
+      passoAtualAudio = (passoAtualAudio + 1) % PASSOS_AUDIO_EXTREMOS.length;
+      atualizarPainelPassos();
+      reproduzirPassoAudio();
+    }
+
+    function registrarSinalSeguro(tipo) {
+      state.linhaTempo.push({ tipo: String(tipo), em: new Date().toISOString() });
+      if (state.linhaTempo.length > 12) state.linhaTempo.shift();
+    }
+
+    function renderLinhaTempoLocal() {
+      if (!state.linhaTempo.length) return "";
+      const itens = state.linhaTempo.map((sinal) => {
+        const hora = new Date(sinal.em).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+        return `<li><strong>${escapeHtml(sinal.tipo)}</strong> • ${escapeHtml(hora)}</li>`;
+      }).join("");
+      return `<details class="details-bloco">
+        <summary>Linha do tempo local (sem dados pessoais)</summary>
+        <ul class="list-clean">${itens}</ul>
+      </details>`;
+    }
+
+    function definirContextoSocorro(contexto) {
+      state.socorroContexto = contexto;
+      registrarSinalSeguro(`Contexto: ${contexto}`);
+      render();
+    }
+
+    function irProximoPasso() {
+      const destinos = { ligacao: "pressure_pause", mensagem: "verify_start", dados: "post_plan" };
+      registrarSinalSeguro("Próximo passo escolhido");
+      navigate(destinos[state.socorroContexto] || "verify_start");
+    }
+
+    function sairSemExplicar() {
+      pararAudioPasso();
+      pararAudioTela();
+      stopCalmGuidance();
+      state.verifyText = "";
+      state.escudo.chave = "";
+      state.raioX.entrada = "";
+      state.helpPreviewText = "";
+      state.vozResultado = null;
+      state.socorroContexto = null;
+      state.pressureTopic = null;
+      registrarSinalSeguro("Saída rápida");
+      goHome();
+    }
+
+    function alternarModoVisitante() {
+      state.visitante = !state.visitante;
+      state.history = [];
+      state.screen = "home";
+      render();
+    }
+
+    function aplicarModoVisitante() {
+      const raiz = document.getElementById("app");
+      if (!raiz) return;
+      const atalhos = raiz.querySelector('[data-bloco="atalhos"]');
+      if (atalhos) {
+        atalhos.innerHTML = `<summary>Canais oficiais (sem seus dados)</summary>
+          <button class="summary-row" onclick="navigate('registro_canais')">
+            <div class="summary-left">
+              <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.56 2.81.69A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div>
+                <div style="font-weight:700; font-size:0.92rem;">Abrir canais oficiais</div>
+                <div style="font-size:0.78rem; color:var(--text-muted);">Banco, cooperativa e emergência</div>
+              </div>
+            </div>
+            <span class="summary-tag">Abrir</span>
+          </button>`;
+      }
+      const ferramentas = raiz.querySelector('[data-bloco="ferramentas"]');
+      if (ferramentas) {
+        ferramentas.innerHTML = `<summary>Ferramentas públicas</summary>
+          <div class="stack" style="gap:10px;">
+            <button class="summary-row" onclick="navigate('verify_start')">
+              <div class="summary-left">
+                <div class="summary-icon">?</div>
+                <div>
+                  <div style="font-weight:700; font-size:0.92rem;">Verificar mensagem ou link</div>
+                  <div style="font-size:0.78rem; color:var(--text-muted);">Análise local, sem envio</div>
+                </div>
+              </div>
+              <span class="summary-tag">Abrir</span>
+            </button>
+            <button class="summary-row" onclick="navigate('discagem_segura')">
+              <div class="summary-left">
+                <div class="summary-icon">159</div>
+                <div>
+                  <div style="font-weight:700; font-size:0.92rem;">Discagem segura</div>
+                  <div style="font-size:0.78rem; color:var(--text-muted);">Escolha um canal verificado</div>
+                </div>
+              </div>
+              <span class="summary-tag">Abrir</span>
+            </button>
+          </div>`;
+      }
+    }
+
+    async function copiarFraseSegura(frase) {
+      let mensagem = "Frase copiada. Cole onde precisar.";
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          await navigator.clipboard.writeText(frase);
+        } else {
+          mensagem = "Selecione a frase para copiar.";
+        }
+      } catch {
+        mensagem = "Não foi possível copiar. Selecione a frase.";
+      }
+      const aviso = document.getElementById("frase-copy-aviso");
+      if (aviso) aviso.textContent = mensagem;
+    }
+
+    function renderSinaisVozHtml() {
+      return SINAIS_VOZ.map((sinal) => `<label style="display:flex; gap:10px; align-items:flex-start; font-size:0.9rem; cursor:pointer;">
+        <input type="checkbox" style="width:auto; margin-top:3px;" ${state.vozSinais[sinal.id] ? "checked" : ""} onchange="alternarSinalVoz('${sinal.id}')" />
+        <span>${escapeHtml(sinal.rotulo)}</span>
+      </label>`).join("");
+    }
+
+    function renderResultadoVozHtml() {
+      const resultado = state.vozResultado;
+      if (!resultado) return "";
+      return `<div class="card card-soft stack" style="margin:0;">
+        <strong>${escapeHtml(resultado.rotulo)}</strong>
+        <ul class="list-clean">${(resultado.sinais || []).map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>
+        <p style="font-size:0.86rem; margin:0;">${escapeHtml(resultado.orientacao)}</p>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">${escapeHtml(resultado.avisoLimiteDeepfake)}</p>
+        <button class="btn btn-secondary btn-center" onclick="navigate('pacto_familia')">Combinar Pergunta Secreta →</button>
+      </div>`;
+    }
+
+    function alternarSinalVoz(campo) {
+      if (!(campo in state.vozSinais)) return;
+      state.vozSinais[campo] = !state.vozSinais[campo];
+      render();
+    }
+
+    function avaliarSinaisVozLocal() {
+      const ponte = window.BREQUE_VOZ;
+      if (!ponte || typeof ponte.avaliarAudioSuspeito !== "function") {
+        state.vozResultado = {
+          rotulo: "Ponte local indisponível — confirme por outro canal",
+          sinais: [],
+          orientacao: "Ligue para o número antigo ou use a Pergunta Secreta da Família.",
+          avisoLimiteDeepfake: "O BREQUE não faz análise acústica e não afirma se uma voz é real ou clonada."
+        };
+      } else {
+        state.vozResultado = ponte.avaliarAudioSuspeito(state.vozSinais);
+      }
+      registrarSinalSeguro("Sinais de voz marcados");
+      render();
+    }
+
     function changeFont(delta) {
       state.fontScale = Math.min(1.25, Math.max(0.9, +(state.fontScale + delta).toFixed(2)));
       document.documentElement.style.setProperty("--font-scale", state.fontScale);
@@ -2568,6 +2815,7 @@
       clearTimer();
       if (pushHistory && state.screen !== screen) state.history.push(state.screen);
       state.screen = screen;
+      if (screen === "discagem_segura") registrarSinalSeguro("Canal oficial aberto");
       render();
     }
 
@@ -2586,6 +2834,7 @@
 
     function startPauseTimer() {
       clearTimer();
+      registrarSinalSeguro("Pausa iniciada");
       state.pauseSeconds = 10;
       render();
       state.pauseInterval = setInterval(() => {
@@ -2863,6 +3112,7 @@
     function alternarMedEtapa(id) {
       state.medChecklist = { ...state.medChecklist, [id]: !state.medChecklist[id] };
       gravarLocal(CHAVES_LOCAIS.med, state.medChecklist);
+      if (state.medChecklist[id]) registrarSinalSeguro("Checklist MED marcado");
       render();
     }
 
@@ -3165,6 +3415,7 @@
             <button class="welcome-go" onclick="goHome()" aria-label="Entrar no BREQUE">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
             </button>
+            <button style="position:absolute; bottom:22px; left:50%; transform:translateX(-50%); background:none; border:none; color:#d6eef7; font-size:0.82rem; text-decoration:underline; cursor:pointer; min-height:44px;" onclick="alternarModoVisitante()">Abrir no modo visitante (sem seus dados)</button>
           </section>
         `;
         return;
@@ -3259,6 +3510,7 @@
             <span data-audio-label>Ouvir esta tela</span>
           </button>
           <span id="audio-aviso" class="audio-aviso" role="status" aria-live="polite"></span>
+          ${state.visitante ? `<button class="btn btn-ghost btn-center" onclick="alternarModoVisitante()">Modo visitante • dados ocultos — sair</button>` : ""}
 
           <div class="home-layout">
             <div class="stack" style="gap: 14px;">
@@ -3280,7 +3532,7 @@
                 </div>
               </button>
 
-              <details class="details-bloco">
+              <details class="details-bloco" data-bloco="atalhos">
                 <summary>Meus atalhos e lembretes</summary>
                 <div class="stack" style="gap:10px;">
                   ${atalhoBancoHtml}
@@ -3298,7 +3550,7 @@
                   <span class="glass-card-sub">Mensagem, link ou ligação</span>
                 </button>
 
-                <button class="glass-card risk-glass" onclick="navigate('post_start')" data-audio="Socorro. Já fez Pix, senha ou app? Abra a mesa de recuperação.">
+                <button class="glass-card risk-glass" onclick="registrarSinalSeguro('Socorro aberto'); navigate('post_start')" data-audio="Socorro. Já fez Pix, senha ou app? Abra a mesa de recuperação.">
                   <div class="glass-card-top">
                     <span class="glass-card-title">Socorro</span>
                     <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2.4"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
@@ -3308,7 +3560,7 @@
               </div>
             </div>
 
-            <details class="details-bloco" aria-label="Ferramentas essenciais">
+            <details class="details-bloco" aria-label="Ferramentas essenciais" data-bloco="ferramentas">
               <summary>Caixa de ferramentas — ver todas (10)</summary>
               <div class="stack" style="gap:10px;">
                 <button class="summary-row" onclick="navigate('central_mais')">
@@ -3479,6 +3731,7 @@
             <p style="margin-top:4px;">Porque sob pressão ninguém deve rolar longos textos para decidir. Os outros recursos continuam na caixa de ferramentas e na Central da Família.</p>
           </details>
         `;
+        if (state.visitante) aplicarModoVisitante();
         return;
       }
 
@@ -4211,6 +4464,19 @@
             </button>
             ${state.cardDownloaded ? `<div class="quote-box"><strong>Imagem gerada no seu aparelho!</strong> Agora você pode fixar no grupo da família no WhatsApp ou imprimir.</div>` : ""}
           </div>
+          <details class="details-bloco">
+            <summary>Kit de 5 minutos para a família</summary>
+            <div class="stack" style="gap:8px;">
+              <p style="font-size:0.84rem; margin:0;">Combine antes do susto: uma pergunta secreta, três frases curtas e três canais oficiais. Nada de código por telefone.</p>
+              <ul class="list-clean">
+                <li>Pergunta combinada pessoalmente, nunca no grupo.</li>
+                <li>Frases: “vou confirmar pelo app”, “não informo código”, “preciso desligar”.</li>
+                <li>Canais: 190, 145 e o número impresso no verso do cartão.</li>
+              </ul>
+              <button class="btn btn-secondary btn-center" onclick="navigate('pacto_familia')">Combinar Pergunta Secreta →</button>
+              <button class="btn btn-secondary btn-center" onclick="navigate('discagem_segura')">Ver canais oficiais →</button>
+            </div>
+          </details>
           <button class="btn btn-secondary btn-center" onclick="goHome()">Voltar ao início</button>
         `;
         return;
@@ -4675,10 +4941,24 @@
           ${pauseHtml}
 
           <div class="card stack">
+            <span class="pill pill-brand">Áudio em etapas</span>
+            <p id="passo-audio-texto" style="font-size:0.98rem; font-weight:700; margin:0;">${escapeHtml(PASSOS_AUDIO_EXTREMOS[passoAtualAudio])}</p>
+            <div class="stack" style="gap:8px;">
+              <button id="passo-audio-botao" class="btn btn-primary btn-center" onclick="reproduzirPassoAudio()">${passoAudioAtivo ? "Parar áudio" : `Ouvir passo ${passoAtualAudio + 1}`}</button>
+              <button class="btn btn-secondary btn-center" onclick="repetirPassoAudio()">Repetir este passo</button>
+              <button class="btn btn-secondary btn-center" onclick="avancarPassoAudio()">Próximo passo →</button>
+            </div>
+            <span id="passo-audio-aviso" class="audio-aviso" role="status" aria-live="polite"></span>
+          </div>
+
+          <div class="card stack">
             <h3>Frases prontas para desligar sem constrangimento</h3>
-            <div class="quote-box">“Meu celular está acabando a bateria. Vou ligar para o número do verso do meu cartão.”</div>
-            <div class="quote-box">“Vou conferir isso com a minha família e já retorno.”</div>
+            <button class="btn btn-secondary" onclick="copiarFraseSegura('Meu celular está acabando a bateria. Vou ligar para o número do verso do meu cartão.')">Copiar: celular sem bateria</button>
+            <button class="btn btn-secondary" onclick="copiarFraseSegura('Vou conferir isso com a minha família e já retorno.')">Copiar: vou conferir com a família</button>
+            <button class="btn btn-secondary" onclick="copiarFraseSegura('Não informo código, senha ou dados bancários por telefone.')">Copiar: não informo código</button>
+            <span id="frase-copy-aviso" class="audio-aviso" role="status" aria-live="polite"></span>
             <p style="font-size: 0.82rem;">Se for familiar em número novo, faça a <strong>Pergunta Secreta da Família</strong> antes de fazer qualquer transferência.</p>
+            <button class="btn btn-ghost btn-center" onclick="sairSemExplicar()">Encerrar sem explicar (limpa só esta tela)</button>
           </div>
 
           <button class="btn btn-secondary btn-center" onclick="navigate('pausa_programada')">Programar uma pausa maior (30 min a 24 h)</button>
@@ -4712,6 +4992,15 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           ${renderRoteiroCard(3, extra)}
+          <details class="details-bloco">
+            <summary>Se parece voz de alguém conhecido</summary>
+            <div class="stack" style="gap:8px;">
+              <p style="font-size:0.84rem; color:var(--text-muted); margin:0;">Marque o que você percebeu. São sinais informados por você — não análise de áudio nem veredito.</p>
+              ${renderSinaisVozHtml()}
+              <button class="btn btn-primary btn-center" onclick="avaliarSinaisVozLocal()">Ver sinais marcados</button>
+              ${renderResultadoVozHtml()}
+            </div>
+          </details>
           <div class="stack">
             <button class="btn btn-primary btn-center" onclick="openHelpPreview('pressão acontecendo agora')">Pedir ajuda a uma pessoa de confiança</button>
             <button class="btn btn-risk btn-center" onclick="navigate('post_start')">Já passei dados ou fiz um pagamento</button>
@@ -4722,21 +5011,54 @@
       }
 
       if (state.screen === "post_start") {
+        const passosSocorro = {
+          ligacao: { titulo: "Saia da ligação com uma frase pronta", corpo: "Use uma frase curta, desligue quando quiser e volte para confirmar pelo seu canal." },
+          mensagem: { titulo: "Confira por outro canal", corpo: "Abra a verificação com 3 perguntas ou ligue para o número que você já tinha." },
+          dados: { titulo: "Abra a Mesa de Recuperação", corpo: "Escolha o que aconteceu e siga os passos na ordem. Sem julgamento e sem promessa." }
+        };
+        const passo = passosSocorro[state.socorroContexto];
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div class="card card-soft">
-            <span class="pill pill-risk">Mesa de Recuperação 2.0 • Passo 1 de 5</span>
-            <h1>Sem julgamento. O que chegou a acontecer?</h1>
-            <p style="margin-top: 6px;">Velocidade e processo bem feito são o que mais pesam na recuperação. Escolha o que aconteceu:</p>
+          <div class="card card-soft stack">
+            <span class="pill pill-brand">Próximo passo único</span>
+            <h2>${passo ? escapeHtml(passo.titulo) : "Escolha por onde começar"}</h2>
+            <p style="font-size:0.88rem; margin:0;">${passo ? escapeHtml(passo.corpo) : "Três caminhos. Um de cada vez. Você pode sair quando quiser."}</p>
+            <div class="stack" style="gap:8px;">
+              <button class="btn ${state.socorroContexto === "ligacao" ? "btn-primary" : "btn-secondary"}" onclick="definirContextoSocorro('ligacao')">Estou em ligação agora</button>
+              <button class="btn ${state.socorroContexto === "mensagem" ? "btn-primary" : "btn-secondary"}" onclick="definirContextoSocorro('mensagem')">Recebi mensagem ou link</button>
+              <button class="btn ${state.socorroContexto === "dados" ? "btn-primary" : "btn-secondary"}" onclick="definirContextoSocorro('dados')">Já fiz Pix ou passei dados</button>
+            </div>
+            <button class="btn btn-primary btn-center" onclick="irProximoPasso()">Ir para o próximo passo →</button>
+            <details class="details-bloco">
+              <summary>Por que um passo só?</summary>
+              <p style="margin-top:4px;">Porque lista longa aumenta a carga quando há pressão. O passo é uma sugestão, não uma decisão tomada por você.</p>
+            </details>
           </div>
+          <div class="section-label">Ou escolha o que aconteceu</div>
           <div class="stack">
-            <button class="btn btn-risk" onclick="state.postEvent='pix'; state.incidentLog.tipoIncidente='pix_golpe'; navigate('incident_log')">Fiz Pix por golpe (abrir assistente MED agora) <span>→</span></button>
-            <button class="btn btn-risk" onclick="state.postEvent='credencial'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Passei código, senha ou dados pessoais <span>→</span></button>
-            <button class="btn btn-risk" onclick="state.postEvent='cartao'; state.incidentLog.tipoIncidente='cartao_clonado'; navigate('incident_log')">Cartão clonado ou compra não reconhecida <span>→</span></button>
-            <button class="btn btn-risk" onclick="state.postEvent='app'; state.incidentLog.tipoIncidente='app_remoto'; state.postChecked=new Set(); navigate('post_plan')">Instalei aplicativo ou dei acesso ao aparelho <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.postEvent='documento'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Enviei documento ou foto <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.postEvent='outro'; state.incidentLog.tipoIncidente='outro'; navigate('incident_log')">Outra situação / organizar relato direto <span>→</span></button>
+            <button class="btn btn-risk" onclick="registrarSinalSeguro('Pix por golpe informado'); state.postEvent='pix'; state.incidentLog.tipoIncidente='pix_golpe'; navigate('incident_log')">Fiz Pix por golpe (abrir assistente MED agora) <span>→</span></button>
+            <button class="btn btn-risk" onclick="registrarSinalSeguro('Dados informados'); state.postEvent='credencial'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Passei código, senha ou dados pessoais <span>→</span></button>
+            <button class="btn btn-risk" onclick="registrarSinalSeguro('Cartão informado'); state.postEvent='cartao'; state.incidentLog.tipoIncidente='cartao_clonado'; navigate('incident_log')">Cartão clonado ou compra não reconhecida <span>→</span></button>
+            <button class="btn btn-risk" onclick="registrarSinalSeguro('Acesso ao aparelho informado'); state.postEvent='app'; state.incidentLog.tipoIncidente='app_remoto'; state.postChecked=new Set(); navigate('post_plan')">Instalei aplicativo ou dei acesso ao aparelho <span>→</span></button>
+            <button class="btn btn-secondary" onclick="registrarSinalSeguro('Documento informado'); state.postEvent='documento'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Enviei documento ou foto <span>→</span></button>
+            <button class="btn btn-secondary" onclick="registrarSinalSeguro('Outra situação informada'); state.postEvent='outro'; state.incidentLog.tipoIncidente='outro'; navigate('incident_log')">Outra situação / organizar relato direto <span>→</span></button>
           </div>
+          <details class="details-bloco">
+            <summary>Se parece voz de alguém conhecido</summary>
+            <div class="stack" style="gap:8px;">
+              <p style="font-size:0.84rem; margin:0;">Ligue para o número antigo, faça chamada de vídeo ou use a Pergunta Secreta da Família. O BREQUE não afirma se a voz é real ou clonada.</p>
+              <button class="btn btn-secondary btn-center" onclick="navigate('pressure_guide')">Marcar sinais que percebi →</button>
+              <button class="btn btn-secondary btn-center" onclick="navigate('pacto_familia')">Ver Pergunta Secreta da Família →</button>
+            </div>
+          </details>
+          <details class="details-bloco">
+            <summary>Se houve chantagem ou ameaça de vazamento</summary>
+            <div class="stack" style="gap:8px;">
+              <p style="font-size:0.84rem; margin:0;">Não pague para “evitar” a divulgação. Guarde o que já está no aparelho, interrompa o contato e procure um canal oficial.</p>
+              <button class="btn btn-secondary btn-center" onclick="navigate('registro_canais')">Ver canais oficiais →</button>
+              <button class="btn btn-secondary btn-center" onclick="openHelpPreview('chantagem ou ameaça')">Pedir apoio a pessoa de confiança →</button>
+            </div>
+          </details>
           <button class="btn btn-primary btn-center" onclick="navigate('discagem_segura')">Ligar para meu banco agora (Discagem Segura) →</button>
         `;
         return;
@@ -4782,6 +5104,7 @@
               return `<div class="check-item ${checked ? "selected" : ""}" onclick="togglePostCheck(${idx})"><div class="check-box">${checked ? "✓" : ""}</div><div style="font-size:0.92rem; ${checked ? "text-decoration:line-through; opacity:0.75;" : ""}">${txt}</div></div>`;
             }).join("")}
           </div>
+          ${renderLinhaTempoLocal()}
           <div class="stack">
             <button class="btn btn-primary btn-center" onclick="openIncidentLog()">Organizar registro do incidente →</button>
             <button class="btn btn-secondary btn-center" onclick="openHelpPreview('apoio após incidente')">Pedir ajuda a uma pessoa de confiança</button>
@@ -4827,6 +5150,7 @@
             <button class="btn btn-primary btn-center" onclick="navigate('discagem_segura')">Abrir Discagem Segura (contestar no meu banco agora) →</button>
             <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">O app guarda apenas “feito/não feito” e as datas do Pix/contestação. Nunca guarda valor, chave Pix, telefone nem relato.</p>
           </div>
+          ${renderLinhaTempoLocal()}
 
           <div class="card ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "card-risk" : "card-amber"} stack">
             <span class="pill ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "pill-risk" : "pill-amber"}">Passo 4 de 5 • Prazos reais do MED</span>
