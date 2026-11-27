@@ -75,6 +75,8 @@
         <p>A chave digitada nunca é gravada em texto puro. Favorecidos e denúncias locais usam um identificador com salt gerado no próprio aparelho. O hash determinístico sem salt existe apenas para comparar com a lista comunitária embutida e não é gravado como novo registro local.</p>
         <h3>Cofre, relatos e métricas</h3>
         <p>O Cofre guarda só identificadores com salt e a data. A Rede Sentinela guarda tipo de padrão, domínio, UF e data — nunca o trecho da mensagem. As métricas são contadores anônimos locais; não há painel remoto nem identificação de pessoa.</p>
+        <h3>Plano de Proteção Pessoal e preferências</h3>
+        <p>O Plano de Proteção Pessoal grava apenas códigos fechados das regras escolhidas e papel genérico de apoio (sem nome, telefone ou texto livre). O app guarda também o fator numérico do tamanho da fonte (<code>fontScale</code>) e a confirmação de boas-vindas — tudo removível no botão de exclusão total.</p>
         <h3>Cache do aplicativo</h3>
         <p>O service worker guarda apenas arquivos estáticos do próprio site para funcionar offline. Ele nunca grava URLs com parâmetros — isso evita que um texto compartilhado pelo recurso de compartilhamento do sistema vire registro persistente.</p>
         <div class="callout"><p><strong>Regra prática:</strong> só tipos de sinal, datas e identificadores pseudonimizados são persistidos. Nome de contato, texto de mensagem, valor, chave Pix completa e número completo não são gravados nem enviados.</p></div>
@@ -94,7 +96,7 @@
       <div class="content-card" id="terceiros">
         <h2>Terceiros, links e compartilhamento</h2>
         <p>Não há cookies de publicidade, pixel, rede social embutida, analytics, crash reporter ou serviço de mensageria no BREQUE. O site traz links apenas para páginas oficiais de bancos e órgãos públicos; abrir um link é decisão sua, e o BREQUE não recebe essas informações.</p>
-        <p>Ao compartilhar uma mensagem para o app pelo menu do sistema, o texto pode aparecer na URL aberta. O service worker foi escrito para não guardar esse tipo de URL, e o conteúdo permanece apenas na sessão.</p>
+        <p>Ao compartilhar uma mensagem para o app pelo menu do sistema, o aplicativo lê o texto apenas na memória da sessão e limpa imediatamente os parâmetros da URL (<code>history.replaceState</code>), além de o service worker nunca guardar URLs com parâmetros.</p>
       </div>
 
       <div class="content-card" id="alteracoes">
