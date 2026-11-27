@@ -98,6 +98,13 @@ describe('Plano de Proteção Pessoal (Pré-Compromisso 100% local)', () => {
     const paraFamiliar = selecionarRegrasParaPressao(planoCompleto, 'familiar', 2)
     expect(paraFamiliar).toHaveLength(2)
     expect(paraFamiliar[0].id).toBe('confirmar_por_outro_canal')
+
+    const paraSelfieInss = selecionarRegrasParaPressao(planoCompleto, 'selfie_inss', 3)
+    expect(paraSelfieInss).toHaveLength(3)
+    expect(paraSelfieInss.map((r) => r.id)).toContain('nao_compartilhar_codigo')
+
+    const paraAdvogado = selecionarRegrasParaPressao(planoCompleto, 'advogado', 3)
+    expect(paraAdvogado.map((r) => r.id)).toContain('confirmar_por_outro_canal')
   })
 
   it('formata resumo para cópia sem dados pessoais e com aviso de limite', () => {

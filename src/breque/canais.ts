@@ -87,6 +87,7 @@ const ROTULO_TIPO: Record<string, string> = {
   banco: 'Banco',
   cooperativa: 'Cooperativa',
   regulador: 'Órgão regulador',
+  orgao_publico: 'Órgão público',
   emergencia: 'Emergência',
 }
 

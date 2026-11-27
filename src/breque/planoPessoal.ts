@@ -16,6 +16,9 @@ export type TopicoPressaoPlano =
   | 'ameaca'
   | 'investimento'
   | 'suporte'
+  | 'selfie_inss'
+  | 'advogado'
+  | 'maquininha'
   | 'outro'
 
 export type RegraPlanoPessoalId =
@@ -60,7 +63,7 @@ export const REGRAS_PLANO_PESSOAL: readonly RegraPlanoPessoal[] = [
       'Nunca vou compartilhar código de verificação, senha ou token com alguém que me ligou.',
     lembretePressao:
       'Você combinou consigo: não informar código, senha ou token em ligação recebida.',
-    topicos: ['banco', 'suporte', 'outro'],
+    topicos: ['banco', 'suporte', 'selfie_inss', 'outro'],
     sugerida: true,
   },
   {
@@ -70,7 +73,7 @@ export const REGRAS_PLANO_PESSOAL: readonly RegraPlanoPessoal[] = [
       'Se alguém pedir dinheiro em meu nome ou de um familiar, vou confirmar por um contato que eu já conheço.',
     lembretePressao:
       'Você combinou consigo: confirmar pedido de dinheiro por um canal que você já tinha antes.',
-    topicos: ['familiar', 'dinheiro'],
+    topicos: ['familiar', 'dinheiro', 'advogado'],
     sugerida: true,
   },
   {
@@ -80,7 +83,18 @@ export const REGRAS_PLANO_PESSOAL: readonly RegraPlanoPessoal[] = [
       'Se disserem que preciso agir imediatamente ou perder algo em minutos, vou parar e verificar com calma.',
     lembretePressao:
       'Você combinou consigo: diante de pressa ou prazo de minutos, parar antes de decidir.',
-    topicos: ['dinheiro', 'banco', 'familiar', 'ameaca', 'investimento', 'suporte', 'outro'],
+    topicos: [
+      'dinheiro',
+      'banco',
+      'familiar',
+      'ameaca',
+      'investimento',
+      'suporte',
+      'selfie_inss',
+      'advogado',
+      'maquininha',
+      'outro',
+    ],
     sugerida: true,
   },
   {
@@ -90,7 +104,7 @@ export const REGRAS_PLANO_PESSOAL: readonly RegraPlanoPessoal[] = [
       'Não vou instalar aplicativo de acesso remoto nem compartilhar minha tela durante uma ligação.',
     lembretePressao:
       'Você combinou consigo: não instalar app de suporte nem espelhar a tela sob orientação por ligação.',
-    topicos: ['suporte', 'banco'],
+    topicos: ['suporte', 'banco', 'selfie_inss'],
     sugerida: false,
   },
   {
@@ -100,7 +114,7 @@ export const REGRAS_PLANO_PESSOAL: readonly RegraPlanoPessoal[] = [
       'Se alguém disser ser do banco, vou encerrar e procurar o número do verso do cartão ou o app oficial.',
     lembretePressao:
       'Você combinou consigo: desligar e confirmar apenas pelo canal oficial que você abrir por conta própria.',
-    topicos: ['banco', 'dinheiro'],
+    topicos: ['banco', 'dinheiro', 'selfie_inss', 'maquininha'],
     sugerida: false,
   },
   {
@@ -110,7 +124,7 @@ export const REGRAS_PLANO_PESSOAL: readonly RegraPlanoPessoal[] = [
       'Antes de transferir um valor fora do comum sob pressão, vou pausar e falar com alguém de confiança.',
     lembretePressao:
       'Você combinou consigo: ouvir uma segunda opinião antes de fazer transferência sob pressão.',
-    topicos: ['dinheiro', 'investimento', 'ameaca', 'familiar'],
+    topicos: ['dinheiro', 'investimento', 'ameaca', 'familiar', 'advogado', 'maquininha'],
     sugerida: false,
   },
 ]

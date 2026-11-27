@@ -1,7 +1,7 @@
 {
-  "catalogo_versao": "1.0.0",
-  "verificado_em": "2026-11-26",
-  "reverificar_apos": "2027-02-26",
+  "catalogo_versao": "1.1.0",
+  "verificado_em": "2026-11-27",
+  "reverificar_apos": "2027-02-27",
   "aviso": "Catálogo de apoio 100% offline, conferido nas páginas oficiais indicadas em cada linha. Não é selo de confiança: em caso de dúvida, vale sempre o número impresso no verso do seu cartão ou o app oficial do banco.",
   "instituicoes": [
     {
@@ -286,6 +286,157 @@
           "descricao": "Bloqueios e atendimento para interior do RS e fora do estado",
           "fonte": "https://www.banrisul.com.br/bob/site/link/banrifone.html",
           "verificado_em": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "picpay",
+      "nome": "PicPay",
+      "tipo": "banco",
+      "dominios": ["picpay.com"],
+      "canais": [
+        {
+          "rotulo": "SAC 24h (Atendimento geral)",
+          "telefone": "0800 025 8000",
+          "descricao": "Contestações de Pix/MED, bloqueios e protocolos 24 horas",
+          "fonte": "https://picpay.com/atendimento",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "PicPay Card (capitais e regiões metropolitanas)",
+          "telefone": "4003 3939",
+          "descricao": "Bloqueio de cartão e compras não reconhecidas em capitais e RM",
+          "fonte": "https://picpay.com/atendimento",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "PicPay Card (demais localidades)",
+          "telefone": "0800 800 3939",
+          "descricao": "Bloqueio de cartão e atendimento para demais localidades",
+          "fonte": "https://picpay.com/atendimento",
+          "verificado_em": "2026-11-27"
+        }
+      ]
+    },
+    {
+      "id": "mercado-pago",
+      "nome": "Mercado Pago",
+      "tipo": "banco",
+      "dominios": ["mercadopago.com.br"],
+      "aviso_especial": "O atendimento telefônico do Mercado Pago costuma pedir um código temporário gerado dentro do próprio app (em Ajuda → Fale Conosco). Nunca passe código para quem ligou para você.",
+      "canais": [
+        {
+          "rotulo": "SAC (Atendimento geral)",
+          "telefone": "0800 637 7246",
+          "descricao": "Bloqueios, contestação de Pix/MED e suporte da conta (pode exigir código gerado no app oficial)",
+          "fonte": "https://www.mercadopago.com.br/ajuda",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "Central de Ajuda (internet)",
+          "telefone": "",
+          "url": "https://www.mercadopago.com.br/ajuda",
+          "descricao": "Abertura de chamados e contestação direto pela conta oficial do Mercado Pago",
+          "fonte": "https://www.mercadopago.com.br/ajuda",
+          "verificado_em": "2026-11-27"
+        }
+      ]
+    },
+    {
+      "id": "pagbank",
+      "nome": "PagBank (PagSeguro)",
+      "tipo": "banco",
+      "dominios": ["pagbank.com.br", "pagseguro.uol.com.br"],
+      "canais": [
+        {
+          "rotulo": "Central de Atendimento (capitais e regiões metropolitanas)",
+          "telefone": "4003 1775",
+          "descricao": "Bloqueios, suspeita de golpe e contestação de Pix/MED",
+          "fonte": "https://pagbank.com.br/atendimento",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "Central de Atendimento (demais localidades)",
+          "telefone": "0800 728 2174",
+          "descricao": "Bloqueios e contestação de Pix/MED para demais localidades",
+          "fonte": "https://pagbank.com.br/atendimento",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "SAC 24h",
+          "telefone": "0800 728 2027",
+          "descricao": "Reclamações, cancelamentos e registro formal de protocolo 24 horas",
+          "fonte": "https://pagbank.com.br/atendimento",
+          "verificado_em": "2026-11-27"
+        }
+      ]
+    },
+    {
+      "id": "c6-bank",
+      "nome": "C6 Bank",
+      "tipo": "banco",
+      "dominios": ["c6bank.com.br"],
+      "canais": [
+        {
+          "rotulo": "Central de Relacionamento 24h (capitais e regiões metropolitanas)",
+          "telefone": "3003 6116",
+          "descricao": "Contestações de Pix/MED, bloqueio de cartão e conferência de transações",
+          "fonte": "https://www.c6bank.com.br/atendimento",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "Central de Relacionamento 24h (demais localidades)",
+          "telefone": "0800 660 6116",
+          "descricao": "Contestações de Pix/MED e bloqueios para demais localidades",
+          "fonte": "https://www.c6bank.com.br/atendimento",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "SAC 24h",
+          "telefone": "0800 660 0060",
+          "descricao": "Reclamações, cancelamentos e registro formal de protocolo",
+          "fonte": "https://www.c6bank.com.br/atendimento",
+          "verificado_em": "2026-11-27"
+        }
+      ]
+    },
+    {
+      "id": "inss",
+      "nome": "INSS (Previdência Social)",
+      "tipo": "orgao_publico",
+      "dominios": ["meu.inss.gov.br"],
+      "aviso_especial": "O INSS não liga nem manda WhatsApp pedindo senha, selfie, foto de documento ou código para prova de vida ou empréstimo. Ligue você para o 135 ou abra o app oficial Meu INSS.",
+      "canais": [
+        {
+          "rotulo": "Central de Atendimento 135",
+          "telefone": "135",
+          "descricao": "Confirmar informações sobre benefícios, prova de vida e empréstimo consignado (segunda a sábado, 7h às 22h)",
+          "fonte": "https://www.gov.br/inss/pt-br/canais_atendimento/central-135",
+          "verificado_em": "2026-11-27"
+        },
+        {
+          "rotulo": "Portal Meu INSS (internet)",
+          "telefone": "",
+          "url": "https://meu.inss.gov.br",
+          "descricao": "Consultar benefícios, bloquear/desbloquear empréstimo consignado e acompanhar pedidos oficialmente",
+          "fonte": "https://meu.inss.gov.br",
+          "verificado_em": "2026-11-27"
+        }
+      ]
+    },
+    {
+      "id": "celular-seguro",
+      "nome": "Celular Seguro (MJSP)",
+      "tipo": "emergencia",
+      "dominios": ["celularseguro.mj.gov.br"],
+      "canais": [
+        {
+          "rotulo": "Portal Celular Seguro (bloqueio por roubo ou furto)",
+          "telefone": "",
+          "url": "https://celularseguro.mj.gov.br",
+          "descricao": "Emitir alerta oficial para agilizar bloqueio de linha, aparelho e aplicativos parceiros em caso de roubo ou furto (acesso com conta gov.br)",
+          "fonte": "https://celularseguro.mj.gov.br",
+          "verificado_em": "2026-11-27"
         }
       ]
     },

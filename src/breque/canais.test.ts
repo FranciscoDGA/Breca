@@ -78,6 +78,29 @@ describe('catálogo oficial offline (data/canais-oficiais.json)', () => {
     expect(bcb?.telefones.some((t) => discavel(t.numero) === '145')).toBe(true)
     expect(bcb?.links.some((l) => l.url.includes('bcb.gov.br/meubc/faleconosco'))).toBe(true)
   })
+
+  it('inclui INSS (135), Celular Seguro e bancos digitais amplamente usados no Pix', () => {
+    const inss = canalPorId('inss')
+    expect(inss?.tipo).toBe('Órgão público')
+    expect(inss?.telefones.some((t) => discavel(t.numero) === '135')).toBe(true)
+    expect(inss?.links.some((l) => l.url.includes('meu.inss.gov.br'))).toBe(true)
+
+    const celularSeguro = canalPorId('celular-seguro')
+    expect(celularSeguro?.links.some((l) => l.url.includes('celularseguro.mj.gov.br'))).toBe(true)
+
+    expect(canalPorId('picpay')?.telefones.some((t) => discavel(t.numero) === '08000258000')).toBe(
+      true,
+    )
+    expect(
+      canalPorId('mercado-pago')?.telefones.some((t) => discavel(t.numero) === '08006377246'),
+    ).toBe(true)
+    expect(canalPorId('pagbank')?.telefones.some((t) => discavel(t.numero) === '40031775')).toBe(
+      true,
+    )
+    expect(canalPorId('c6-bank')?.telefones.some((t) => discavel(t.numero) === '30036116')).toBe(
+      true,
+    )
+  })
 })
 
 describe('busca de canais (autocomplete)', () => {
