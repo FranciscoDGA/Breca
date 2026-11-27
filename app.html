@@ -1120,7 +1120,6 @@
       vacinaStep: 0,
       vacinaSafraId: "para-banpara-2025",
       vacinaFeedback: "",
-      vacinaScore: 0,
       vacinaNotificouVencida: false,
       vacinaAgenda: { ultima: "", proxima: "", intervaloDias: 60, criadoEm: 0 },
       checkup: { respostas: {}, resultado: null, feedback: "" },
@@ -1214,6 +1213,17 @@
       }
     }
     const SALT_LOCAL = obterSaltLocal();
+
+    function apagarTodosOsDadosLocais() {
+      if (!window.confirm("Apagar todos os dados deste aparelho? Isso inclui cofre, favorecidos, relatos, métricas e o salt local. Não há cópia em servidor.")) return;
+      try {
+        Object.values(CHAVES_LOCAIS).forEach((chave) => localStorage.removeItem(chave));
+      } catch {
+        // Sem storage, nada a apagar.
+      }
+      // Recarrega para descartar também texto colado e relatos em memória.
+      window.location.reload();
+    }
 
     state.cofre = lerLocal(CHAVES_LOCAIS.cofre, []);
     state.favorecidos = lerLocal(CHAVES_LOCAIS.favorecidos, []);
@@ -1338,7 +1348,6 @@
       state.vacinaSafraId = id;
       state.vacinaStep = 0;
       state.vacinaFeedback = "";
-      state.vacinaScore = 0;
       render();
     }
 
@@ -1347,7 +1356,6 @@
       const c = safra.rodadas[state.vacinaStep];
       if (!c) return;
       const opt = c.opcoes[idx];
-      if (opt.correta) state.vacinaScore += 1;
       state.vacinaFeedback = opt.feedback;
       render();
     }
@@ -1377,7 +1385,6 @@
       if (safraId) state.vacinaSafraId = safraId;
       state.vacinaStep = 0;
       state.vacinaFeedback = "";
-      state.vacinaScore = 0;
       navigate("vacina_60s");
     }
 
@@ -1860,6 +1867,7 @@
           const discar = numeroDiscavel(tel.numero, tel.dddInterurbano);
           if (!discar) return "";
           const dataLinha = formatarDataBr(tel.verificadoEm || canal.verificadoEm);
+          const fonteUrl = urlHttpsSegura(tel.fonte || canal.fonte);
           return `
             <div style="border:1.5px solid var(--border); border-radius:14px; padding:12px; background:var(--surface-soft); display:flex; flex-direction:column; gap:6px;">
               <a class="btn btn-primary" style="text-decoration:none; text-align:left; display:block; padding:12px 14px;" href="tel:${escapeHtml(discar)}">
@@ -1869,7 +1877,7 @@
               ${tel.descricao ? `<div style="font-size:0.82rem; color:var(--text);"><strong>Quando usar:</strong> ${escapeHtml(tel.descricao)}</div>` : ""}
               ${state.operadoraCodigo && discar !== String(tel.numero || "").replace(/\D/g, "") ? `<div style="font-size:0.76rem; color:var(--brand);">Discando com operadora ${escapeHtml(state.operadoraCodigo)}: <strong>${escapeHtml(discar)}</strong></div>` : ""}
               <div style="font-size:0.74rem; color:var(--text-muted);">
-                <strong>Fonte oficial:</strong> <a href="${escapeHtml(tel.fonte || canal.fonte)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand); text-decoration:underline;">abrir página oficial</a>
+                <strong>Fonte oficial:</strong> ${fonteUrl ? `<a href="${escapeHtml(fonteUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand); text-decoration:underline;">abrir página oficial</a>` : "<span>fonte indisponível</span>"}
                 • <span>verificado pela equipe em ${escapeHtml(dataLinha)}</span>
               </div>
             </div>
@@ -1877,15 +1885,18 @@
         }).join("");
 
         const linksHtml = (canal.links || []).map((lnk) => {
+          const linkUrl = urlHttpsSegura(lnk.url);
+          if (!linkUrl) return "";
+          const fonteUrl = urlHttpsSegura(lnk.fonte || canal.fonte);
           const dataLinha = formatarDataBr(lnk.verificadoEm || canal.verificadoEm);
           return `
             <div style="border:1.5px solid var(--border); border-radius:14px; padding:12px; background:var(--surface-soft); display:flex; flex-direction:column; gap:6px;">
-              <a class="btn btn-secondary" style="text-decoration:none; text-align:left; display:block; padding:11px 14px;" href="${escapeHtml(lnk.url)}" target="_blank" rel="noopener noreferrer">
+              <a class="btn btn-secondary" style="text-decoration:none; text-align:left; display:block; padding:11px 14px;" href="${escapeHtml(linkUrl)}" target="_blank" rel="noopener noreferrer">
                 <strong style="display:block;">${escapeHtml(lnk.rotulo)} →</strong>
               </a>
               <div style="font-size:0.82rem; color:var(--text);">${escapeHtml(lnk.descricao)}</div>
               <div style="font-size:0.74rem; color:var(--text-muted);">
-                <strong>Fonte oficial:</strong> <a href="${escapeHtml(lnk.fonte || canal.fonte)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand); text-decoration:underline;">abrir página oficial</a>
+                <strong>Fonte oficial:</strong> ${fonteUrl ? `<a href="${escapeHtml(fonteUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--brand); text-decoration:underline;">abrir página oficial</a>` : "<span>fonte indisponível</span>"}
                 • <span>verificado pela equipe em ${escapeHtml(dataLinha)}</span>
               </div>
             </div>
@@ -1949,7 +1960,7 @@
           simuladosConcluidos: state.metricas.simulados,
           tempoMedioAteVerificarSegundos: mediaSegundosSimulado(),
           simuladosComVerificacao: state.metricas.verificou,
-          incidentesRegistrados: state.metricas.incidentes
+          relatosOrganizados: state.metricas.incidentes
         }
       };
       const blob = new Blob([JSON.stringify(conteudo, null, 2)], { type: "application/json;charset=utf-8" });
@@ -2352,7 +2363,6 @@
       utter.onend = () => { state.isSpeaking = false; render(); };
       utter.onerror = () => { state.isSpeaking = false; render(); };
 
-      window.__brequeUtter = utter;
       state.isSpeaking = true;
       render();
 
@@ -2743,6 +2753,16 @@
         .replace(/'/g, "&#39;");
     }
 
+    // Só abre links https vindos do catálogo verificado. Nunca aceita javascript: ou http:.
+    function urlHttpsSegura(url) {
+      try {
+        const u = new URL(String(url || ""));
+        return u.protocol === "https:" ? u.href : "";
+      } catch {
+        return "";
+      }
+    }
+
     function normalizeText(str) {
       return (str || "")
         .toLowerCase()
@@ -2855,10 +2875,9 @@
     }
 
     function openHelpPreview(contextLabel) {
-      state.helpPreviewText = state.verifyText
-        ? `Situação que quero conferir: ${state.verifyText.slice(0, 120)}`
-        : `Estou em dúvida sobre uma situação (${contextLabel}) e gostaria de conferir com você antes de decidir.`;
-      state.helpSentSimulated = false;
+      // Nunca copia o texto colado para a prévia: ele pode conter PII e a
+      // pessoa decidirá o que compartilhar, se quiser.
+      state.helpPreviewText = `Estou em dúvida sobre uma situação (${contextLabel}) e gostaria de conferir com você antes de decidir.`;
       navigate("help_preview");
     }
 
@@ -3937,7 +3956,7 @@
               <li>Eles medem o comportamento da sua família no treino, não a “segurança” de um pagamento.</li>
               <li>Um tempo menor e mais verificações sugerem que o treino está ajudando.</li>
               <li>Não há comparação com outras famílias nem envio de dados para o parceiro.</li>
-              <li>Incidentes registrados neste aparelho: ${state.metricas.incidentes}</li>
+              <li>Relatos organizados neste aparelho: ${state.metricas.incidentes}</li>
             </ul>
           </div>
 
@@ -4563,6 +4582,7 @@
         const etapasMed = etapasMedLista();
         const meuBanco = obterBancoFavorito();
         const bcbCanal = canaisOficiais().find((c) => c.id === "banco-central");
+        const bcbLinkUrl = bcbCanal && bcbCanal.links[0] ? urlHttpsSegura(bcbCanal.links[0].url) : "";
 
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
@@ -4670,7 +4690,7 @@
             <div class="stack">
               <button class="btn btn-secondary btn-center" onclick="state.discagemBusca=''; navigate('discagem_segura')">Ouvidoria / Central do meu banco (Discagem Segura) →</button>
               ${bcbCanal && bcbCanal.telefones[0] ? `<a class="btn btn-secondary btn-center" style="text-decoration:none;" href="tel:145">Ligar para o Banco Central (145 — Fale Conosco)</a>` : ""}
-              ${bcbCanal && bcbCanal.links[0] ? `<a class="btn btn-ghost btn-center" style="text-decoration:none;" href="${escapeHtml(bcbCanal.links[0].url)}" target="_blank" rel="noopener noreferrer">Abrir Fale Conosco do Banco Central na internet →</a>` : ""}
+              ${bcbLinkUrl ? `<a class="btn btn-ghost btn-center" style="text-decoration:none;" href="${escapeHtml(bcbLinkUrl)}" target="_blank" rel="noopener noreferrer">Abrir Fale Conosco do Banco Central na internet →</a>` : ""}
             </div>
           </div>
 
@@ -4901,7 +4921,7 @@
             <ul class="list-clean">
               <li><strong>Processamento local:</strong> mensagens coladas, respostas do Roteiro Reverso e relatos do incidente rodam 100% no seu aparelho e desaparecem ao fechar a sessão.</li>
               <li><strong>Envio de dado:</strong> nenhum. O app não tem rede no runtime; a escolha de plano é apenas copiada para a área de transferência do seu aparelho.</li>
-              <li><strong>Direitos do titular (art. 18 da LGPD):</strong> você pode solicitar confirmação, correção ou exclusão do seu e-mail cadastrado a qualquer momento.</li>
+              <li><strong>Direitos do titular (art. 18 da LGPD):</strong> não há conta nem e-mail cadastrado. Você pode apagar todos os dados gravados neste aparelho pelo botão abaixo, a qualquer momento.</li>
             </ul>
           </div>
 
@@ -4918,6 +4938,7 @@
           </div>
 
           <button class="btn btn-primary btn-center" onclick="handleInstallClick()">Como instalar no celular (PWA)</button>
+          <button class="btn btn-ghost btn-center" style="font-size:0.86rem;" onclick="apagarTodosOsDadosLocais()">Apagar todos os meus dados deste aparelho</button>
         `;
       }
     }

@@ -71,6 +71,22 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).toContain('saltLocal: "breca.saltLocal.v1"')
   })
 
+  it('app.html não preenche a prévia com texto colado nem aceita links inseguros', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).not.toContain('state.verifyText.slice(0, 120)')
+    expect(html).toContain('urlHttpsSegura')
+    expect(html).not.toContain('href="${escapeHtml(lnk.url)}"')
+    expect(html).not.toContain('href="${escapeHtml(bcbCanal.links[0].url)}"')
+    expect(html).not.toContain('__brequeUtter')
+  })
+
+  it('app.html oferece exclusão total dos dados locais', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).toContain('function apagarTodosOsDadosLocais()')
+    expect(html).toContain('Apagar todos os meus dados deste aparelho')
+    expect(html).not.toContain('e-mail cadastrado a qualquer momento')
+  })
+
   it('app.html não promete bloqueio nem fala em ação "segura"', () => {
     const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
     expect(html).not.toContain('Não dá para liberar antes')
