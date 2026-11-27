@@ -1332,13 +1332,50 @@
       saltLocal: "breca.saltLocal.v1"
     };
 
+    const CHAVES_PROTOTIPO_PROIBIDAS = new Set(["__proto__", "constructor", "prototype"]);
+    const HASH_LOCAL_RE = /^[a-f0-9]{16,64}$/i;
+
+    function jsonParseSeguro(bruto) {
+      return JSON.parse(bruto, (chave, valor) => {
+        if (CHAVES_PROTOTIPO_PROIBIDAS.has(chave)) return undefined;
+        return valor;
+      });
+    }
+
     function lerLocal(chave, padrao) {
       try {
         const bruto = localStorage.getItem(chave);
-        return bruto ? JSON.parse(bruto) : padrao;
+        return bruto ? jsonParseSeguro(bruto) : padrao;
       } catch {
         return padrao;
       }
+    }
+
+    function sanitizarListaHashesLocal(lista, tipo) {
+      if (!Array.isArray(lista)) return [];
+      return lista
+        .filter((item) => item && typeof item === "object" && typeof item.hash === "string" && HASH_LOCAL_RE.test(item.hash))
+        .slice(0, 200)
+        .map((item) => {
+          if (tipo === "denuncia") {
+            return {
+              hash: item.hash,
+              data: typeof item.data === "string" && /^\d{4}-\d{2}-\d{2}$/.test(item.data) ? item.data : "",
+              uf: typeof item.uf === "string" ? item.uf.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2) || undefined : undefined
+            };
+          }
+          if (tipo === "favorecido") {
+            return {
+              tipo: typeof item.tipo === "string" ? item.tipo.slice(0, 32) : "desconhecido",
+              hash: item.hash,
+              criadoEm: Number.isFinite(Number(item.criadoEm)) ? Number(item.criadoEm) : 0
+            };
+          }
+          return {
+            hash: item.hash,
+            criadoEm: Number.isFinite(Number(item.criadoEm)) ? Number(item.criadoEm) : 0
+          };
+        });
     }
 
     function gravarLocal(chave, valor) {
@@ -1379,9 +1416,9 @@
       window.location.reload();
     }
 
-    state.cofre = lerLocal(CHAVES_LOCAIS.cofre, []);
-    state.favorecidos = lerLocal(CHAVES_LOCAIS.favorecidos, []);
-    state.denunciasLocais = lerLocal(CHAVES_LOCAIS.denuncias, []);
+    state.cofre = sanitizarListaHashesLocal(lerLocal(CHAVES_LOCAIS.cofre, []), "cofre");
+    state.favorecidos = sanitizarListaHashesLocal(lerLocal(CHAVES_LOCAIS.favorecidos, []), "favorecido");
+    state.denunciasLocais = sanitizarListaHashesLocal(lerLocal(CHAVES_LOCAIS.denuncias, []), "denuncia");
     const sentinelaSalva = lerLocal(CHAVES_LOCAIS.sentinela, null);
     if (sentinelaSalva && typeof sentinelaSalva === "object") {
       state.sentinela.optIn = !!sentinelaSalva.optIn;
@@ -2171,7 +2208,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; padding-top:4px;">
               ${ehFavorito
                 ? `<button class="btn btn-ghost" style="padding:6px 10px; font-size:0.8rem;" onclick="definirBancoFavorito('')">Remover da tela inicial</button>`
-                : `<button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" onclick="definirBancoFavorito('${escapeHtml(canal.id)}')">Salvar como meu banco (1 toque na tela inicial)</button>`
+                : `<button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" data-canal-id="${escapeHtml(canal.id)}" onclick="definirBancoFavorito(this.dataset.canalId)">Salvar como meu banco (1 toque na tela inicial)</button>`
               }
             </div>
           </div>
@@ -3803,7 +3840,7 @@
                     <span class="pill pill-amber">Meu banco • 1 toque</span>
                     <button class="btn-ghost" style="font-size:0.78rem; padding:4px 6px;" onclick="navigate('discagem_segura')">Trocar banco</button>
                   </div>
-                  <button class="btn btn-primary btn-center" onclick="state.discagemBusca='${escapeHtml(meuBanco.nome)}'; navigate('discagem_segura')">
+                  <button class="btn btn-primary btn-center" data-banco-nome="${escapeHtml(meuBanco.nome)}" onclick="state.discagemBusca=this.dataset.bancoNome || ''; navigate('discagem_segura')">
                     Falar com meu banco agora (${escapeHtml(meuBanco.nome)}) →
                   </button>
                   <p style="font-size:0.8rem; color:var(--text); margin:0;">${escapeHtml(meuBanco.avisoEspecial || "Use apenas o canal oficial verificado.")}</p>
@@ -4301,7 +4338,7 @@
           </div>
           ${safras.length > 1 && state.vacinaStep === 0 && !state.vacinaFeedback ? `
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              ${safras.map((s) => `<button class="top-pill" style="background:${s.id === safra.id ? "var(--brand)" : "var(--surface)"}; color:${s.id === safra.id ? "#fff" : "var(--text)"}; border-color:var(--border);" onclick="selecionarSafraVacina('${escapeHtml(s.id)}')">${escapeHtml(s.safra)}</button>`).join("")}
+              ${safras.map((s) => `<button class="top-pill" style="background:${s.id === safra.id ? "var(--brand)" : "var(--surface)"}; color:${s.id === safra.id ? "#fff" : "var(--text)"}; border-color:var(--border);" data-safra-id="${escapeHtml(s.id)}" onclick="selecionarSafraVacina(this.dataset.safraId)">${escapeHtml(s.safra)}</button>`).join("")}
             </div>
           ` : ""}
           <div class="card"><div class="quote-box">${escapeHtml(c.msg)}</div></div>
@@ -4453,7 +4490,7 @@
               ` : ""}
 
               ${res.formatoValido && res.constaEmDenuncia && res.origemDenuncia === "local" ? `
-                <button class="btn btn-ghost" style="font-size:0.82rem;" onclick="removerDenunciaLocalPix('${escapeHtml(hashLocalParaRemover)}')">Remover este marcador local</button>
+                <button class="btn btn-ghost" style="font-size:0.82rem;" data-hash="${escapeHtml(hashLocalParaRemover)}" onclick="removerDenunciaLocalPix(this.dataset.hash)">Remover este marcador local</button>
               ` : ""}
 
               ${res.formatoValido && !res.constaEmDenuncia ? `
@@ -5776,7 +5813,7 @@
             <p style="margin-top: 6px;">Você decide quando pedir ajuda e revisa exatamente o texto antes de confirmar. O BREQUE <strong>não</strong> monitora ninguém nem envia alertas silenciosos.</p>
           </div>
           <div class="stack">
-            ${state.trustedContacts.map(c => `<div class="card card-soft" style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><div><div style="font-weight:700;">${escapeHtml(c.name)}</div><div style="font-size:0.82rem; color:var(--text-muted);">${escapeHtml(c.note)}</div></div><button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" onclick="state.selectedContactId='${escapeHtml(c.id)}'; openHelpPreview('pedido de apoio');">Ver prévia</button></div>`).join("")}
+            ${state.trustedContacts.map(c => `<div class="card card-soft" style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><div><div style="font-weight:700;">${escapeHtml(c.name)}</div><div style="font-size:0.82rem; color:var(--text-muted);">${escapeHtml(c.note)}</div></div><button class="btn btn-secondary" style="width:auto; padding:8px 12px; font-size:0.82rem;" data-contact-id="${escapeHtml(c.id)}" onclick="state.selectedContactId=this.dataset.contactId; openHelpPreview('pedido de apoio');">Ver prévia</button></div>`).join("")}
           </div>
           <div class="card stack">
             <h3>Adicionar contato (demonstração)</h3>

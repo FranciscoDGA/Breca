@@ -19,16 +19,26 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(map.get('X-Frame-Options')).toBe('DENY')
     expect(map.get('Referrer-Policy')).toBe('no-referrer')
     expect(map.get('Permissions-Policy')).toContain('camera=()')
+    expect(map.get('Cross-Origin-Opener-Policy')).toBe('same-origin')
+    expect(map.get('Cross-Origin-Resource-Policy')).toBe('same-origin')
+    expect(map.get('X-DNS-Prefetch-Control')).toBe('off')
+    expect(map.get('X-Permitted-Cross-Domain-Policies')).toBe('none')
     expect(map.get('Content-Security-Policy')).toContain("frame-ancestors 'none'")
     expect(map.get('Content-Security-Policy')).toContain("object-src 'none'")
+    expect(map.get('Content-Security-Policy')).toContain("worker-src 'self'")
+    expect(map.get('Content-Security-Policy')).toContain('upgrade-insecure-requests')
   })
 
-  it('supabase/schema.sql ativa RLS em todas as tabelas e valida tamanho/formato de e-mail', () => {
+  it('supabase/schema.sql ativa RLS em todas as tabelas, aplica menor privilégio e valida entradas', () => {
     const sql = readFileSync(resolve(process.cwd(), 'supabase/schema.sql'), 'utf-8')
     expect(sql).toContain('alter table public.assinaturas enable row level security')
     expect(sql).toContain('alter table public.relatos_minimizados enable row level security')
     expect(sql).toContain('alter table public.interesse_planos enable row level security')
     expect(sql).toContain('char_length(email) between 5 and 254')
+    expect(sql).toContain('revoke all on table public.assinaturas from public, anon, authenticated')
+    expect(sql).toContain('grant select on table public.assinaturas to authenticated')
+    expect(sql).toContain("set search_path = ''")
+    expect(sql).toContain('to authenticated')
   })
 
   it('app.html escapa entradas do usuário contra DOM/Reflected XSS', () => {
@@ -298,5 +308,27 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
       expect(html, pagina).toContain('apple-touch-icon.png')
       expect(html, pagina).not.toContain('property="og:image" content="https://breca-rho.vercel.app/icon.svg"')
     }
+  })
+
+  it('não versiona credenciais/URLs Supabase e elimina injeção JS em onclick e Prototype Pollution', () => {
+    for (const caminho of ['prototipo-breque/index.html', 'BACKLOG-ESTRATEGICO-BREQUE.md', 'app.html', 'index.html']) {
+      const conteudo = readFileSync(resolve(process.cwd(), caminho), 'utf-8')
+      expect(conteudo, caminho).not.toMatch(/\bsb_(?:publishable|secret)_[A-Za-z0-9_-]{12,}\b/)
+      expect(conteudo, caminho).not.toMatch(/https:\/\/[a-z0-9]{12,}\.supabase\.co/i)
+    }
+
+    const app = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(app).toContain('function jsonParseSeguro(bruto)')
+    expect(app).toContain('CHAVES_PROTOTIPO_PROIBIDAS')
+    expect(app).toContain('function sanitizarListaHashesLocal(lista, tipo)')
+    expect(app).not.toMatch(/onclick="[^"]*'\$\{escapeHtml\(/)
+    expect(app).toContain('data-hash="${escapeHtml(hashLocalParaRemover)}"')
+    expect(app).toContain('data-canal-id="${escapeHtml(canal.id)}"')
+    expect(app).toContain('data-contact-id="${escapeHtml(c.id)}"')
+
+    const gitignore = readFileSync(resolve(process.cwd(), '.gitignore'), 'utf-8')
+    expect(gitignore).toContain('!.env.example')
+    expect(gitignore).toContain('*.pem')
+    expect(gitignore).toContain('*.key')
   })
 })
