@@ -71,7 +71,7 @@ Toda nova função passa por 3 degraus:
 ---
 
 ## 4. Pendências Operacionais do Proprietário
-- [ ] Rodar `supabase/schema.sql` no SQL Editor do projeto Supabase (`vbqvajvyurxpbisqdpmi.supabase.co`).
+- [ ] Rodar `supabase/schema.sql` no SQL Editor do projeto Supabase (`SEU-PROJETO.supabase.co`, apenas quando autorizada a Camada 2).
 - [ ] Conduzir testes moderados com 5 a 10 pessoas reais usando `https://breca-rho.vercel.app`.
 - [ ] Revisar textos jurídicos (MED, LGPD, valor probatório) com advogado especializado antes de ativar cobrança real (Mercado Pago / Stripe).
 
