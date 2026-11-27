@@ -56,7 +56,7 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     const sw = readFileSync(resolve(process.cwd(), 'public/sw.js'), 'utf-8')
     expect(sw).toContain("url.search === ''")
     expect(sw).toContain("'/assets/app.js'")
-    expect(sw).toContain('breque-pwa-v5')
+    expect(sw).toContain('breque-pwa-v6')
     const vite = readFileSync(resolve(process.cwd(), 'vite.config.ts'), 'utf-8')
     expect(vite).toContain("entryFileNames: 'assets/[name].js'")
   })
@@ -94,6 +94,20 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).not.toContain('ação curta e segura')
     expect(html).not.toContain('Prova de eficácia')
     expect(html).toContain('você pode sair quando quiser')
+  })
+
+  it('painéis do app usam a direção visual da landing sem promessa de proteção', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).toContain('class="section-eyebrow"')
+    expect(html).toContain('class="bento"')
+    expect(html).toContain('bento-item bento-item--wide')
+    expect(html).toContain('class="manifesto-strip"')
+    expect(html).toContain('A decisão continua <em>sua.</em>')
+    expect(html).toContain('Painel local de treino')
+    expect(html).toContain('Sem promessa de eficácia')
+    expect(html).not.toContain('Painel de eficácia')
+    expect(html).not.toContain('proteger sua família sem vigiar')
+    expect(html).not.toContain('taxa de golpes evitados')
   })
 
   it('landing tem menu mobile acessível, FAQ ampliada e páginas institucionais', () => {

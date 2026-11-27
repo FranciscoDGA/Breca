@@ -1,4 +1,4 @@
-const CACHE_NAME = 'breque-pwa-v5'
+const CACHE_NAME = 'breque-pwa-v6'
 // O bundle tem nome fixo para poder entrar no precache: sem ele, a primeira
 // abertura offline do PWA carregaria o HTML sem as funções do app.
 const CORE_ASSETS = [
