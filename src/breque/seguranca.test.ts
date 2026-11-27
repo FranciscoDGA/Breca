@@ -95,4 +95,40 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).not.toContain('Prova de eficácia')
     expect(html).toContain('você pode sair quando quiser')
   })
+
+  it('landing tem menu mobile acessível, FAQ ampliada e páginas institucionais', () => {
+    const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf-8')
+    expect(html).toContain('data-menu-toggle')
+    expect(html).toContain('aria-controls="nav-principal"')
+    expect(html).toContain('id="nav-principal"')
+    expect(html).toContain('/site.js')
+    expect((html.match(/<details\b/g) || []).length).toBeGreaterThanOrEqual(12)
+    for (const pagina of ['/sobre.html', '/contato.html', '/privacidade.html', '/termos.html']) {
+      expect(html, pagina).toContain(`href="${pagina}"`)
+    }
+    expect(html).toContain('class="mobile-cta"')
+  })
+
+  it('páginas institucionais não coletam dados nem falam em veredito seguro', () => {
+    for (const nome of ['privacidade', 'termos', 'sobre', 'contato']) {
+      const html = readFileSync(resolve(process.cwd(), 'public', `${nome}.html`), 'utf-8')
+      expect(html, nome).toContain('data-menu-toggle')
+      expect(html, nome).toContain('href="/site.css"')
+      expect(html, nome).toContain('<link rel="canonical"')
+      expect(html, nome).not.toMatch(/<form\b/i)
+      expect(html, nome).not.toMatch(/type="email"/i)
+      expect(html, nome).not.toMatch(/\bfetch\s*\(/)
+      expect(html, nome).not.toMatch(/gtag\s*\(|sendBeacon\s*\(|<script[^>]+src="[^"]*(analytics|gtag)/i)
+      expect(html, nome).not.toContain('mailto:')
+      expect(html, nome).not.toContain('está seguro')
+    }
+  })
+
+  it('site.js só abre o menu e copia texto, sem rede nem persistência', () => {
+    const js = readFileSync(resolve(process.cwd(), 'public/site.js'), 'utf-8')
+    expect(js).toContain('aria-expanded')
+    expect(js).toContain('navigator.clipboard.writeText')
+    expect(js).not.toMatch(/\bfetch\s*\(/)
+    expect(js).not.toMatch(/localStorage|sessionStorage|indexedDB/)
+  })
 })

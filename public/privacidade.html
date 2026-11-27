@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de Privacidade — BREQUE</title>
+  <meta name="description" content="Como o BREQUE trata dados: processamento local, sem conta, sem servidor próprio, sem analytics e sem PII persistida." />
+  <link rel="canonical" href="https://breca-rho.vercel.app/privacidade.html" />
+  <meta property="og:title" content="Política de Privacidade — BREQUE" />
+  <meta property="og:description" content="Seus dados ficam no seu aparelho. Sem conta, sem servidor nosso e sem terceiros coletando informações." />
+  <meta property="og:image" content="https://breca-rho.vercel.app/icon.svg" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/site.css" />
+  <script src="/site.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="container nav-bar">
+      <a href="/" class="logo">
+        <svg width="26" height="26" viewBox="0 0 512 512" aria-hidden="true">
+          <path d="M256 64L104 128v122c0 106 64 198 152 232 88-34 152-126 152-232V128L256 64z" fill="#0f2f3d" stroke="#0f2f3d" stroke-width="20"/>
+          <rect x="198" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
+          <rect x="274" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
+        </svg>
+        BREQUE
+      </a>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-controls="nav-principal" aria-expanded="false" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="nav-principal">
+        <a href="/#situacoes">Quando usar</a>
+        <a href="/#como-funciona">Como funciona</a>
+        <a href="/#duvidas">Dúvidas</a>
+        <div class="nav-secondary">
+          <a href="/sobre.html">Sobre</a>
+          <a href="/contato.html">Contato</a>
+          <a href="/privacidade.html">Privacidade</a>
+          <a href="/termos.html">Termos</a>
+        </div>
+        <a href="/app.html" class="btn-dark" style="padding:10px 18px; font-size:0.88rem;">Testar o app</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Início</a> › Política de Privacidade</div>
+      <span class="tag">LGPD • Privacidade por projeto</span>
+      <h1>Seus dados ficam no seu aparelho.</h1>
+      <p>Sem conta, sem servidor nosso, sem analytics e sem terceiros coletando informações. Esta página explica, em linguagem simples, o que acontece quando você usa o BREQUE.</p>
+    </div>
+  </section>
+
+  <div class="container page-layout">
+    <main>
+      <div class="content-card" id="resumo">
+        <h2>Resumo em 30 segundos</h2>
+        <div class="facts">
+          <div class="fact"><strong>Zero</strong><span>envio de dados a servidor do BREQUE</span></div>
+          <div class="fact"><strong>Zero</strong><span>contas, e-mails ou senhas cadastradas</span></div>
+          <div class="fact"><strong>Zero</strong><span>SDKs de terceiros, analytics ou crash reporter</span></div>
+        </div>
+        <p class="lead">O BREQUE é um apoio à decisão que roda localmente. Ele não lê seu WhatsApp, não acessa seu banco, não pede CPF, senha, código SMS ou número de cartão e não promete que um pagamento seja seguro.</p>
+      </div>
+
+      <div class="content-card" id="dados">
+        <h2>Quais dados existem e onde ficam</h2>
+        <h3>Texto que você cola para conferir</h3>
+        <p>Fica na memória da sessão, no aparelho. Você pode copiar um texto pronto para uma pessoa de confiança ou exportar um relato; nada disso é enviado automaticamente. Ao fechar a sessão, o texto em memória desaparece.</p>
+        <h3>Chave Pix e destinatários</h3>
+        <p>A chave digitada nunca é gravada em texto puro. Favorecidos e denúncias locais usam um identificador com salt gerado no próprio aparelho. O hash determinístico sem salt existe apenas para comparar com a lista comunitária embutida e não é gravado como novo registro local.</p>
+        <h3>Cofre, relatos e métricas</h3>
+        <p>O Cofre guarda só identificadores com salt e a data. A Rede Sentinela guarda tipo de padrão, domínio, UF e data — nunca o trecho da mensagem. As métricas são contadores anônimos locais; não há painel remoto nem identificação de pessoa.</p>
+        <h3>Cache do aplicativo</h3>
+        <p>O service worker guarda apenas arquivos estáticos do próprio site para funcionar offline. Ele nunca grava URLs com parâmetros — isso evita que um texto compartilhado pelo recurso de compartilhamento do sistema vire registro persistente.</p>
+        <div class="callout"><p><strong>Regra prática:</strong> só tipos de sinal, datas e identificadores pseudonimizados são persistidos. Nome de contato, texto de mensagem, valor, chave Pix completa e número completo não são gravados nem enviados.</p></div>
+      </div>
+
+      <div class="content-card" id="lgpd">
+        <h2>LGPD e seus direitos</h2>
+        <p>Como não há conta nem base de dados mantida pelo BREQUE, não há titular cadastrado em servidor nosso e nada a solicitar por e-mail. Os dados que existem estão no dispositivo que você controla.</p>
+        <ul>
+          <li><strong>Confirmar ou corrigir:</strong> as informações gravadas podem ser conferidas nas telas do próprio app.</li>
+          <li><strong>Excluir:</strong> a tela de Privacidade do app oferece “Apagar todos os meus dados deste aparelho”, que remove cofre, favorecidos, relatos, métricas, texto em memória e o salt local.</li>
+          <li><strong>Oposição e portabilidade:</strong> não se aplicam a um tratamento que não sai do aparelho; você pode exportar suas métricas locais em JSON por iniciativa própria.</li>
+        </ul>
+        <p class="small">A base legal e a finalidade são a proteção do titular no próprio dispositivo, com minimização por construção. Este texto é informativo e não substitui orientação jurídica.</p>
+      </div>
+
+      <div class="content-card" id="terceiros">
+        <h2>Terceiros, links e compartilhamento</h2>
+        <p>Não há cookies de publicidade, pixel, rede social embutida, analytics, crash reporter ou serviço de mensageria no BREQUE. O site pode trazer links para o repositório de código e para canais oficiais; abrir um link é decisão sua, e o BREQUE não recebe essas informações.</p>
+        <p>Ao compartilhar uma mensagem para o app pelo menu do sistema, o texto pode aparecer na URL aberta. O service worker foi escrito para não guardar esse tipo de URL, e o conteúdo permanece apenas na sessão.</p>
+      </div>
+
+      <div class="content-card" id="alteracoes">
+        <h2>Alterações e transparência</h2>
+        <p>Mudanças de arquitetura e de tratamento de dados são registradas em ADR dentro do repositório do projeto. A versão desta política é de <strong>27 de novembro de 2026</strong>.</p>
+        <div class="btn-row">
+          <a href="/termos.html" class="btn-ghost action">Ler os Termos de Uso →</a>
+          <a href="/contato.html" class="btn-dark action">Falar com o projeto</a>
+        </div>
+      </div>
+    </main>
+
+    <aside class="toc">
+      <strong>Nesta página</strong>
+      <a href="#resumo">Resumo</a>
+      <a href="#dados">Quais dados existem</a>
+      <a href="#lgpd">LGPD e direitos</a>
+      <a href="#terceiros">Terceiros e links</a>
+      <a href="#alteracoes">Alterações</a>
+      <a href="/app.html" class="btn-dark">Testar o app grátis →</a>
+    </aside>
+  </div>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <strong>BREQUE — O segundo antes do Pix</strong>
+        <p style="margin:6px 0 0;">Apoio à decisão, não garantia de prevenção ou devolução de valores.</p>
+      </div>
+      <div><strong>Produto</strong><a href="/app.html">Testar o app</a><a href="/#duvidas">Dúvidas</a></div>
+      <div><strong>Institucional</strong><a href="/sobre.html">Sobre</a><a href="/contato.html">Contato</a><a href="/privacidade.html">Privacidade</a><a href="/termos.html">Termos e LGPD</a></div>
+    </div>
+  </footer>
+  <div class="mobile-cta">
+    <a href="/app.html" class="btn-primary">Testar grátis →</a>
+    <a href="/#duvidas" class="btn-dark">Dúvidas</a>
+  </div>
+</body>
+</html>

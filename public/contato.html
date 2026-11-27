@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contato — BREQUE</title>
+  <meta name="description" content="Fale com o projeto BREQUE sem enviar dados sensíveis: dúvidas, bugs, sugestões e parcerias institucionais pelo repositório público." />
+  <link rel="canonical" href="https://breca-rho.vercel.app/contato.html" />
+  <meta property="og:title" content="Contato — BREQUE" />
+  <meta property="og:description" content="Sem formulário e sem servidor nosso. Você escolhe o que escrever e onde publicar." />
+  <meta property="og:image" content="https://breca-rho.vercel.app/icon.svg" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/site.css" />
+  <script src="/site.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="container nav-bar">
+      <a href="/" class="logo">
+        <svg width="26" height="26" viewBox="0 0 512 512" aria-hidden="true">
+          <path d="M256 64L104 128v122c0 106 64 198 152 232 88-34 152-126 152-232V128L256 64z" fill="#0f2f3d" stroke="#0f2f3d" stroke-width="20"/>
+          <rect x="198" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
+          <rect x="274" y="184" width="40" height="144" rx="14" fill="#f59e0b"/>
+        </svg>
+        BREQUE
+      </a>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-controls="nav-principal" aria-expanded="false" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav-links" id="nav-principal">
+        <a href="/#situacoes">Quando usar</a>
+        <a href="/#como-funciona">Como funciona</a>
+        <a href="/#duvidas">Dúvidas</a>
+        <div class="nav-secondary">
+          <a href="/sobre.html">Sobre</a>
+          <a href="/contato.html">Contato</a>
+          <a href="/privacidade.html">Privacidade</a>
+          <a href="/termos.html">Termos</a>
+        </div>
+        <a href="/app.html" class="btn-dark" style="padding:10px 18px; font-size:0.88rem;">Testar o app</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb"><a href="/">Início</a> › Contato</div>
+      <span class="tag">Sem formulário • Sem envio automático</span>
+      <h1>Fale com o projeto sem enviar dados sensíveis.</h1>
+      <p>Não há formulário neste site e não há servidor nosso recebendo mensagens. Você escolhe o canal, escreve o que quiser e decide o que publicar.</p>
+    </div>
+  </section>
+
+  <div class="container page-layout">
+    <main>
+      <div class="content-card" id="canal">
+        <h2>Dúvidas, bugs e sugestões</h2>
+        <p>O registro público do projeto é o repositório no GitHub. Abrir uma issue é uma ação sua: o BREQUE não envia nada automaticamente e não pede login.</p>
+        <div class="btn-row">
+          <a href="https://github.com/FranciscoDGA/Breca/issues" target="_blank" rel="noopener noreferrer" class="btn-primary action">Abrir issues do projeto ↗</a>
+          <button type="button" class="btn-ghost action" data-copiar="https://github.com/FranciscoDGA/Breca" data-aviso="copia-status">Copiar endereço do repositório</button>
+        </div>
+        <p id="copia-status" class="small" aria-live="polite">Copiar não envia nada: a ação fica só na área de transferência do seu aparelho.</p>
+      </div>
+
+      <div class="content-card" id="parcerias">
+        <h2>Parcerias institucionais</h2>
+        <p>Para cooperativas, bancos, prefeituras ou programas de educação financeira, abra uma issue com <strong>[Parceria]</strong> no título e descreva apenas a instituição e o objetivo do piloto.</p>
+        <p>Não é necessário enviar dados de clientes, CPF, CNPJ, contratos ou planilhas. O BREQUE não tem área de cobrança ativa e não processa pagamento neste site.</p>
+      </div>
+
+      <div class="content-card" id="emergencia">
+        <h2>Se o problema é um golpe agora</h2>
+        <p>Use o aplicativo para ligar em 1 toque ao canal oficial do seu banco (Discagem Segura) e, se já tiver feito o Pix, abra a Mesa de Recuperação com os prazos do MED.</p>
+        <p>Para dúvidas regulatórias com o Banco Central, ligue <strong>145</strong> ou acesse <a href="https://www.bcb.gov.br/" target="_blank" rel="noopener noreferrer">bcb.gov.br</a> digitando o endereço manualmente. Não use número recebido por mensagem.</p>
+        <div class="callout"><p><strong>Este canal não é emergência bancária.</strong> Não prometemos resposta em prazo fixo e não tratamos casos individuais por aqui.</p></div>
+      </div>
+
+      <div class="content-card" id="privacidade-contato">
+        <h2>Privacidade e dados</h2>
+        <p>Não há e-mail cadastrado nem solicitação a fazer: você apaga seus dados diretamente no app pelo botão “Apagar todos os meus dados deste aparelho”. Leia a <a href="/privacidade.html">Política de Privacidade</a> para saber exatamente o que é gravado.</p>
+      </div>
+
+      <div class="content-card" id="nao-enviar">
+        <h2>O que não enviar</h2>
+        <ul>
+          <li>Senhas, códigos de SMS ou respostas de segundo fator.</li>
+          <li>CPF, CNPJ, número de cartão, chave Pix completa ou valores de transferência.</li>
+          <li>Prints de conversa, áudios ou dados de outras pessoas.</li>
+          <li>Informações bancárias de terceiros, mesmo que você tenha acesso a elas.</li>
+        </ul>
+        <p class="small">Issues são públicas. Se você precisar tratar algo confidencial, não use este canal.</p>
+      </div>
+    </main>
+
+    <aside class="toc">
+      <strong>Nesta página</strong>
+      <a href="#canal">Dúvidas e bugs</a>
+      <a href="#parcerias">Parcerias</a>
+      <a href="#emergencia">Golpe agora</a>
+      <a href="#privacidade-contato">Privacidade</a>
+      <a href="#nao-enviar">O que não enviar</a>
+      <a href="/app.html" class="btn-dark">Testar o app grátis →</a>
+    </aside>
+  </div>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <strong>BREQUE — O segundo antes do Pix</strong>
+        <p style="margin:6px 0 0;">Apoio à decisão, não garantia de prevenção ou devolução de valores.</p>
+      </div>
+      <div><strong>Produto</strong><a href="/app.html">Testar o app</a><a href="/#duvidas">Dúvidas</a></div>
+      <div><strong>Institucional</strong><a href="/sobre.html">Sobre</a><a href="/contato.html">Contato</a><a href="/privacidade.html">Privacidade</a><a href="/termos.html">Termos e LGPD</a></div>
+    </div>
+  </footer>
+  <div class="mobile-cta">
+    <a href="/app.html" class="btn-primary">Testar grátis →</a>
+    <a href="/#duvidas" class="btn-dark">Dúvidas</a>
+  </div>
+</body>
+</html>

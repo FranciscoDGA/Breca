@@ -124,8 +124,13 @@ experiência da linha 159 dentro do app, 100% offline).
 ## Estrutura principal
 
 ```text
-index.html                  landing page pública
+index.html                  landing page pública (menu mobile, FAQ ampliada, funil de conversão)
 app.html                    PWA principal (Discagem Segura, Escudo Pix, Jornada, MED, Vacina, Radar)
+public/privacidade.html     Política de Privacidade (dados locais, LGPD, como apagar)
+public/termos.html          Termos de Uso e LGPD (limitações, autonomia, planos)
+public/sobre.html           Sobre o projeto e transparência
+public/contato.html         Contato sem backend (issues do repositório + cópia do link)
+public/site.css, site.js    estilo e menu mobile compartilhados pelas páginas estáticas
 data/canais-oficiais.json   catálogo offline versionado (validado no build)
 data/denuncias-locais.json  lista offline de hashes comunitários (vazia na v1)
 data/vacinas.json           safras versionadas da Vacina de 60 Segundos (caso Banpará + clássicos)
