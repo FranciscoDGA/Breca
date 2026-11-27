@@ -300,12 +300,18 @@
       display: inline-block;
       font-size: 0.74rem;
       font-weight: 800;
+      color: #7c2d12;
+      background: #fde68a;
+      border: 1px solid #d97706;
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-bottom: 5px;
+    }
+
+    .action-card.amber-tone .priority-badge {
       color: #fde68a;
       background: rgba(245, 158, 11, 0.22);
-      border: 1px solid rgba(251, 191, 36, 0.5);
-      border-radius: 999px;
-      padding: 2px 9px;
-      margin-bottom: 5px;
+      border-color: rgba(251, 191, 36, 0.5);
     }
 
     .action-card.risk-tone {
@@ -746,6 +752,28 @@
       margin: 0;
     }
 
+    .welcome-actions {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .welcome-visitor {
+      background: none;
+      border: none;
+      color: #e6f4fa;
+      font-size: 0.84rem;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      min-height: 44px;
+      padding: 8px 14px;
+      border-radius: 999px;
+    }
+
     .welcome-go {
       position: relative;
       z-index: 2;
@@ -1174,6 +1202,7 @@
       history: [],
       fontScale: 1,
       verifyText: "",
+      verifyFeedback: "",
       q1Origin: null,
       q2Pressure: null,
       q3Request: null,
@@ -2176,7 +2205,6 @@
       const nomes = {
         familia_mensal: "Plus / Família mensal (R$ 12,90/mês)",
         familia_anual: "Plus / Família anual (R$ 99,00/ano)",
-        gold: "Gold (R$ 29,90/mês)",
         institucional: "Cooperativa / Empresa (B2B2C)"
       };
       const texto = `Tenho interesse no plano ${nomes[state.selectedPlan] || state.selectedPlan} do BREQUE.`;
@@ -2796,6 +2824,17 @@
       render();
     }
 
+    function analisarTextoLocal() {
+      const textoLimpo = (state.verifyText || "").trim();
+      if (textoLimpo.length < 4) {
+        state.verifyFeedback = "Cole o link ou a mensagem recebida (pelo menos 4 caracteres) ou responda às 3 perguntas rápidas abaixo.";
+        render();
+        return;
+      }
+      state.verifyFeedback = "";
+      render();
+    }
+
     function changeFont(delta) {
       state.fontScale = Math.min(1.25, Math.max(0.9, +(state.fontScale + delta).toFixed(2)));
       document.documentElement.style.setProperty("--font-scale", state.fontScale);
@@ -3412,10 +3451,12 @@
               <p class="welcome-sub">Um breque na hora da dúvida. Interrompa decisões sob pressão e verifique com calma.</p>
             </div>
 
-            <button class="welcome-go" onclick="goHome()" aria-label="Entrar no BREQUE">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-            </button>
-            <button style="position:absolute; bottom:22px; left:50%; transform:translateX(-50%); background:none; border:none; color:#d6eef7; font-size:0.82rem; text-decoration:underline; cursor:pointer; min-height:44px;" onclick="alternarModoVisitante()">Abrir no modo visitante (sem seus dados)</button>
+            <div class="welcome-actions">
+              <button class="welcome-go" onclick="goHome()" aria-label="Entrar no BREQUE">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+              </button>
+              <button class="welcome-visitor" onclick="alternarModoVisitante()">Abrir no modo visitante (sem seus dados)</button>
+            </div>
           </section>
         `;
         return;
@@ -3561,7 +3602,7 @@
             </div>
 
             <details class="details-bloco" aria-label="Ferramentas essenciais" data-bloco="ferramentas">
-              <summary>Caixa de ferramentas — ver todas (10)</summary>
+              <summary>Caixa de ferramentas — ver todas (14)</summary>
               <div class="stack" style="gap:10px;">
                 <button class="summary-row" onclick="navigate('central_mais')">
                   <div class="summary-left">
@@ -3849,7 +3890,7 @@
             </button>
             <button class="tile-btn bento-item bento-item--wide" onclick="navigate('planos')" style="border-color:#bfd6e0; background:var(--brand-soft);">
               <span class="tile-title" style="color:var(--brand);">Planos BREQUE</span>
-              <span class="tile-sub">Grátis, Família e Gold</span>
+              <span class="tile-sub">Grátis, Família e B2B2C</span>
             </button>
           </div>
 
@@ -4641,20 +4682,21 @@
           ? window.BREQUE_SENTINELA.extrairDominioSuspeito(state.verifyText)
           : "";
         app.innerHTML = `
-          <div style="position:relative; border-radius:20px; overflow:hidden; padding:18px 16px 20px; background:radial-gradient(circle at 50% 35%, rgba(16,185,129,0.28) 0%, rgba(14,165,233,0.2) 45%, rgba(6,16,24,0.95) 100%); border:1px solid rgba(125,211,252,0.2); text-align:center;">
-            <button class="btn btn-ghost" style="position:absolute; left:12px; top:12px; color:#fff;" onclick="goBack()">←</button>
-            <div style="font-size:0.86rem; font-weight:700; color:#d6eef7; margin-bottom:12px;">Verificar Mensagem ou Link</div>
-            <div style="width:62px; height:62px; margin:0 auto 10px; border-radius:50%; background:rgba(14,165,198,0.2); border:1.5px solid rgba(125,211,252,0.5); box-shadow:0 0 24px rgba(56,189,248,0.4); display:flex; align-items:center; justify-content:center;">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e0f7ff" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          <div style="position:relative; border-radius:20px; overflow:hidden; padding:20px 20px 22px; background:radial-gradient(circle at 50% 28%, rgba(16,185,129,0.22) 0%, rgba(14,165,233,0.16) 44%, transparent 76%), linear-gradient(155deg, #0b2430 0%, #0f2f3d 58%, #154357 100%); border:1px solid rgba(125,211,252,0.28); text-align:center;">
+            <button class="btn btn-ghost" style="position:absolute; left:12px; top:12px; color:#ffffff;" onclick="goBack()" aria-label="Voltar">←</button>
+            <div style="font-size:0.9rem; font-weight:800; color:#ffffff; margin:0 36px 12px;">Verificar Mensagem ou Link</div>
+            <div style="width:62px; height:62px; margin:0 auto 10px; border-radius:50%; background:rgba(14,165,198,0.24); border:1.5px solid rgba(125,211,252,0.55); box-shadow:0 0 24px rgba(56,189,248,0.35); display:flex; align-items:center; justify-content:center;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
             </div>
-            <p style="font-size:0.84rem; color:#bfe0ee;">Análise 100% local no aparelho. O BREQUE não abre links nem envia textos para servidores.</p>
+            <p style="font-size:0.86rem; color:#dbeaf1; margin:0;">Análise 100% local no aparelho. O BREQUE não abre links nem envia textos para servidores.</p>
           </div>
 
           <div class="card stack">
             <label class="field-label" for="verify-text">Cole aqui o link ou a mensagem recebida</label>
-            <textarea id="verify-text" rows="3" maxlength="1000" placeholder="Ex.: www.correios-taxa.xyz ou 'Oi mãe, troquei de número...'" oninput="state.verifyText = this.value;">${escapeHtml(state.verifyText)}</textarea>
+            <textarea id="verify-text" rows="3" maxlength="1000" placeholder="Ex.: www.correios-taxa.xyz ou 'Oi mãe, troquei de número...'" oninput="state.verifyText = this.value; state.verifyFeedback = '';">${escapeHtml(state.verifyText)}</textarea>
             <p style="font-size: 0.78rem;">Não cole senhas, códigos de SMS, CPF nem número de cartão.</p>
-            <button class="btn btn-primary btn-center" onclick="render()">Analisar agora (100% local) →</button>
+            <button class="btn btn-primary btn-center" onclick="analisarTextoLocal()">Analisar agora (100% local) →</button>
+            ${state.verifyFeedback ? `<div class="quote-box" role="status">${escapeHtml(state.verifyFeedback)}</div>` : ""}
           </div>
 
           ${localScan ? `
@@ -4700,9 +4742,9 @@
 
           <div class="section-label">Testar com exemplos reais comuns no Brasil</div>
           <div class="stack">
-            <button class="btn btn-secondary" onclick="state.verifyText='Oi, troquei de número porque meu celular quebrou. Preciso pagar um Pix urgente de R$ 950 agora, depois te devolvo.'; render();">“Oi, troquei de número... preciso de um Pix” <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.verifyText='Central de segurança do banco: compra suspeita detectada. Não desligue e informe o código SMS.'; render();">“Central de segurança: informe o código SMS” <span>→</span></button>
-            <button class="btn btn-secondary" onclick="state.verifyText='Sua encomenda foi retida. Regularize a taxa em http://correios-taxa.xyz agora.'; render();">Link falso: http://correios-taxa.xyz <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.verifyText='Oi, troquei de número porque meu celular quebrou. Preciso pagar um Pix urgente de R$ 950 agora, depois te devolvo.'; state.verifyFeedback=''; render();">“Oi, troquei de número... preciso de um Pix” <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.verifyText='Central de segurança do banco: compra suspeita detectada. Não desligue e informe o código SMS.'; state.verifyFeedback=''; render();">“Central de segurança: informe o código SMS” <span>→</span></button>
+            <button class="btn btn-secondary" onclick="state.verifyText='Sua encomenda foi retida. Regularize a taxa em http://correios-taxa.xyz agora.'; state.verifyFeedback=''; render();">Link falso: http://correios-taxa.xyz <span>→</span></button>
           </div>
         `;
         return;
@@ -5138,6 +5180,14 @@
           </div>
 
           <div class="card card-amber stack">
+            <span class="pill pill-risk">Passo 1 de 5 • Contatar o banco pelo canal oficial</span>
+            <h3>Acione a contestação/MED direto no canal oficial do seu banco</h3>
+            <p style="font-size:0.88rem; margin:0;">Use o app oficial já instalado ou o telefone do verso do cartão. Nunca ligue para número enviado por mensagem nem pague “intermediário” para estornar.</p>
+            ${meuBanco && meuBanco.orientacaoMed ? `<div class="quote-box" style="margin:0;"><strong>No seu banco (${escapeHtml(meuBanco.nome)}):</strong> ${escapeHtml(meuBanco.orientacaoMed)}</div>` : ""}
+            <button class="btn btn-primary btn-center" onclick="navigate('discagem_segura')">Abrir Discagem Segura (contestar no meu banco agora) →</button>
+          </div>
+
+          <div class="card card-amber stack">
             <span class="pill pill-amber">Passo 2 de 5 • Checklist na ordem certa</span>
             <h3>Marque conforme for fazendo (fica salvo no aparelho)</h3>
             ${etapasMed.map((etapa) => `
@@ -5146,26 +5196,9 @@
                 <span style="${state.medChecklist[etapa.id] ? "text-decoration:line-through; opacity:0.72;" : ""}">${escapeHtml(etapa.label)}</span>
               </label>
             `).join("")}
-            ${meuBanco && meuBanco.orientacaoMed ? `<div class="quote-box" style="margin:0;"><strong>No seu banco (${escapeHtml(meuBanco.nome)}):</strong> ${escapeHtml(meuBanco.orientacaoMed)}</div>` : ""}
-            <button class="btn btn-primary btn-center" onclick="navigate('discagem_segura')">Abrir Discagem Segura (contestar no meu banco agora) →</button>
             <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">O app guarda apenas “feito/não feito” e as datas do Pix/contestação. Nunca guarda valor, chave Pix, telefone nem relato.</p>
           </div>
           ${renderLinhaTempoLocal()}
-
-          <div class="card ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "card-risk" : "card-amber"} stack">
-            <span class="pill ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "pill-risk" : "pill-amber"}">Passo 4 de 5 • Prazos reais do MED</span>
-            <h2>${prazoMed.limiteIso ? (prazoMed.vencido ? `A janela de 80 dias venceu em ${formatarDataBr(prazoMed.limiteIso)}` : `Faltam ${prazoMed.diasRestantes} dia(s) dos 80 dias do MED (até ${formatarDataBr(prazoMed.limiteIso)})`) : "Informe a data do Pix abaixo para calcular os 80 dias do MED"}</h2>
-            <ul class="list-clean" style="color:var(--text);">
-              ${regrasMed.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}
-            </ul>
-            <div class="rr-block">
-              <div class="rr-title">O que o MED NÃO cobre</div>
-              <ul class="list-clean" style="color:var(--text);">
-                ${naoCobreMed.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}
-              </ul>
-            </div>
-            <p style="font-size:0.76rem; color:var(--text-muted); margin:0;"><strong>Fonte oficial:</strong> ${escapeHtml(fonteMed)}. O prazo garante o direito de pedir análise, não devolução garantida.</p>
-          </div>
 
           <div class="card stack">
             <span class="pill pill-brand">Passo 3 de 5 • Relato organizado com linha do tempo e SHA-256</span>
@@ -5218,6 +5251,21 @@
             ${state.incidentLog.copiaErro ? `<div class="quote-box" style="border-left-color:var(--risk); background:var(--risk-bg);">Não foi possível copiar automaticamente. Use o botão Baixar .txt.</div>` : ""}
             ${state.incidentLog.saved ? `<div class="quote-box"><strong>relato-breque.txt gerado localmente com SHA-256 no rodapé!</strong> Nenhum dado saiu do aparelho.</div>` : ""}
             ${state.incidentLog.savedJson ? `<div class="quote-box"><strong>dossie-med-breque.json gerado localmente!</strong> Nenhum dado saiu do aparelho.</div>` : ""}
+          </div>
+
+          <div class="card ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "card-risk" : "card-amber"} stack">
+            <span class="pill ${prazoMed.limiteIso && prazoMed.diasRestantes !== null && prazoMed.diasRestantes < 7 ? "pill-risk" : "pill-amber"}">Passo 4 de 5 • Prazos reais do MED</span>
+            <h2>${prazoMed.limiteIso ? (prazoMed.vencido ? `A janela de 80 dias venceu em ${formatarDataBr(prazoMed.limiteIso)}` : `Faltam ${prazoMed.diasRestantes} dia(s) dos 80 dias do MED (até ${formatarDataBr(prazoMed.limiteIso)})`) : "Informe a data do Pix acima para calcular os 80 dias do MED"}</h2>
+            <ul class="list-clean" style="color:var(--text);">
+              ${regrasMed.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}
+            </ul>
+            <div class="rr-block">
+              <div class="rr-title">O que o MED NÃO cobre</div>
+              <ul class="list-clean" style="color:var(--text);">
+                ${naoCobreMed.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}
+              </ul>
+            </div>
+            <p style="font-size:0.76rem; color:var(--text-muted); margin:0;"><strong>Fonte oficial:</strong> ${escapeHtml(fonteMed)}. O prazo garante o direito de pedir análise, não devolução garantida.</p>
           </div>
 
           <div class="card card-soft stack">
@@ -5379,24 +5427,6 @@
             </button>
           </div>
 
-          <div class="card stack">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h2>Gold</h2>
-              <div style="text-align:right;">
-                <strong style="color:var(--text); font-size:1.1rem;">R$ 29,90/mês</strong>
-                <div style="font-size:0.78rem; color:var(--text-muted);">em preparação com parceiros</div>
-              </div>
-            </div>
-            <ul class="list-clean">
-              <li>Tudo do plano Família</li>
-              <li>Apoio guiado na Mesa de Recuperação</li>
-              <li>Microsseguro digital via seguradora parceira (SUSEP)</li>
-            </ul>
-            <button class="btn btn-secondary btn-center" onclick="state.selectedPlan='gold'; document.getElementById('plan-signup').scrollIntoView({behavior:'smooth'});">
-              Tenho interesse no Gold
-            </button>
-          </div>
-
           <div class="card card-soft stack">
             <h3>Cooperativas, bancos e empresas (B2B2C)</h3>
             <p>A partir de R$ 0,50 a R$ 1,50 por usuário ativo/mês para oferecer o BREQUE gratuitamente à sua base.</p>
@@ -5413,7 +5443,6 @@
               <select id="plan-select" style="width:100%; padding:11px; border-radius:12px; border:1.5px solid var(--border); font-size:0.94rem; background:var(--surface-soft); color:var(--text);" onchange="state.selectedPlan=this.value">
                 <option value="familia_mensal" ${state.selectedPlan === 'familia_mensal' ? 'selected' : ''}>Plus / Família — R$ 12,90/mês</option>
                 <option value="familia_anual" ${state.selectedPlan === 'familia_anual' ? 'selected' : ''}>Plus / Família Anual — R$ 99,00/ano</option>
-                <option value="gold" ${state.selectedPlan === 'gold' ? 'selected' : ''}>Gold — R$ 29,90/mês</option>
                 <option value="institucional" ${state.selectedPlan === 'institucional' ? 'selected' : ''}>Cooperativa / Empresa (B2B2C)</option>
               </select>
             </div>

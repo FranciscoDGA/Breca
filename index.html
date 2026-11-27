@@ -29,11 +29,12 @@
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: clip; }
     section { scroll-margin-top: 84px; }
     :focus-visible { outline: 3px solid rgba(245, 158, 11, 0.6); outline-offset: 3px; }
     h1, h2, h3, blockquote { text-wrap: balance; }
     p { text-wrap: pretty; }
+    code { overflow-wrap: anywhere; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
@@ -41,6 +42,7 @@
       color: var(--text);
       background: var(--bg);
       line-height: 1.55;
+      overflow-x: clip;
     }
 
     a { text-decoration: none; color: inherit; }
@@ -204,15 +206,19 @@
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
       gap: 48px;
       align-items: center;
     }
 
+    .hero-grid > * { min-width: 0; }
+
     .hero-pill {
       display: inline-flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 8px;
+      max-width: 100%;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(253, 230, 138, 0.35);
       color: #fde68a;
@@ -301,14 +307,24 @@
     .momentos a.is-active { background: #fbc96a; color: #0f1b24; }
 
     /* CENA DO PRODUTO */
-    .hero-scene { position: relative; max-width: 370px; margin: 0 auto; }
+    .hero-scene {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 370px;
+      margin: 0 auto;
+    }
 
     .hero-float {
-      position: absolute;
+      position: relative;
       z-index: 2;
       display: flex;
       align-items: center;
       gap: 9px;
+      max-width: 100%;
       padding: 10px 14px;
       border-radius: 14px;
       background: rgba(255, 255, 255, 0.96);
@@ -322,8 +338,8 @@
     }
 
     .hero-float strong { display: block; color: var(--brand); font-size: 0.72rem; font-weight: 700; }
-    .hero-float--top { left: -34px; top: 7%; }
-    .hero-float--bottom { right: -28px; bottom: 9%; }
+    .hero-float--top { align-self: flex-start; }
+    .hero-float--bottom { align-self: flex-end; }
     .hero-float-dot {
       width: 9px; height: 9px; flex: none; border-radius: 50%;
       background: var(--amber-bright); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18);
@@ -335,6 +351,7 @@
       border: 6px solid #1e3342;
       border-radius: 34px;
       padding: 16px;
+      width: 100%;
       max-width: 330px;
       margin: 0 auto;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
@@ -516,6 +533,23 @@
     .step-card h3 { margin: 0 0 8px; color: var(--brand); font-size: 1.08rem; }
     .step-card p { margin: 0; color: var(--muted); font-size: 0.94rem; }
 
+    .bank-logos {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .bank-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      flex: none;
+      display: block;
+      box-shadow: inset 0 0 0 1px rgba(15, 27, 36, 0.08), 0 2px 6px rgba(15, 27, 36, 0.1);
+    }
+
     .family-banner {
       background: linear-gradient(145deg, #0f2f3d 0%, #194d63 100%);
       color: #fff;
@@ -670,21 +704,22 @@
       header .container { padding-left: 24px; padding-right: 24px; }
       .logo { font-size: 1.05rem; gap: 8px; }
       .logo svg { width: 24px; height: 24px; }
-      .hero-grid, .grid-3, .bento, .trust-grid, .family-banner, .fact-grid { grid-template-columns: 1fr; }
+      .hero-grid, .grid-3, .bento, .trust-grid, .family-banner, .fact-grid { grid-template-columns: minmax(0, 1fr); }
+      .grid-3 > *, .bento > *, .trust-grid > *, .family-banner > *, .fact-grid > *, .footer-grid > * { min-width: 0; }
       .bento-item--wide { grid-column: auto; }
       .bento-item { min-height: 0; }
       .hero { padding: 56px 0 64px; }
       .hero h1 { font-size: 2.15rem; }
       .hero p { font-size: 1rem; }
       .hero-scene { display: flex; flex-direction: column; gap: 12px; max-width: 330px; }
-      .hero-float { position: static; align-self: center; max-width: 320px; }
+      .hero-float { position: static; align-self: center; width: 100%; max-width: 330px; }
       .hero-float--top { order: -1; }
-      .momentos { width: 100%; justify-content: space-between; }
-      .momentos a { flex: 1; padding: 8px 6px; font-size: 0.76rem; text-align: center; }
+      .momentos { display: flex; width: 100%; max-width: 100%; justify-content: space-between; }
+      .momentos a { flex: 1; min-width: 0; padding: 8px 6px; font-size: 0.76rem; text-align: center; }
       .manifesto { padding: 72px 0; }
       .manifesto::before { font-size: 12rem; left: -2%; }
       .family-banner { padding: 28px 22px; }
-      .footer-grid { grid-template-columns: 1fr; gap: 22px; }
+      .footer-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 
       .menu-toggle { display: flex; }
 
@@ -995,38 +1030,125 @@
       </div>
       <div class="grid-3">
         <div class="step-card">
+          <div class="bank-logos" aria-label="Logotipo do Banco Central do Brasil">
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Banco Central do Brasil">
+              <title>Banco Central do Brasil</title>
+              <rect width="40" height="40" rx="10" fill="#003865"/>
+              <path d="M20 8L9 14.5h22L20 8z" fill="#ffffff"/>
+              <rect x="11.5" y="16.5" width="3" height="10.5" rx="0.8" fill="#ffffff"/>
+              <rect x="18.5" y="16.5" width="3" height="10.5" rx="0.8" fill="#ffffff"/>
+              <rect x="25.5" y="16.5" width="3" height="10.5" rx="0.8" fill="#ffffff"/>
+              <rect x="9" y="28.5" width="22" height="3" rx="1" fill="#e5b82e"/>
+            </svg>
+          </div>
           <span class="chat-tag">Regulador • Verificado em 26/11/2026</span>
           <h3 style="margin-top:8px;">Banco Central do Brasil</h3>
           <p><strong>145</strong> e Fale Conosco em <code>bcb.gov.br/meubc/faleconosco</code>. Reclamar de banco e tirar dúvidas sobre o MED.</p>
         </div>
         <div class="step-card">
+          <div class="bank-logos" aria-label="Logotipo do Banpará">
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Banpará">
+              <title>Banpará</title>
+              <rect width="40" height="40" rx="10" fill="#004c97"/>
+              <path d="M0 30L40 24v16H0z" fill="#f7c600" opacity="0.95"/>
+              <text x="20" y="21.5" text-anchor="middle" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="14" font-weight="800" letter-spacing="-0.03em">BP</text>
+              <text x="20" y="34.5" text-anchor="middle" fill="#003366" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="7" font-weight="800">PARÁ</text>
+            </svg>
+          </div>
           <span class="chat-tag">Banco local do Pará • Verificado em 26/11/2026</span>
           <h3 style="margin-top:8px;">Banpará</h3>
           <p><strong>3004 4444</strong> (Belém e RM) / <strong>0800 285 8080</strong> (demais localidades, fixo). Fonte: <code>banpara.b.br</code>.</p>
         </div>
         <div class="step-card">
+          <div class="bank-logos" aria-label="Logotipo do Nubank">
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Nubank">
+              <title>Nubank</title>
+              <rect width="40" height="40" rx="10" fill="#820ad1"/>
+              <text x="20" y="25.5" text-anchor="middle" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="18" font-weight="800" letter-spacing="-0.04em">nu</text>
+            </svg>
+          </div>
           <span class="chat-tag">Sem telefone público • Verificado em 26/11/2026</span>
           <h3 style="margin-top:8px;">Nubank</h3>
           <p>Atendimento <strong>somente pelo chat dentro do app 24h</strong>. Se alguém ligar se passando pelo Nubank, desligue.</p>
         </div>
         <div class="step-card">
+          <div class="bank-logos" aria-label="Logotipos de Banco do Brasil, Caixa, Itaú, Bradesco e Santander">
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Banco do Brasil">
+              <title>Banco do Brasil</title>
+              <rect width="40" height="40" rx="10" fill="#fcfc30"/>
+              <path d="M20 7l11 7.5-11 7.5-11-7.5L20 7zm0 11l11 7.5L20 33 9 25.5 20 18z" fill="none" stroke="#0038a8" stroke-width="2.6" stroke-linejoin="round"/>
+              <text x="20" y="24.5" text-anchor="middle" fill="#0038a8" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="11.5" font-weight="900">BB</text>
+            </svg>
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Caixa Econômica Federal">
+              <title>Caixa Econômica Federal</title>
+              <rect width="40" height="40" rx="10" fill="#005ca9"/>
+              <path d="M10.5 11.5h7.2l11.8 17h-7.2l-11.8-17z" fill="#ffffff"/>
+              <path d="M29.5 11.5h-7.2l-11.8 17h7.2l11.8-17z" fill="#f39200"/>
+            </svg>
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Itaú">
+              <title>Itaú</title>
+              <rect width="40" height="40" rx="10" fill="#ec7000"/>
+              <rect x="4" y="4" width="32" height="32" rx="7" fill="#003399"/>
+              <text x="20" y="24.5" text-anchor="middle" fill="#ffdd00" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="12.5" font-weight="800" letter-spacing="-0.02em">Itaú</text>
+            </svg>
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Bradesco">
+              <title>Bradesco</title>
+              <rect width="40" height="40" rx="10" fill="#cc092f"/>
+              <path d="M9.5 22.5a10.5 10.5 0 0 1 21 0" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round"/>
+              <path d="M14 23a6 6 0 0 1 12 0" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round"/>
+              <rect x="17.2" y="23.5" width="2.4" height="7" rx="1.2" fill="#ffffff"/>
+              <rect x="20.8" y="25" width="2.4" height="5.5" rx="1.2" fill="#ffffff"/>
+            </svg>
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Santander">
+              <title>Santander</title>
+              <rect width="40" height="40" rx="10" fill="#ec0000"/>
+              <path d="M20 9.5c-2.2 3.2-.6 5.4 1.2 7.4 1.8 2 2.4 4.2.5 6.8 3.6-1.4 5.5-4.7 4-8.1-.8-1.9-2.8-3.4-3.7-6.1H20zm-5.2 4.5c-2.8 2.4-3.8 6-2 9.4 1.3 2.5 4.4 4.1 7.8 4.1 3.5 0 6.8-1.6 8.2-4.3-1.4 1.2-3.5 1.8-6 1.8-4.2 0-7.2-2.2-7.2-5.6 0-1.9.8-3.6 2-5.4h-2.8z" fill="#ffffff"/>
+            </svg>
+          </div>
           <span class="chat-tag">Bancos nacionais • Verificado em 26/11/2026</span>
           <h3 style="margin-top:8px;">BB, Caixa, Itaú, Bradesco e Santander</h3>
           <p>BB (4004 0001 / 0800 729 0001) • Caixa (4004 0104 / 0800 104 0104) • Itaú (4004 4828 / 0800 970 4828) • Bradesco (4002 0022 / 0800 570 0022) • Santander (4004 3535 / 0800 702 3535).</p>
         </div>
         <div class="step-card">
+          <div class="bank-logos" aria-label="Logotipos de Inter e Banrisul">
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Inter">
+              <title>Inter</title>
+              <rect width="40" height="40" rx="10" fill="#ff7a00"/>
+              <text x="20" y="24" text-anchor="middle" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="11.5" font-weight="800" letter-spacing="-0.03em">inter</text>
+            </svg>
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Banrisul">
+              <title>Banrisul</title>
+              <rect width="40" height="40" rx="10" fill="#004b87"/>
+              <path d="M10 28.5L26 11.5h4.5L14.5 28.5H10z" fill="#38bdf8"/>
+              <text x="20" y="25.5" text-anchor="middle" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" font-size="16" font-weight="800">B</text>
+            </svg>
+          </div>
           <span class="chat-tag">Digitais e Regionais • Verificado em 26/11/2026</span>
           <h3 style="margin-top:8px;">Inter e Banrisul</h3>
           <p>Inter SAC 24h (<strong>0800 940 9999</strong>) • Banrisul SAC (<strong>0800 646 1515</strong>) e Banrifone (<strong>(51) 3210 0122</strong> / <strong>0800 541 8855</strong>).</p>
         </div>
         <div class="step-card">
+          <div class="bank-logos" aria-label="Logotipos de Sicredi e Sicoob">
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Sicredi">
+              <title>Sicredi</title>
+              <rect width="40" height="40" rx="10" fill="#3fa110"/>
+              <path d="M20 9.5c2.2 0 4 2.4 4 5.5 0 1.8-.6 3.5-1.6 4.5h-4.8c-1-1-1.6-2.7-1.6-4.5 0-3.1 1.8-5.5 4-5.5zm0 21c-2.2 0-4-2.4-4-5.5 0-1.8.6-3.5 1.6-4.5h4.8c1 1 1.6 2.7 1.6 4.5 0 3.1-1.8 5.5-4 5.5zm-10.5-10.5c0-2.2 2.4-4 5.5-4 1.8 0 3.5.6 4.5 1.6v4.8c-1 1-2.7 1.6-4.5 1.6-3.1 0-5.5-1.8-5.5-4zm21 0c0 2.2-2.4 4-5.5 4-1.8 0-3.5-.6-4.5-1.6v-4.8c1-1 2.7-1.6 4.5-1.6 3.1 0 5.5 1.8 5.5 4z" fill="#ffffff"/>
+            </svg>
+            <svg class="bank-logo" viewBox="0 0 40 40" role="img" aria-label="Sicoob">
+              <title>Sicoob</title>
+              <rect width="40" height="40" rx="10" fill="#003641"/>
+              <path d="M20 9L30 27.5H24.2L20 19.5l-4.2 8H10L20 9z" fill="#7db61c"/>
+              <path d="M20 19.5l4.2 8H15.8l4.2-8z" fill="#00ae9d"/>
+            </svg>
+          </div>
           <span class="chat-tag">Cooperativas • Verificado em 26/11/2026</span>
           <h3 style="margin-top:8px;">Sicredi e Sicoob</h3>
           <p>Sicredi (<strong>0800 724 4770</strong>) • Sicoob (<strong>4000 1111</strong> / <strong>0800 642 0000</strong>). Todos com fonte oficial clicável dentro do app.</p>
         </div>
       </div>
       <p style="text-align:center; font-size:0.84rem; color:var(--muted); margin-top:18px;">
-        Catálogo 100% offline dentro do app. Em caso de dúvida, vale sempre o número impresso no verso do seu cartão.
+        Catálogo 100% offline dentro do app. Em caso de dúvida, vale sempre o número impresso no verso do seu cartão.<br/>
+        Nomes e ícones identificam apenas canais públicos de atendimento — o BREQUE é independente e não possui vínculo oficial com as instituições listadas.
       </p>
     </div>
   </section>
@@ -1131,9 +1253,12 @@
               <li>Arquitetura LGPD local-first</li>
             </ul>
           </div>
-          <a href="/app.html" class="btn-dark" style="background:var(--brand-soft); color:var(--brand);">Falar sobre parceria</a>
+          <a href="/contato.html" class="btn-dark" style="background:var(--brand-soft); color:var(--brand);">Falar sobre parceria</a>
         </div>
       </div>
+      <p style="text-align:center; font-size:0.84rem; color:var(--muted); margin:18px auto 0; max-width:680px;">
+        O uso essencial é gratuito e não há checkout ativo nem cobrança automática neste site.
+      </p>
     </div>
   </section>
 

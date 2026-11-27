@@ -175,4 +175,48 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(js).not.toMatch(/\bfetch\s*\(/)
     expect(js).not.toMatch(/localStorage|sessionStorage|indexedDB/)
   })
+
+  it('mantém contraste legível no CTA lateral das páginas institucionais e nos badges do app', () => {
+    const siteCss = readFileSync(resolve(process.cwd(), 'public/site.css'), 'utf-8')
+    expect(siteCss).toContain('.toc a:not(.btn-dark)')
+    expect(siteCss).toMatch(/\.toc \.btn-dark\s*\{[^}]*color:\s*#ffffff/)
+
+    const app = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(app).toMatch(/\.priority-badge\s*\{[^}]*color:\s*#7c2d12/)
+    expect(app).toContain('linear-gradient(155deg, #0b2430 0%, #0f2f3d 58%, #154357 100%)')
+    expect(app).toContain('class="welcome-actions"')
+    expect(app).toContain('class="welcome-visitor"')
+  })
+
+  it('mantém MED em ordem 1 a 5, contador real da caixa de ferramentas, feedback vazio e planos alinhados', () => {
+    const app = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    const p1 = app.indexOf('Passo 1 de 5')
+    const p2 = app.indexOf('Passo 2 de 5')
+    const p3 = app.indexOf('Passo 3 de 5')
+    const p4 = app.indexOf('Passo 4 de 5')
+    const p5 = app.indexOf('Passo 5 de 5')
+    expect(p1).toBeGreaterThan(-1)
+    expect(p1).toBeLessThan(p2)
+    expect(p2).toBeLessThan(p3)
+    expect(p3).toBeLessThan(p4)
+    expect(p4).toBeLessThan(p5)
+
+    const blocoFerramentas = app.match(
+      /<details[^>]*data-bloco="ferramentas"[\s\S]*?<\/details>/,
+    )
+    expect(blocoFerramentas).not.toBeNull()
+    const totalBotoes = (blocoFerramentas![0].match(/class="summary-row"/g) || []).length
+    expect(blocoFerramentas![0]).toContain(`Caixa de ferramentas — ver todas (${totalBotoes})`)
+
+    expect(app).toContain('function analisarTextoLocal()')
+    expect(app).toContain('onclick="analisarTextoLocal()"')
+    expect(app).not.toContain('Gold (R$ 29,90/mês)')
+    expect(app).not.toContain('Tenho interesse no Gold')
+
+    const landing = readFileSync(resolve(process.cwd(), 'index.html'), 'utf-8')
+    const secaoCanais = landing.match(/<section id="canais-verificados">[\s\S]*?<\/section>/)
+    expect(secaoCanais).not.toBeNull()
+    expect((secaoCanais![0].match(/class="bank-logo"/g) || []).length).toBe(12)
+    expect(secaoCanais![0]).not.toMatch(/<img[^>]+src="https?:\/\//i)
+  })
 })
