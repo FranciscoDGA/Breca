@@ -165,6 +165,8 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
       expect(html, nome).not.toMatch(/gtag\s*\(|sendBeacon\s*\(|<script[^>]+src="[^"]*(analytics|gtag)/i)
       expect(html, nome).not.toContain('mailto:')
       expect(html, nome).not.toContain('está seguro')
+      expect(html, nome).not.toContain('FranciscoDGA')
+      expect(html, nome).not.toContain('github.com')
     }
   })
 
