@@ -791,6 +791,54 @@
       font-weight: 600;
     }
 
+    .audio-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      border: 1.5px solid #c5dce5;
+      background: var(--brand-soft);
+      color: var(--brand);
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .audio-btn[aria-pressed="true"] {
+      background: var(--brand);
+      color: #ffffff;
+      border-color: var(--brand);
+    }
+
+    .audio-aviso {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      min-height: 1em;
+    }
+
+    .details-bloco {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 13px;
+    }
+
+    .details-bloco > summary {
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--brand);
+    }
+
+    .details-bloco[open] > summary {
+      margin-bottom: 10px;
+    }
+
     .arc-hero {
       position: relative;
       display: flex;
@@ -852,7 +900,7 @@
 
     .glass-trio {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
 
@@ -2353,6 +2401,9 @@
       }
     };
 
+    let audioTelaAtivo = false;
+    let utteranceTela = null;
+
     function clearTimer() {
       if (state.pauseInterval) {
         clearInterval(state.pauseInterval);
@@ -2381,6 +2432,9 @@
         window.speechSynthesis.cancel();
       }
       state.isSpeaking = false;
+      audioTelaAtivo = false;
+      utteranceTela = null;
+      atualizarBotoesAudio();
     }
 
     if ("speechSynthesis" in window) {
@@ -2396,6 +2450,7 @@
         return;
       }
 
+      pararAudioTela();
       const synth = window.speechSynthesis;
       synth.cancel();
       synth.resume();
@@ -2425,6 +2480,73 @@
         synth.resume();
         synth.speak(utter);
       }, 80);
+    }
+
+    function atualizarBotoesAudio() {
+      document.querySelectorAll('[data-audio-toggle]').forEach((botao) => {
+        botao.setAttribute('aria-pressed', audioTelaAtivo ? 'true' : 'false');
+        const rotulo = botao.querySelector('[data-audio-label]');
+        if (rotulo) rotulo.textContent = audioTelaAtivo ? 'Parar áudio' : 'Ouvir esta tela';
+      });
+    }
+
+    function pararAudioTela() {
+      if (audioTelaAtivo || utteranceTela) {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      }
+      audioTelaAtivo = false;
+      utteranceTela = null;
+      atualizarBotoesAudio();
+    }
+
+    function textoVisivelParaAudio() {
+      const app = document.getElementById('app');
+      if (!app) return '';
+      return Array.from(app.querySelectorAll('[data-audio]'))
+        .filter((elemento) => !elemento.closest('details:not([open])'))
+        .map((elemento) => (elemento.getAttribute('data-audio') || '').trim())
+        .filter(Boolean)
+        .join(' ');
+    }
+
+    function alternarAudioTela() {
+      if (audioTelaAtivo) {
+        pararAudioTela();
+        return;
+      }
+      if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+        const aviso = document.getElementById('audio-aviso');
+        if (aviso) aviso.textContent = 'Sem voz local neste aparelho. Você pode continuar lendo as instruções.';
+        return;
+      }
+      const texto = textoVisivelParaAudio();
+      if (!texto) return;
+      pararAudioTela();
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      synth.resume();
+      const utter = new SpeechSynthesisUtterance(texto);
+      utter.lang = 'pt-BR';
+      utter.rate = 0.95;
+      utter.pitch = 1;
+      utter.volume = 1;
+      const voices = synth.getVoices();
+      const ptVoice = voices.find((v) => /pt[-_]BR/i.test(v.lang)) || voices.find((v) => /^pt/i.test(v.lang));
+      if (ptVoice) utter.voice = ptVoice;
+      const finalizar = () => {
+        audioTelaAtivo = false;
+        utteranceTela = null;
+        atualizarBotoesAudio();
+      };
+      utter.onend = finalizar;
+      utter.onerror = finalizar;
+      audioTelaAtivo = true;
+      utteranceTela = utter;
+      atualizarBotoesAudio();
+      setTimeout(() => {
+        synth.resume();
+        synth.speak(utter);
+      }, 60);
     }
 
     function changeFont(delta) {
@@ -3128,14 +3250,19 @@
               </button>`;
 
         app.innerHTML = `
-          <div class="status-glass">
+          <div class="status-glass" data-audio="BREQUE local. Pause, verifique e decida com calma.">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <span>BREQUE local • Pausa, verificação e decisão sua</span>
           </div>
+          <button class="audio-btn" type="button" data-audio-toggle aria-pressed="false" onclick="alternarAudioTela()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+            <span data-audio-label>Ouvir esta tela</span>
+          </button>
+          <span id="audio-aviso" class="audio-aviso" role="status" aria-live="polite"></span>
 
           <div class="home-layout">
             <div class="stack" style="gap: 14px;">
-              <button class="arc-hero" onclick="navigate('pressure_pause')" aria-label="Estão me pressionando agora">
+              <button class="arc-hero" onclick="navigate('pressure_pause')" aria-label="Estão me pressionando agora" data-audio="Pausa imediata. Toque aqui se estão te pressionando agora.">
                 <div class="arc-wrap">
                   <svg class="arc-svg" viewBox="0 0 280 158" aria-hidden="true">
                     <defs>
@@ -3153,20 +3280,17 @@
                 </div>
               </button>
 
-              ${atalhoBancoHtml}
-              ${atalhoJornadaHtml}
-              ${barraVacinaHtml}
+              <details class="details-bloco">
+                <summary>Meus atalhos e lembretes</summary>
+                <div class="stack" style="gap:10px;">
+                  ${atalhoBancoHtml}
+                  ${atalhoJornadaHtml}
+                  ${barraVacinaHtml}
+                </div>
+              </details>
 
               <div class="glass-trio">
-                <button class="glass-card amber-glass" onclick="navigate('pressure_pause')">
-                  <div class="glass-card-top">
-                    <span class="glass-card-title">Pressão</span>
-                    <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fde68a" stroke-width="2.4"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
-                  </div>
-                  <span class="glass-card-sub">Áudio calmo e saída agora</span>
-                </button>
-
-                <button class="glass-card" onclick="navigate('verify_start')">
+                <button class="glass-card" onclick="navigate('verify_start')" data-audio="Verificar. Mensagem, link ou ligação: confira por outro canal.">
                   <div class="glass-card-top">
                     <span class="glass-card-title">Verificar</span>
                     <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
@@ -3174,7 +3298,7 @@
                   <span class="glass-card-sub">Mensagem, link ou ligação</span>
                 </button>
 
-                <button class="glass-card risk-glass" onclick="navigate('post_start')">
+                <button class="glass-card risk-glass" onclick="navigate('post_start')" data-audio="Socorro. Já fez Pix, senha ou app? Abra a mesa de recuperação.">
                   <div class="glass-card-top">
                     <span class="glass-card-title">Socorro</span>
                     <span class="glass-mini-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2.4"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
@@ -3184,16 +3308,21 @@
               </div>
             </div>
 
-            <section class="summary-box" aria-label="Ferramentas essenciais">
-              <div style="display:flex; justify-content:space-between; align-items:center; padding: 0 2px;">
-                <div>
-                  <span class="section-eyebrow">Caixa de ferramentas</span>
-                  <h2 style="font-size:1rem;">Ferramentas essenciais</h2>
-                </div>
-                <button class="btn-ghost" style="font-size:0.82rem; color:#7dd3fc; border:none;" onclick="navigate('central_mais')">Abrir central</button>
-              </div>
+            <details class="details-bloco" aria-label="Ferramentas essenciais">
+              <summary>Caixa de ferramentas — ver todas (10)</summary>
+              <div class="stack" style="gap:10px;">
+                <button class="summary-row" onclick="navigate('central_mais')">
+                  <div class="summary-left">
+                    <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+                    <div>
+                      <div style="font-weight:700; font-size:0.92rem;">Abrir central da família</div>
+                      <div style="font-size:0.78rem; color:var(--text-muted);">Treino, plano e mais recursos</div>
+                    </div>
+                  </div>
+                  <span class="summary-tag">Abrir</span>
+                </button>
 
-              <button class="summary-row" onclick="navigate('escudo_pix')">
+                <button class="summary-row" onclick="navigate('escudo_pix')">
                 <div class="summary-left">
                   <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
                   <div>
@@ -3335,14 +3464,20 @@
                 </div>
                 <span class="summary-tag">Ver</span>
               </button>
-            </section>
+              </div>
+            </details>
           </div>
 
           <section class="manifesto-strip" aria-label="O princípio do BREQUE">
             <span class="section-eyebrow">O princípio do BREQUE</span>
-            <blockquote>A decisão continua <em>sua.</em></blockquote>
-            <p>Ele cria um segundo de pausa, nunca um bloqueio. Sem selo verde e sem promessa de proteção — só a pergunta certa na hora certa.</p>
+            <blockquote data-audio="A decisão continua sua.">A decisão continua <em>sua.</em></blockquote>
+            <p>Ele cria um segundo de pausa, nunca um bloqueio. Sem selo verde e sem promessa de proteção.</p>
           </section>
+
+          <details class="details-bloco">
+            <summary>Por que só 3 passos na tela?</summary>
+            <p style="margin-top:4px;">Porque sob pressão ninguém deve rolar longos textos para decidir. Os outros recursos continuam na caixa de ferramentas e na Central da Família.</p>
+          </details>
         `;
         return;
       }
@@ -3350,14 +3485,19 @@
       if (state.screen === "central_mais") {
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
+          <button class="audio-btn" type="button" data-audio-toggle aria-pressed="false" onclick="alternarAudioTela()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+            <span data-audio-label>Ouvir esta tela</span>
+          </button>
+          <span id="audio-aviso" class="audio-aviso" role="status" aria-live="polite"></span>
+          <div data-audio="Central da Família e Treino. Prepare-se antes do susto. Treine em um minuto, combine apoio sem vigilância e reveja só o que você decide.">
             <span class="section-eyebrow">Central da Família & Treino</span>
             <h1 class="panel-titulo">Prepare-se antes do susto</h1>
-            <p style="margin-top:6px;">Ferramentas para treinar em 1 minuto, combinar apoio sem vigilância e rever suas métricas locais.</p>
+            <p style="margin-top:6px;">Treine em 1 minuto, combine apoio sem vigilância e reveja suas métricas locais.</p>
           </div>
 
           <div class="stack">
-            <button class="action-card primary-tone" onclick="resetVacina()">
+            <button class="action-card primary-tone" onclick="resetVacina()" data-audio="Vacina de 60 segundos. Treino rápido em três rodadas.">
               <div class="icon-badge icon-brand">60s</div>
               <div>
                 <span class="action-title">Vacina de 60 Segundos</span>
@@ -3365,7 +3505,7 @@
               </div>
             </button>
 
-            <button class="action-card primary-tone" onclick="state.cardDownloaded=false; navigate('cartao_familia')">
+            <button class="action-card primary-tone" onclick="state.cardDownloaded=false; navigate('cartao_familia')" data-audio="Cartão da Família. Imagem pronta para o grupo.">
               <div class="icon-badge icon-brand">PNG</div>
               <div>
                 <span class="action-title">Cartão da Família (WhatsApp / Geladeira)</span>
@@ -3373,7 +3513,7 @@
               </div>
             </button>
 
-            <button class="action-card primary-tone" onclick="navigate('checkup_familia')">
+            <button class="action-card primary-tone" onclick="navigate('checkup_familia')" data-audio="Check-up rápido. Seis perguntas para gerar um briefing.">
               <div class="icon-badge icon-brand">6</div>
               <div>
                 <span class="action-title">Check-up Rápido (6 perguntas → Briefing Familiar)</span>
@@ -3381,16 +3521,20 @@
               </div>
             </button>
 
-            <button class="action-card primary-tone" onclick="navigate('pacto_familia')">
-              <div class="icon-badge icon-brand">✓</div>
-              <div>
-                <span class="action-title">Pacto Familiar de Autonomia</span>
-                <span class="action-sub">Apoio sem vigilância + Pergunta Secreta da Família</span>
-              </div>
-            </button>
           </div>
 
-          <div class="card card-soft stack">
+          <details class="details-bloco">
+            <summary>Mais opções e configurações</summary>
+            <div class="stack">
+              <button class="action-card" onclick="navigate('pacto_familia')">
+                <div class="icon-badge icon-brand">✓</div>
+                <div>
+                  <span class="action-title">Pacto Familiar de Autonomia</span>
+                  <span class="action-sub">Apoio sem vigilância + Pergunta Secreta da Família</span>
+                </div>
+              </button>
+
+              <div class="card card-soft stack">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
               <div>
                 <strong>Pausa Programada</strong>
@@ -3456,7 +3600,9 @@
             </button>
           </div>
 
-          <button class="btn btn-secondary btn-center" onclick="navigate('privacy')">Termos de Uso, Privacidade e LGPD</button>
+            <button class="btn btn-secondary btn-center" onclick="navigate('privacy')">Termos de Uso, Privacidade e LGPD</button>
+            </div>
+          </details>
         `;
         return;
       }
@@ -4001,7 +4147,12 @@
         const taxa = simulados ? Math.round((state.metricas.verificou / simulados) * 100) : 0;
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
-          <div>
+          <button class="audio-btn" type="button" data-audio-toggle aria-pressed="false" onclick="alternarAudioTela()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+            <span data-audio-label>Ouvir esta tela</span>
+          </button>
+          <span id="audio-aviso" class="audio-aviso" role="status" aria-live="polite"></span>
+          <div data-audio="Números locais do seu treino. Números anônimos que ficam só aqui. Sem promessa de eficácia: se o treino não mudar o comportamento, você vê.">
             <span class="section-eyebrow">Painel local • Sem telemetria</span>
             <h1 class="panel-titulo">Números locais do seu treino</h1>
             <p style="margin-top:6px;">Números anônimos que ficam só aqui. Sem promessa de eficácia: se o treino não mudar o comportamento, você vê.</p>
@@ -4016,22 +4167,28 @@
 
           <section class="manifesto-strip stack">
             <span class="section-eyebrow">O limite destes números</span>
-            <blockquote>Eles medem comportamento, não <em>garantia.</em></blockquote>
-            <ul class="list-clean">
-              <li>Nenhum número aqui é veredito sobre um pagamento.</li>
-              <li>Um tempo menor e mais verificações sugerem que o treino está ajudando.</li>
-              <li>Não há comparação com outras famílias nem envio de dados para o parceiro.</li>
-              <li>Relatos organizados neste aparelho: ${state.metricas.incidentes}</li>
-            </ul>
+            <blockquote data-audio="Eles medem comportamento, não garantia.">Eles medem comportamento, não <em>garantia.</em></blockquote>
           </section>
 
-          <div class="card card-amber stack">
-            <h3>Para um piloto com cooperativa ou prefeitura</h3>
-            <p style="font-size:0.88rem; color:var(--text);">A proposta é um piloto de 90 dias com grupo de controle e painel agregado anônimo. O BREQUE não inventa número de eficácia: sem medição, não há promessa.</p>
-            <button class="btn btn-primary btn-center" onclick="exportarMetricas()">Exportar minhas métricas locais em JSON</button>
-            <button class="btn btn-secondary btn-center" onclick="navigate('simulado_familiar')">Fazer um simulado agora →</button>
-            <button class="btn btn-ghost btn-center" onclick="limparMetricas()">Apagar métricas deste aparelho</button>
-          </div>
+          <details class="details-bloco">
+            <summary>Ver detalhes e exportar</summary>
+            <div class="stack">
+              <ul class="list-clean">
+                <li>Nenhum número aqui é veredito sobre um pagamento.</li>
+                <li>Um tempo menor e mais verificações sugerem que o treino está ajudando.</li>
+                <li>Não há comparação com outras famílias nem envio de dados para o parceiro.</li>
+                <li>Relatos organizados neste aparelho: ${state.metricas.incidentes}</li>
+              </ul>
+
+              <div class="card card-amber stack">
+                <h3>Para um piloto com cooperativa ou prefeitura</h3>
+                <p style="font-size:0.88rem; color:var(--text);">A proposta é um piloto de 90 dias com grupo de controle e painel agregado anônimo. O BREQUE não inventa número de eficácia: sem medição, não há promessa.</p>
+                <button class="btn btn-primary btn-center" onclick="exportarMetricas()">Exportar minhas métricas locais em JSON</button>
+                <button class="btn btn-secondary btn-center" onclick="navigate('simulado_familiar')">Fazer um simulado agora →</button>
+                <button class="btn btn-ghost btn-center" onclick="limparMetricas()">Apagar métricas deste aparelho</button>
+              </div>
+            </div>
+          </details>
         `;
         return;
       }
