@@ -110,6 +110,18 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(html).not.toContain('taxa de golpes evitados')
   })
 
+  it('áudio é opcional, local e silencia detalhes fechados', () => {
+    const html = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(html).toContain('function alternarAudioTela()')
+    expect(html).toContain('data-audio-toggle')
+    expect(html).toContain('aria-pressed="false"')
+    expect(html).toContain("elemento.closest('details:not([open])')")
+    expect(html).not.toMatch(/data-audio="[^"]*\$\{/)
+    expect(html).not.toMatch(/localStorage[^\n]*audio/i)
+    expect(html).not.toMatch(/onload[^\n]*alternarAudioTela/i)
+    expect((html.match(/<details\b/g) || []).length).toBeGreaterThanOrEqual(5)
+  })
+
   it('landing tem menu mobile acessível, FAQ ampliada e páginas institucionais', () => {
     const html = readFileSync(resolve(process.cwd(), 'index.html'), 'utf-8')
     expect(html).toContain('data-menu-toggle')
