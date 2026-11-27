@@ -130,8 +130,8 @@ Implementado nesta rodada:
 
 - `npm run lint`, `npm run test:engine`, `npm run check:motor`,
   `npm run check:catalogo`: OK.
-- `npm test`: 142 testes em 20 arquivos, todos passando (inclui a nova asserção
-  de áudio).
+- `npm test`: 144 testes em 21 arquivos, todos passando (inclui as asserções de
+  áudio e da rodada 2).
 - `npm run build`: OK.
 - Smoke com JSDOM: as três telas renderizam com um botão de áudio cada; o
   clique reproduz apenas textos fixos visíveis, para ao navegar e não lê
@@ -148,11 +148,38 @@ Implementado nesta rodada:
 - Voz local depende do aparelho; se não houver, o app mostra aviso e mantém o
   texto. Garantia offline de áudio exigiria assets novos e outra ADR.
 
-## 9. Referências
+## 9. Rodada 2 — breques para situações extremas
+
+O usuário pediu uma nova opinião: “se esse app fosse seu, o que mais ele teria
+para ajudar em situações extremas?”. A resposta priorizou menos funcionalidades
+e mais ajuda à memória e ao tempo de reação. O usuário autorizou a execução.
+
+Implementado:
+
+- **Socorro com próximo passo único:** três sinais explícitos (ligação,
+  mensagem/link, dados já informados) geram uma recomendação por vez.
+- **Linha do tempo local:** só tipo de sinal e horário, sem valor, chave, nome
+  ou relato; em memória, sem `localStorage`.
+- **Frases de saída em 1 toque** e `Encerrar sem explicar`, que limpa só o texto
+  volátil da sessão.
+- **Áudio em etapas** na sessão de proteção: uma frase, `Repetir`, `Próximo`.
+- **Modo visitante**, sem atalhos nem dados da pessoa, com saída explícita.
+- **Kit de 5 minutos para a família**, dentro do Cartão da Família.
+- **Roteiros recolhidos** para voz conhecida e chantagem/ameaça de vazamento.
+- **Ponte `BREQUE_VOZ`**: sinais marcados pela pessoa são avaliados pelo módulo
+  local já existente, como pergunta educativa — nunca como veredito.
+
+ADR: `docs/adr/0019-breques-para-situacoes-extremas.md`.
+
+Ressalva registrada: `analisadorContextual` e `verificadorPix` continuam sem
+ligação com o fluxo ao vivo. Ligá-los mudaria a análise atual e exige matriz de
+falsos positivos própria; ficou como dívida consciente, não como esquecimento.
+
+## 10. Referências
 
 - `docs/adr/0016-direcao-visual-editorial-e-cena-do-produto.md`
 - `docs/adr/0017-paineis-do-app-com-direcao-visual-da-landing.md`
 - `docs/adr/0018-audio-local-opcional-e-hierarquia-progressiva.md`
+- `docs/adr/0019-breques-para-situacoes-extremas.md`
 - Site publicado: `https://breca-rho.vercel.app`
-- Comits desta rodada: `d072d2e` (áudio e telas), `3723415` (ADR e regressões) e
-  o commit deste registro; histórico completo: `git log --oneline -8`.
+- Rodada 1: `d072d2e`, `3723415` e `acc2429`. Rodada 2: ver `git log --oneline`.
