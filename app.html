@@ -214,6 +214,17 @@
       font-size: 0.93rem;
     }
 
+    h1, h2, h3 {
+      text-wrap: balance;
+      font-feature-settings: "kern" 1;
+    }
+
+    .panel-titulo {
+      font-size: clamp(1.35rem, 1.15rem + 1vw, 1.8rem);
+      line-height: 1.22;
+      letter-spacing: -0.01em;
+    }
+
     .stack {
       display: flex;
       flex-direction: column;
@@ -445,6 +456,46 @@
       color: var(--text-muted);
       margin-top: 4px;
     }
+
+    .section-eyebrow {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--brand-2);
+      margin-bottom: 6px;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .bento-item { min-width: 0; }
+    .bento-item--wide { grid-column: span 2; }
+
+    .manifesto-strip {
+      background: var(--brand);
+      color: #e8f1f5;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .manifesto-strip .section-eyebrow { color: #9ecfe2; }
+    .manifesto-strip h3 { color: #ffffff; }
+    .manifesto-strip blockquote {
+      margin: 0;
+      font-size: clamp(1.2rem, 1rem + 1vw, 1.55rem);
+      font-weight: 800;
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+    .manifesto-strip em { color: #fde68a; font-style: normal; }
+    .manifesto-strip p, .manifesto-strip li { color: #d6e6ed; }
 
     .pill {
       display: inline-block;
@@ -979,6 +1030,10 @@
         grid-template-columns: 1fr 1fr;
         gap: 12px;
       }
+    }
+
+    @media (max-width: 560px) {
+      .bento { grid-template-columns: 1fr 1fr; }
     }
 
     @media print {
@@ -3075,7 +3130,7 @@
         app.innerHTML = `
           <div class="status-glass">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span>BREQUE pronto • Análises e relatos processados no seu aparelho</span>
+            <span>BREQUE local • Pausa, verificação e decisão sua</span>
           </div>
 
           <div class="home-layout">
@@ -3131,8 +3186,11 @@
 
             <section class="summary-box" aria-label="Ferramentas essenciais">
               <div style="display:flex; justify-content:space-between; align-items:center; padding: 0 2px;">
-                <h2 style="font-size:1rem;">Ferramentas essenciais</h2>
-                <button class="btn-ghost" style="font-size:0.82rem; color:#7dd3fc; border:none;" onclick="navigate('central_mais')">Ver todas</button>
+                <div>
+                  <span class="section-eyebrow">Caixa de ferramentas</span>
+                  <h2 style="font-size:1rem;">Ferramentas essenciais</h2>
+                </div>
+                <button class="btn-ghost" style="font-size:0.82rem; color:#7dd3fc; border:none;" onclick="navigate('central_mais')">Abrir central</button>
               </div>
 
               <button class="summary-row" onclick="navigate('escudo_pix')">
@@ -3260,8 +3318,8 @@
                 <div class="summary-left">
                   <div class="summary-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
                   <div>
-                    <div style="font-weight:700; font-size:0.92rem;">Painel de eficácia</div>
-                    <div style="font-size:0.78rem; color:var(--text-muted);">Tempo médio até verificar, só no aparelho</div>
+                    <div style="font-weight:700; font-size:0.92rem;">Painel local de treino</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted);">Métricas anônimas, só no aparelho</div>
                   </div>
                 </div>
                 <span class="summary-tag">Ver</span>
@@ -3279,6 +3337,12 @@
               </button>
             </section>
           </div>
+
+          <section class="manifesto-strip" aria-label="O princípio do BREQUE">
+            <span class="section-eyebrow">O princípio do BREQUE</span>
+            <blockquote>A decisão continua <em>sua.</em></blockquote>
+            <p>Ele cria um segundo de pausa, nunca um bloqueio. Sem selo verde e sem promessa de proteção — só a pergunta certa na hora certa.</p>
+          </section>
         `;
         return;
       }
@@ -3287,9 +3351,9 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
-            <span class="pill pill-brand">Central da Família & Treino</span>
-            <h1>Prepare-se antes do susto</h1>
-            <p style="margin-top:6px;">Ferramentas para treinar em 1 minuto, proteger sua família sem vigiar e gerenciar seu plano.</p>
+            <span class="section-eyebrow">Central da Família & Treino</span>
+            <h1 class="panel-titulo">Prepare-se antes do susto</h1>
+            <p style="margin-top:6px;">Ferramentas para treinar em 1 minuto, combinar apoio sem vigilância e rever suas métricas locais.</p>
           </div>
 
           <div class="stack">
@@ -3349,44 +3413,44 @@
           ` : ""}
 
           <div class="section-label">Mais recursos</div>
-          <div class="grid-2">
-            <button class="tile-btn" onclick="navigate('trusted')">
+          <div class="bento">
+            <button class="tile-btn bento-item bento-item--wide" onclick="navigate('trusted')">
               <span class="tile-title">Pessoa de Confiança</span>
               <span class="tile-sub">Prepare pedido de apoio</span>
             </button>
-            <button class="tile-btn" onclick="openIncidentLog()">
+            <button class="tile-btn bento-item" onclick="openIncidentLog()">
               <span class="tile-title">Dossiê 30 Min (MED)</span>
               <span class="tile-sub">Organize relato e protocolo</span>
             </button>
-            <button class="tile-btn" onclick="navigate('raio_x')">
+            <button class="tile-btn bento-item" onclick="navigate('raio_x')">
               <span class="tile-title">Raio-X Pix e boleto</span>
               <span class="tile-sub">Comparar intenção e código</span>
             </button>
-            <button class="tile-btn" onclick="navigate('cofre')">
+            <button class="tile-btn bento-item bento-item--wide" onclick="navigate('cofre')">
               <span class="tile-title">Cofre de destinos</span>
               <span class="tile-sub">${state.cofre.length} cadastrado(s)</span>
             </button>
-            <button class="tile-btn" onclick="navigate('pausa_programada')">
+            <button class="tile-btn bento-item" onclick="navigate('pausa_programada')">
               <span class="tile-title">Pausa Programada</span>
               <span class="tile-sub">${state.pausa.ativo ? "Em andamento" : "Esperar antes de decidir"}</span>
             </button>
-            <button class="tile-btn" onclick="navigate('simulado_familiar')">
+            <button class="tile-btn bento-item" onclick="navigate('simulado_familiar')">
               <span class="tile-title">Simulado em família</span>
               <span class="tile-sub">Treino consensual cronometrado</span>
             </button>
-            <button class="tile-btn" onclick="navigate('registro_canais')">
+            <button class="tile-btn bento-item bento-item--wide" onclick="navigate('registro_canais')">
               <span class="tile-title">Registro de canais</span>
               <span class="tile-sub">Lista aberta e exportável</span>
             </button>
-            <button class="tile-btn" onclick="navigate('eficacia')">
-              <span class="tile-title">Painel de eficácia</span>
-              <span class="tile-sub">Métricas locais, sem telemetria</span>
+            <button class="tile-btn bento-item" onclick="navigate('eficacia')">
+              <span class="tile-title">Painel local de treino</span>
+              <span class="tile-sub">Métricas anônimas, sem telemetria</span>
             </button>
-            <button class="tile-btn" onclick="navigate('stages_overview')">
+            <button class="tile-btn bento-item" onclick="navigate('stages_overview')">
               <span class="tile-title">Roteiro Reverso</span>
               <span class="tile-sub">6 estágios e padrões</span>
             </button>
-            <button class="tile-btn" onclick="navigate('planos')" style="border-color:#bfd6e0; background:var(--brand-soft);">
+            <button class="tile-btn bento-item bento-item--wide" onclick="navigate('planos')" style="border-color:#bfd6e0; background:var(--brand-soft);">
               <span class="tile-title" style="color:var(--brand);">Planos BREQUE</span>
               <span class="tile-sub">Grátis, Família e Gold</span>
             </button>
@@ -3938,27 +4002,28 @@
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           <div>
-            <span class="pill pill-brand">Painel local • Sem telemetria</span>
-            <h1>Números locais do seu treino</h1>
-            <p style="margin-top:6px;">Números anônimos que ficam só aqui. Sem painel inflado: se o treino não mudar o comportamento, você vê.</p>
+            <span class="section-eyebrow">Painel local • Sem telemetria</span>
+            <h1 class="panel-titulo">Números locais do seu treino</h1>
+            <p style="margin-top:6px;">Números anônimos que ficam só aqui. Sem promessa de eficácia: se o treino não mudar o comportamento, você vê.</p>
           </div>
 
-          <div class="grid-2">
-            <div class="card card-soft"><div style="font-size:0.78rem; color:var(--text-muted);">Treinos concluídos</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${state.metricas.vacinas}</div></div>
-            <div class="card card-soft"><div style="font-size:0.78rem; color:var(--text-muted);">Simulados concluídos</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${simulados}</div></div>
-            <div class="card card-soft"><div style="font-size:0.78rem; color:var(--text-muted);">Tempo médio até verificar</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${simulados ? formatarSegundos(media) : "—"}</div></div>
-            <div class="card card-soft"><div style="font-size:0.78rem; color:var(--text-muted);">Verificaram por outro canal</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${simulados ? taxa + "%" : "—"}</div></div>
+          <div class="bento">
+            <div class="card card-soft bento-item bento-item--wide"><div style="font-size:0.78rem; color:var(--text-muted);">Treinos concluídos</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${state.metricas.vacinas}</div></div>
+            <div class="card card-soft bento-item"><div style="font-size:0.78rem; color:var(--text-muted);">Simulados concluídos</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${simulados}</div></div>
+            <div class="card card-soft bento-item"><div style="font-size:0.78rem; color:var(--text-muted);">Tempo médio até verificar</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${simulados ? formatarSegundos(media) : "—"}</div></div>
+            <div class="card card-soft bento-item bento-item--wide"><div style="font-size:0.78rem; color:var(--text-muted);">Verificaram por outro canal</div><div style="font-size:1.8rem; font-weight:800; color:var(--brand);">${simulados ? taxa + "%" : "—"}</div></div>
           </div>
 
-          <div class="card card-neutral stack">
-            <h3>O que estes números querem dizer</h3>
+          <section class="manifesto-strip stack">
+            <span class="section-eyebrow">O limite destes números</span>
+            <blockquote>Eles medem comportamento, não <em>garantia.</em></blockquote>
             <ul class="list-clean">
-              <li>Eles medem o comportamento da sua família no treino, não a “segurança” de um pagamento.</li>
+              <li>Nenhum número aqui é veredito sobre um pagamento.</li>
               <li>Um tempo menor e mais verificações sugerem que o treino está ajudando.</li>
               <li>Não há comparação com outras famílias nem envio de dados para o parceiro.</li>
               <li>Relatos organizados neste aparelho: ${state.metricas.incidentes}</li>
             </ul>
-          </div>
+          </section>
 
           <div class="card card-amber stack">
             <h3>Para um piloto com cooperativa ou prefeitura</h3>
