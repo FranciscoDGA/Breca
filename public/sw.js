@@ -1,4 +1,4 @@
-const CACHE_NAME = 'breque-pwa-v7'
+const CACHE_NAME = 'breque-pwa-v8'
 // O bundle tem nome fixo para poder entrar no precache: sem ele, a primeira
 // abertura offline do PWA carregaria o HTML sem as funções do app.
 const CORE_ASSETS = [
@@ -8,6 +8,9 @@ const CORE_ASSETS = [
   '/assets/app.js',
   '/manifest.webmanifest',
   '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png',
 ]
 
 self.addEventListener('install', (event) => {

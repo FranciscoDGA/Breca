@@ -11,10 +11,28 @@
   "lang": "pt-BR",
   "icons": [
     {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "share_target": {
@@ -28,12 +46,28 @@
   },
   "shortcuts": [
     {
+      "name": "Estão me pressionando agora",
+      "short_name": "Pausa agora",
+      "url": "/app.html?atalho=pressao",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Já fiz um Pix (MED)",
+      "short_name": "Socorro MED",
+      "url": "/app.html?atalho=socorro",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
       "name": "Verificar mensagem ou link",
-      "url": "/app.html?atalho=verificar"
+      "short_name": "Verificar",
+      "url": "/app.html?atalho=verificar",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Raio-X do Pix e boleto",
-      "url": "/app.html?atalho=raiox"
+      "short_name": "Raio-X Pix",
+      "url": "/app.html?atalho=raiox",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
