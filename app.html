@@ -14,13 +14,16 @@
   <meta property="og:title" content="BREQUE — Copiloto contra golpes" />
   <meta property="og:description" content="Um breque na hora da dúvida. Interrompa decisões sob pressão, verifique por outro canal e aja com calma. Tudo processado no seu aparelho." />
   <meta property="og:url" content="https://breca-rho.vercel.app/" />
-  <meta property="og:image" content="https://breca-rho.vercel.app/icon.svg" />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:image" content="https://breca-rho.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="BREQUE — Copiloto contra golpes" />
   <meta name="twitter:description" content="Um breque na hora da dúvida. Interrompa decisões sob pressão e verifique por outro canal." />
+  <meta name="twitter:image" content="https://breca-rho.vercel.app/og-image.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/icon.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <title>BREQUE — Copiloto contra golpes</title>
   <style>
     :root {
@@ -777,24 +780,27 @@
     .welcome-go {
       position: relative;
       z-index: 2;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 1.5px solid rgba(255, 255, 255, 0.28);
-      background: #040b11;
-      color: #ffffff;
-      display: flex;
+      min-height: 56px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.34);
+      background: #f59e0b;
+      color: #0b222c;
+      font-size: 1rem;
+      font-weight: 800;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
       cursor: pointer;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
       transition: transform 160ms var(--ease-out), background-color 150ms ease;
     }
 
     @media (hover: hover) and (pointer: fine) {
       .welcome-go:hover {
-        background: #0d2536;
-        transform: scale(1.04);
+        background: #fbbf24;
+        transform: scale(1.03);
       }
     }
 
@@ -1141,7 +1147,7 @@
 </head>
 <body>
   <div class="app-shell" role="application" aria-label="BREQUE Copiloto contra golpes">
-    <div class="proto-strip">
+    <div class="proto-strip" id="proto-strip" aria-live="polite">
       BREQUE • Processamento local no aparelho • Não acessa bancos nem WhatsApp
     </div>
 
@@ -1321,6 +1327,8 @@
       medDatas: "breca.medDatas.v1",
       bancoFavorito: "breca.bancoFavorito.v1",
       operadora: "breca.operadora.v1",
+      fontScale: "breca.fontScale.v1",
+      boasVindasVistas: "breca.boasVindasVistas.v1",
       saltLocal: "breca.saltLocal.v1"
     };
 
@@ -1382,13 +1390,18 @@
     }
     state.metricas = { ...state.metricas, ...lerLocal(CHAVES_LOCAIS.metricas, {}) };
     state.compromisso = { ...state.compromisso, ...lerLocal(CHAVES_LOCAIS.compromisso, {}) };
+    const fontScaleSalvo = Number(lerLocal(CHAVES_LOCAIS.fontScale, 1));
+    if (Number.isFinite(fontScaleSalvo) && fontScaleSalvo >= 0.9 && fontScaleSalvo <= 1.25) {
+      state.fontScale = +fontScaleSalvo.toFixed(2);
+      document.documentElement.style.setProperty("--font-scale", state.fontScale);
+    }
     const REGRAS_PLANO_FALLBACK = [
       {
         id: "nao_compartilhar_codigo",
         tituloCurto: "Nunca passar código por ligação",
         compromisso: "Nunca vou compartilhar código de verificação, senha ou token com alguém que me ligou.",
         lembretePressao: "Você combinou consigo: não informar código, senha ou token em ligação recebida.",
-        topicos: ["banco", "suporte", "outro"],
+        topicos: ["banco", "suporte", "selfie_inss", "outro"],
         sugerida: true
       },
       {
@@ -1396,7 +1409,7 @@
         tituloCurto: "Confirmar por número conhecido",
         compromisso: "Se alguém pedir dinheiro em meu nome ou de um familiar, vou confirmar por um contato que eu já conheço.",
         lembretePressao: "Você combinou consigo: confirmar pedido de dinheiro por um canal que você já tinha antes.",
-        topicos: ["familiar", "dinheiro"],
+        topicos: ["familiar", "dinheiro", "advogado"],
         sugerida: true
       },
       {
@@ -1404,7 +1417,7 @@
         tituloCurto: "Parar diante de urgência",
         compromisso: "Se disserem que preciso agir imediatamente ou perder algo em minutos, vou parar e verificar com calma.",
         lembretePressao: "Você combinou consigo: diante de pressa ou prazo de minutos, parar antes de decidir.",
-        topicos: ["dinheiro", "banco", "familiar", "ameaca", "investimento", "suporte", "outro"],
+        topicos: ["dinheiro", "banco", "familiar", "ameaca", "investimento", "suporte", "selfie_inss", "advogado", "maquininha", "outro"],
         sugerida: true
       },
       {
@@ -1412,7 +1425,7 @@
         tituloCurto: "Recusar acesso remoto ao celular",
         compromisso: "Não vou instalar aplicativo de acesso remoto nem compartilhar minha tela durante uma ligação.",
         lembretePressao: "Você combinou consigo: não instalar app de suporte nem espelhar a tela sob orientação por ligação.",
-        topicos: ["suporte", "banco"],
+        topicos: ["suporte", "banco", "selfie_inss"],
         sugerida: false
       },
       {
@@ -1420,7 +1433,7 @@
         tituloCurto: "Ligar só pelo verso do cartão",
         compromisso: "Se alguém disser ser do banco, vou encerrar e procurar o número do verso do cartão ou o app oficial.",
         lembretePressao: "Você combinou consigo: desligar e confirmar apenas pelo canal oficial que você abrir por conta própria.",
-        topicos: ["banco", "dinheiro"],
+        topicos: ["banco", "dinheiro", "selfie_inss", "maquininha"],
         sugerida: false
       },
       {
@@ -1428,7 +1441,7 @@
         tituloCurto: "Ouvir uma segunda opinião antes",
         compromisso: "Antes de transferir um valor fora do comum sob pressão, vou pausar e falar com alguém de confiança.",
         lembretePressao: "Você combinou consigo: ouvir uma segunda opinião antes de fazer transferência sob pressão.",
-        topicos: ["dinheiro", "investimento", "ameaca", "familiar"],
+        topicos: ["dinheiro", "investimento", "ameaca", "familiar", "advogado", "maquininha"],
         sugerida: false
       }
     ];
@@ -2918,9 +2931,64 @@
       render();
     }
 
+    let wakeLockSentinel = null;
+    let navegandoPorPopstate = false;
+    const TELAS_MANTER_ACESA = new Set([
+      "pressure_pause",
+      "pressure_topic",
+      "pressure_guide",
+      "pausa_programada",
+      "post_start",
+      "post_plan",
+      "incident_log",
+      "discagem_segura"
+    ]);
+
+    async function gerenciarWakeLockTela(screen) {
+      const precisa = TELAS_MANTER_ACESA.has(screen);
+      if (!precisa) {
+        if (wakeLockSentinel) {
+          try { await wakeLockSentinel.release(); } catch {}
+          wakeLockSentinel = null;
+        }
+        return;
+      }
+      if (!("wakeLock" in navigator) || !navigator.wakeLock || typeof navigator.wakeLock.request !== "function") return;
+      if (document.visibilityState && document.visibilityState !== "visible") return;
+      if (wakeLockSentinel) return;
+      try {
+        wakeLockSentinel = await navigator.wakeLock.request("screen");
+        wakeLockSentinel.addEventListener("release", () => {
+          wakeLockSentinel = null;
+        });
+      } catch {
+        wakeLockSentinel = null;
+      }
+    }
+
+    function atualizarFaixaOffline() {
+      const strip = document.getElementById("proto-strip");
+      if (!strip) return;
+      const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+      strip.textContent = offline
+        ? "Modo offline ativo • O BREQUE segue funcionando 100% no seu aparelho"
+        : "BREQUE • Processamento local no aparelho • Não acessa bancos nem WhatsApp";
+    }
+
+    function limparUrlAtual(screen) {
+      try {
+        if (window.history && typeof window.history.replaceState === "function") {
+          window.history.replaceState({ brequeScreen: screen, brequeDepth: 0 }, "", window.location.pathname);
+        }
+      } catch {
+        // Ambiente sem history API gravável (ex.: file://) segue normalmente.
+      }
+    }
+
     function changeFont(delta) {
       state.fontScale = Math.min(1.25, Math.max(0.9, +(state.fontScale + delta).toFixed(2)));
       document.documentElement.style.setProperty("--font-scale", state.fontScale);
+      if (!state.visitante) gravarLocal(CHAVES_LOCAIS.fontScale, state.fontScale);
     }
 
     async function handleInstallClick() {
@@ -2935,22 +3003,40 @@
 
     function navigate(screen, pushHistory = true) {
       clearTimer();
-      if (pushHistory && state.screen !== screen) state.history.push(state.screen);
+      if (pushHistory && state.screen !== screen) {
+        state.history.push(state.screen);
+        if (!navegandoPorPopstate) {
+          try {
+            if (window.history && typeof window.history.pushState === "function") {
+              window.history.pushState(
+                { brequeScreen: screen, brequeDepth: state.history.length },
+                "",
+                window.location.pathname
+              );
+            }
+          } catch {}
+        }
+      }
       state.screen = screen;
       if (screen === "discagem_segura") registrarSinalSeguro("Canal oficial aberto");
+      gerenciarWakeLockTela(screen);
       render();
     }
 
     function goBack() {
       clearTimer();
       state.screen = state.history.pop() || "home";
+      gerenciarWakeLockTela(state.screen);
       render();
     }
 
     function goHome() {
       clearTimer();
+      if (!state.visitante) gravarLocal(CHAVES_LOCAIS.boasVindasVistas, true);
       state.history = [];
       state.screen = "home";
+      limparUrlAtual("home");
+      gerenciarWakeLockTela("home");
       render();
     }
 
@@ -3675,7 +3761,8 @@
 
             <div class="welcome-actions">
               <button class="welcome-go" onclick="goHome()" aria-label="Entrar no BREQUE">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+                <span>Entrar no BREQUE</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
               </button>
               <button class="welcome-visitor" onclick="alternarModoVisitante()">Abrir no modo visitante (sem seus dados)</button>
             </div>
@@ -4855,6 +4942,10 @@
               <div class="rr-title">Dica para configurar com pais ou avós (2 minutos)</div>
               <p>1. Coloque o ícone do BREQUE na primeira tela, ao lado do WhatsApp.<br/>2. Combinem juntos a <strong>Pergunta Secreta da Família</strong>.<br/>3. Mostrem que o app não vigia ninguém — só ajuda a pausar na hora da dúvida.</p>
             </div>
+            <div class="rr-block">
+              <div class="rr-title">Proteção extra no WhatsApp (2 minutos — Confirmação em duas etapas)</div>
+              <p>Para evitar clonagem de conta antes mesmo do golpe acontecer:<br/>1. Abra o WhatsApp → <strong>Configurações</strong> → <strong>Conta</strong> → <strong>Confirmação em duas etapas</strong>.<br/>2. Toque em <strong>Ativar</strong> e crie um PIN de 6 dígitos (anote em papel fora do celular).<br/>3. Nunca informe esse PIN nem o código de 6 dígitos do SMS para ninguém.</p>
+            </div>
           </div>
           <button class="btn btn-primary btn-center" onclick="goHome()">Voltar ao início</button>
         `;
@@ -5334,6 +5425,9 @@
           { id: "dinheiro", label: "Pedido de dinheiro ou Pix" },
           { id: "banco", label: "Contato que diz ser do banco" },
           { id: "familiar", label: "Familiar pedindo ajuda" },
+          { id: "selfie_inss", label: "Pedido de selfie, documento ou prova de vida (INSS/empréstimo)" },
+          { id: "advogado", label: "Advogado ou precatório pedindo taxa para liberar dinheiro" },
+          { id: "maquininha", label: "Entregador ou maquininha (taxa de presente / visor quebrado)" },
           { id: "ameaca", label: "Ameaça ou intimidação" },
           { id: "investimento", label: "Promessa de investimento ou ganho rápido" },
           { id: "suporte", label: "Suporte técnico pedindo acesso ao aparelho" },
@@ -5348,9 +5442,13 @@
       }
 
       if (state.screen === "pressure_guide") {
-        const extra = state.pressureTopic === "ameaca"
-          ? "<strong>Atenção à sua segurança física:</strong> se você estiver sob ameaça imediata ou em risco físico, procure ajuda local apropriada imediatamente (como a polícia pelo 190)."
-          : "";
+        const avisosTopico = {
+          ameaca: "<strong>Atenção à sua segurança física:</strong> se você estiver sob ameaça imediata ou em risco físico, procure ajuda local apropriada imediatamente (como a polícia pelo 190).",
+          selfie_inss: "<strong>Atenção a selfie e prova de vida:</strong> golpistas usam selfie ao vivo e foto de documento para abrir contas e contratar empréstimos consignados no seu nome. O INSS não pede selfie ou senha por WhatsApp — confirme ligando você para o <strong>135</strong> ou no app oficial Meu INSS.",
+          advogado: "<strong>Atenção ao golpe do falso advogado:</strong> golpistas usam dados públicos de processos reais e pedem Pix urgente de custas ou taxa de liberação. Encerre e ligue para o número antigo do seu advogado ou do escritório.",
+          maquininha: "<strong>Atenção a entregas inesperadas:</strong> não passe cartão em maquininha com visor quebrado ou sem conferir o valor real na tela, nem tire selfie para suposto entregador de presente ou brinde."
+        };
+        const extra = avisosTopico[state.pressureTopic] || "";
         app.innerHTML = `
           <button class="btn btn-ghost" onclick="goBack()">← Voltar</button>
           ${renderRoteiroCard(3, extra)}
@@ -5403,6 +5501,7 @@
             <button class="btn btn-risk" onclick="registrarSinalSeguro('Dados informados'); state.postEvent='credencial'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Passei código, senha ou dados pessoais <span>→</span></button>
             <button class="btn btn-risk" onclick="registrarSinalSeguro('Cartão informado'); state.postEvent='cartao'; state.incidentLog.tipoIncidente='cartao_clonado'; navigate('incident_log')">Cartão clonado ou compra não reconhecida <span>→</span></button>
             <button class="btn btn-risk" onclick="registrarSinalSeguro('Acesso ao aparelho informado'); state.postEvent='app'; state.incidentLog.tipoIncidente='app_remoto'; state.postChecked=new Set(); navigate('post_plan')">Instalei aplicativo ou dei acesso ao aparelho <span>→</span></button>
+            <button class="btn btn-risk" onclick="registrarSinalSeguro('Roubo ou furto de celular informado'); state.postEvent='celular_roubado'; state.incidentLog.tipoIncidente='outro'; state.postChecked=new Set(); navigate('post_plan')">Roubo ou furto de celular (Celular Seguro + bancos) <span>→</span></button>
             <button class="btn btn-secondary" onclick="registrarSinalSeguro('Documento informado'); state.postEvent='documento'; state.incidentLog.tipoIncidente='dados_passados'; state.postChecked=new Set(); navigate('post_plan')">Enviei documento ou foto <span>→</span></button>
             <button class="btn btn-secondary" onclick="registrarSinalSeguro('Outra situação informada'); state.postEvent='outro'; state.incidentLog.tipoIncidente='outro'; navigate('incident_log')">Outra situação / organizar relato direto <span>→</span></button>
           </div>
@@ -5428,7 +5527,7 @@
       }
 
       if (state.screen === "post_plan") {
-        const stageMap = { pix: 5, credencial: 4, app: 4, documento: 4, outro: 6 };
+        const stageMap = { pix: 5, credencial: 4, app: 4, celular_roubado: 5, documento: 4, outro: 6 };
         const stepsMap = {
           pix: [
             "Contate imediatamente o seu banco pelo canal oficial (app já instalado ou verso do cartão) e pergunte sobre contestação/MED — sem garantia de bloqueio ou devolução.",
@@ -5444,6 +5543,11 @@
             "Interrompa imediatamente o contato com quem pediu a instalação.",
             "Evite abrir bancos neste aparelho até buscar suporte confiável.",
             "Se possível, troque senhas importantes a partir de outro aparelho confiável."
+          ],
+          celular_roubado: [
+            "De outro aparelho ou com ajuda de uma pessoa de confiança, acesse o portal oficial Celular Seguro (celularseguro.mj.gov.br com conta gov.br) para emitir o alerta de bloqueio de linha, aparelho e bancos parceiros.",
+            "Ligue imediatamente para os canais oficiais dos seus bancos (pela Discagem Segura) para bloquear acesso ao app, cartões e Pix.",
+            "Registre Boletim de Ocorrência e acompanhe contas, empréstimos e chaves no seu CPF pelo Registrato oficial do Banco Central (registrato.bcb.gov.br)."
           ],
           documento: [
             "Interrompa o contato e não envie novos documentos ou selfies.",
@@ -5834,21 +5938,35 @@
           </div>
 
           <button class="btn btn-primary btn-center" onclick="handleInstallClick()">Como instalar no celular (PWA)</button>
+          <button class="btn btn-secondary btn-center" onclick="alternarModoVisitante()">${state.visitante ? "Sair do modo visitante" : "Ativar modo visitante (ocultar dados locais)"}</button>
           <button class="btn btn-ghost btn-center" style="font-size:0.86rem;" onclick="apagarTodosOsDadosLocais()">Apagar todos os meus dados deste aparelho</button>
         `;
       }
     }
 
-    // Web Share Target (Android PWA): se o usuário compartilhou um texto/link para o BREQUE, abre direto em Verificar
+    // Web Share Target (Android PWA) e atalhos rápidos do ícone.
+    // Remove sempre os parâmetros da URL (replaceState) para que nenhum texto
+    // compartilhado fique no histórico do navegador (regra 4 do AGENTS.md).
     const params = new URLSearchParams(window.location.search);
     const sharedText = [params.get("title"), params.get("text"), params.get("url")]
       .filter(Boolean)
       .join(" ")
       .trim()
       .slice(0, 1000);
+    const modoPwaInstalado = Boolean(
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+      window.navigator.standalone === true
+    );
+    const boasVindasJaVistas = lerLocal(CHAVES_LOCAIS.boasVindasVistas, false) === true;
+
     if (sharedText) {
       state.verifyText = sharedText;
       state.screen = "verify_start";
+    } else if (params.get("atalho") === "pressao") {
+      state.screen = "pressure_pause";
+    } else if (params.get("atalho") === "socorro") {
+      registrarSinalSeguro("Socorro aberto");
+      state.screen = "post_start";
     } else if (params.get("atalho") === "escudo") {
       state.screen = "escudo_pix";
     } else if (params.get("atalho") === "raiox") {
@@ -5857,7 +5975,40 @@
       state.screen = "verify_start";
     } else if (params.get("install") === "1") {
       state.screen = "install_guide";
+    } else if (boasVindasJaVistas || modoPwaInstalado) {
+      state.screen = "home";
     }
+
+    limparUrlAtual(state.screen);
+    atualizarFaixaOffline();
+    gerenciarWakeLockTela(state.screen);
+
+    window.addEventListener("popstate", (ev) => {
+      if (state.history.length > 0) {
+        navegandoPorPopstate = true;
+        clearTimer();
+        const anterior = state.history.pop();
+        state.screen = (ev.state && ev.state.brequeScreen) || anterior || "home";
+        gerenciarWakeLockTela(state.screen);
+        render();
+        navegandoPorPopstate = false;
+      } else if (state.screen !== "home" && state.screen !== "welcome") {
+        navegandoPorPopstate = true;
+        clearTimer();
+        state.screen = "home";
+        gerenciarWakeLockTela("home");
+        render();
+        navegandoPorPopstate = false;
+      }
+    });
+
+    window.addEventListener("online", atualizarFaixaOffline);
+    window.addEventListener("offline", atualizarFaixaOffline);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        gerenciarWakeLockTela(state.screen);
+      }
+    });
 
     render();
     window.addEventListener("breque:modulos-prontos", () => {

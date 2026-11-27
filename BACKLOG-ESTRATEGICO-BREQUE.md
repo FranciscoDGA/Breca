@@ -19,9 +19,12 @@
   2. **Cartão da Família (PNG real)** gerado localmente via Canvas para fixar no WhatsApp ou geladeira.
   3. **Dossiê 30 Min (MED)** com download real de `relato-breque.txt` (100% local, sem prometer prova jurídica).
   4. **Pacto Familiar de Autonomia** (apoio sem vigilância).
-- **Monetização e Jurídico:**
-  - Tela de Planos reais (Básico Grátis, Plus/Família R$ 12,90/mês ou R$ 99/ano, Gold R$ 29,90/mês, B2B2C Cooperativas) conectada ao Supabase (`interesse_planos`).
-  - Termos de Uso, Limitação de Responsabilidade e Política de Privacidade/LGPD na aba *Dados*.
+- **Monetização e Jurídico (Camada 1 — 100% local):**
+  - Tela de Planos alinhada entre landing e app (Grátis para sempre, Plus / Família R$ 12,90/mês ou R$ 99/ano, B2B2C Cooperativas/Bancos), sem envio externo nem formulário (apenas cópia local da preferência).
+  - Termos de Uso, Limitação de Responsabilidade e Política de Privacidade/LGPD na aba *Dados* e páginas institucionais dedicadas.
+- **Pré-Compromisso e Distribuição PWA (entregues em 27/11/2026):**
+  - **Plano de Proteção Pessoal (ADR 0020):** regras de ouro 100% locais sem PII, exibidas automaticamente sob pressão e ocultas no Modo Visitante.
+  - **Open Graph PNG (`og-image.png`), ícones PNG (`apple-touch-icon.png`, `192`/`512`/`maskable`) e Web Share Target com limpeza imediata de URL (`replaceState`)** + histórico do botão Voltar (`popstate`) + Wake Lock na pausa/socorro + catálogo ampliado (INSS 135, Celular Seguro, PicPay, Mercado Pago, PagBank, C6 Bank).
 
 ---
 

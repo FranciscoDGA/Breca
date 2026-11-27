@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
@@ -56,7 +56,9 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     const sw = readFileSync(resolve(process.cwd(), 'public/sw.js'), 'utf-8')
     expect(sw).toContain("url.search === ''")
     expect(sw).toContain("'/assets/app.js'")
-    expect(sw).toContain('breque-pwa-v7')
+    expect(sw).toContain("'/icon-192.png'")
+    expect(sw).toContain("'/apple-touch-icon.png'")
+    expect(sw).toContain('breque-pwa-v8')
     const vite = readFileSync(resolve(process.cwd(), 'vite.config.ts'), 'utf-8')
     expect(vite).toContain("entryFileNames: 'assets/[name].js'")
   })
@@ -236,5 +238,65 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
     expect(secaoCanais).not.toBeNull()
     expect((secaoCanais![0].match(/class="bank-logo"/g) || []).length).toBe(12)
     expect(secaoCanais![0]).not.toMatch(/<img[^>]+src="https?:\/\//i)
+  })
+
+  it('limpa URL do Share Target, integra botão Voltar (popstate), Wake Lock, fonte salva e novos cenários', () => {
+    const app = readFileSync(resolve(process.cwd(), 'app.html'), 'utf-8')
+    expect(app).toContain('function limparUrlAtual(screen)')
+    expect(app).toContain('window.history.replaceState(')
+    expect(app).toContain('window.history.pushState(')
+    expect(app).toContain('window.addEventListener("popstate"')
+    expect(app).toContain('navigator.wakeLock.request("screen")')
+    expect(app).toContain('fontScale: "breca.fontScale.v1"')
+    expect(app).toContain('boasVindasVistas: "breca.boasVindasVistas.v1"')
+    expect(app).toContain('params.get("atalho") === "pressao"')
+    expect(app).toContain('params.get("atalho") === "socorro"')
+    expect(app).toContain('function atualizarFaixaOffline()')
+    expect(app).toContain('<span>Entrar no BREQUE</span>')
+    expect(app).toContain('selfie_inss')
+    expect(app).toContain('advogado')
+    expect(app).toContain('maquininha')
+    expect(app).toContain('celular_roubado')
+    expect(app).toContain('Confirmação em duas etapas')
+  })
+
+  it('usa PNGs reais para ícones PWA (iOS/Android/maskable) e Open Graph nas páginas', () => {
+    for (const ativo of [
+      'public/icon-192.png',
+      'public/icon-512.png',
+      'public/icon-maskable-512.png',
+      'public/apple-touch-icon.png',
+      'public/og-image.png',
+    ]) {
+      expect(existsSync(resolve(process.cwd(), ativo)), ativo).toBe(true)
+    }
+
+    const manifest = JSON.parse(
+      readFileSync(resolve(process.cwd(), 'public/manifest.webmanifest'), 'utf-8'),
+    ) as {
+      icons: Array<{ src: string; type: string; purpose?: string }>
+      shortcuts: Array<{ url: string }>
+    }
+    expect(manifest.icons.some((i) => i.src === '/icon-192.png' && i.type === 'image/png')).toBe(true)
+    expect(manifest.icons.some((i) => i.src === '/icon-512.png' && i.type === 'image/png')).toBe(true)
+    expect(
+      manifest.icons.some((i) => i.src === '/icon-maskable-512.png' && i.purpose === 'maskable'),
+    ).toBe(true)
+    expect(manifest.shortcuts.some((s) => s.url.includes('atalho=pressao'))).toBe(true)
+    expect(manifest.shortcuts.some((s) => s.url.includes('atalho=socorro'))).toBe(true)
+
+    for (const pagina of [
+      'index.html',
+      'app.html',
+      'public/contato.html',
+      'public/privacidade.html',
+      'public/sobre.html',
+      'public/termos.html',
+    ]) {
+      const html = readFileSync(resolve(process.cwd(), pagina), 'utf-8')
+      expect(html, pagina).toContain('og-image.png')
+      expect(html, pagina).toContain('apple-touch-icon.png')
+      expect(html, pagina).not.toContain('property="og:image" content="https://breca-rho.vercel.app/icon.svg"')
+    }
   })
 })
