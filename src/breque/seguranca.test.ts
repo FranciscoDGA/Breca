@@ -107,6 +107,12 @@ describe('Auditoria AppSec — testes de regressão de segurança', () => {
       expect(html, pagina).toContain(`href="${pagina}"`)
     }
     expect(html).toContain('class="mobile-cta"')
+    expect(html).toContain('class="hero-scene"')
+    expect(html).toContain('class="momentos"')
+    expect(html).toContain('id="manifesto"')
+    expect(html).toContain('class="bento"')
+    expect(html).toContain('id="recuperacao"')
+    expect(html).toContain('id="treino"')
   })
 
   it('páginas institucionais não coletam dados nem falam em veredito seguro', () => {
